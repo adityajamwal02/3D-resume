@@ -503,6 +503,109 @@
   .contact-bottom {
     border-color: #36556140;
   }
+  .contact-section .name-period {
+    color: #466673;
+  }
+  .contact-form {
+    width: 100%;
+    max-width: 680px;
+    min-width: 0;
+  }
+  .contact-form fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    display: grid;
+    gap: 20px;
+  }
+  .contact-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .contact-form label {
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .contact-form input:not([type="checkbox"]),
+  .contact-form textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #466673;
+    border-radius: 6px;
+    padding: 12px;
+    font: inherit;
+    font-size: 16px;
+    background: #ffffffb8;
+    color: #172d30;
+  }
+  .contact-form textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+  .contact-form input:focus-visible,
+  .contact-form textarea:focus-visible {
+    outline: 2px solid #172d30;
+    outline-offset: 3px;
+  }
+  .contact-form .contact-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .contact-consent input {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    accent-color: #172d30;
+    margin: 0;
+  }
+  .contact-form .contact-trap {
+    display: none;
+  }
+  .contact-submit {
+    justify-self: start;
+    min-width: 170px;
+    background: #172d30;
+    color: #fff;
+    border: 1px solid #172d30;
+  }
+  .contact-form :disabled {
+    cursor: not-allowed;
+  }
+  .contact-submit:disabled {
+    background: #466673;
+  }
+  .contact-status {
+    min-height: 48px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .contact-alternatives {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    font-size: 13px;
+  }
+  .contact-alternatives a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 24px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  @media (max-width: 600px) {
+    .contact-fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   .contact-section .social-links a {
     border: 1px solid #34545f33;
     border-radius: 24px;

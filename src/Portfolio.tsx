@@ -4,16 +4,14 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
-  Check,
-  Copy,
   CodeXml as Github,
   BriefcaseBusiness as Linkedin,
   Mail,
-  Printer,
 } from "lucide-react";
 import { experience, skillGroups } from "./content";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
+import ContactForm from "./components/ContactForm";
 import "./island.css";
 
 const mentorshipSessions = [
@@ -49,18 +47,6 @@ const mentorshipSessions = [
 
 export default function Portfolio() {
   const [selectedSkill, setSelectedSkill] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [copyError, setCopyError] = useState(false);
-
-  async function copyEmail() {
-    try {
-      await navigator.clipboard.writeText("aditya.vicky01@gmail.com");
-      setCopied(true);
-      setCopyError(false);
-    } catch {
-      setCopyError(true);
-    }
-  }
 
   return (
     <>
@@ -95,12 +81,14 @@ export default function Portfolio() {
               <a className="button button-primary" href="#experience">
                 Explore my journey <ArrowDown size={17} />
               </a>
-              <button
+              <a
                 className="button button-secondary"
-                onClick={() => window.print()}
+                href="https://www.linkedin.com/in/adityajamwal02/"
+                target="_blank"
+                rel="noreferrer"
               >
-                <Printer size={16} /> Resume
-              </button>
+                <Linkedin size={16} /> LinkedIn <ArrowUpRight size={15} />
+              </a>
             </div>
           </div>
           <SystemsScene />
@@ -193,14 +181,13 @@ export default function Portfolio() {
                       {job.company}
                       <span>{job.role}</span>
                     </h3>
-                    {job.company !== "Cisco" && (
-                      <span
-                        className={`company-symbol company-${job.company.toLowerCase()}`}
-                        aria-hidden="true"
-                      >
-                        {job.company === "Microsoft" ? "M" : "a."}
-                      </span>
-                    )}
+                    <img
+                      className={`company-logo company-${job.company.toLowerCase()}`}
+                      src={`${import.meta.env.BASE_URL}${job.company.toLowerCase()}-logo.svg`}
+                      alt=""
+                      width="40"
+                      height="40"
+                    />
                   </div>
                   <ul>
                     {job.bullets.map((bullet) => (
@@ -577,27 +564,10 @@ export default function Portfolio() {
             </span>
           </div>
           <h2 id="contact-title">
-            Let’s build something
-            <br />
-            <em>that matters.</em>
+            Get in touch<span className="name-period">.</span>
           </h2>
           <div className="contact-bottom">
-            <div>
-              <a className="email-link" href="mailto:aditya.vicky01@gmail.com">
-                aditya.vicky01@gmail.com <ArrowUpRight />
-              </a>
-              <button className="copy-button" onClick={copyEmail}>
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? "Email copied" : "Copy email"}
-              </button>
-              <span className="sr-only" role="status">
-                {copied
-                  ? "Email address copied to clipboard."
-                  : copyError
-                    ? "Clipboard unavailable. Use the email link above."
-                    : ""}
-              </span>
-            </div>
+            <ContactForm />
             <div className="social-links">
               <a
                 href="https://github.com/adityajamwal02"
@@ -612,9 +582,6 @@ export default function Portfolio() {
                 rel="noreferrer"
               >
                 <Linkedin size={18} /> LinkedIn <ArrowUpRight size={15} />
-              </a>
-              <a href="mailto:aditya.vicky01@gmail.com">
-                <Mail size={18} /> Email <ArrowUpRight size={15} />
               </a>
             </div>
           </div>

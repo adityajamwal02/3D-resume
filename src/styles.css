@@ -482,16 +482,15 @@ em {
   color: var(--muted);
   margin-top: 8px;
 }
-.company-symbol {
-  font: 30px var(--display);
-  color: #778779;
+.company-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
-.company-cisco {
-  font-size: 20px;
-  color: #8bbdd1;
-}
+.company-cisco,
 .company-ambee {
-  color: #cfb889;
+  width: 56px;
 }
 .job ul {
   padding: 0;

@@ -1,9 +1,33 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { PNG } from "pngjs";
 
-test("resume content, navigation, skill filters, and professional links", async ({
+async function configureContact(page: Page) {
+  await page.route("**/contact-config.json", (route) =>
+    route.fulfill({
+      json: {
+        serviceId: "test_service",
+        templateId: "test_template",
+        publicKey: "test_public_key",
+      },
+    }),
+  );
+}
+
+async function fillContact(page: Page) {
+  await page.getByLabel("Name", { exact: true }).fill("Test Visitor");
+  await page
+    .getByLabel("Your email", { exact: true })
+    .fill("visitor@example.com");
+  await page
+    .getByLabel("Message", { exact: true })
+    .fill("I would like to discuss a project opportunity.");
+  await page.getByRole("checkbox").check();
+}
+
+test("portfolio content, navigation, skill filters, and professional links", async ({
   page,
+  browserName,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -30,6 +54,17 @@ test("resume content, navigation, skill filters, and professional links", async 
       .toBeGreaterThan(0);
   }
   await expect(page.locator(".job")).toHaveCount(3);
+  await expect(page.locator(".company-logo")).toHaveCount(3);
+  for (const logo of await page.locator(".company-logo").all()) {
+    await expect
+      .poll(() =>
+        logo.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    const bounds = await logo.boundingBox();
+    expect(bounds!.height).toBe(32);
+    expect(bounds!.width).toBeLessThanOrEqual(56);
+  }
   const cisco = page.locator(".job").filter({
     has: page.getByRole("heading", {
       name: "Cisco Software Engineer",
@@ -60,14 +95,18 @@ test("resume content, navigation, skill filters, and professional links", async 
   await page.getByRole("button", { name: "03 AI & development" }).click();
   await expect(page.locator(".skill-panel")).toContainText("Agentic AI");
   await expect(
-    page.getByRole("link", { name: "LinkedIn", exact: true }),
+    page
+      .locator(".hero-actions")
+      .getByRole("link", { name: "LinkedIn", exact: true }),
   ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
   await expect(
     page.getByRole("link", { name: "GitHub", exact: true }),
   ).toHaveAttribute("href", "https://github.com/adityajamwal02");
-  await expect(
-    page.getByRole("link", { name: "aditya.vicky01@gmail.com", exact: true }),
-  ).toHaveAttribute("href", "mailto:aditya.vicky01@gmail.com");
+  await expect(page.locator('a[href^="mailto:"], a[download]')).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /resume|print/i })).toHaveCount(
+    0,
+  );
+  expect(await page.locator("body").innerHTML()).not.toContain("@gmail.com");
   const brokenAnchors = await page
     .locator('a[href^="#"]')
     .evaluateAll((links) =>
@@ -76,7 +115,28 @@ test("resume content, navigation, skill filters, and professional links", async 
         .filter((href) => !document.querySelector(href)),
     );
   expect(brokenAnchors).toEqual([]);
-  expect(errors).toEqual([]);
+  const restrictedWebGL =
+    browserName === "firefox" &&
+    errors.some((error) =>
+      error.includes(
+        "AllowWebgl2:false restricts context creation on this system.",
+      ),
+    );
+  if (restrictedWebGL)
+    await expect(page.locator(".scene-fallback")).toBeVisible();
+  expect(
+    errors.filter(
+      (error) =>
+        !(
+          restrictedWebGL &&
+          (error.includes(
+            "AllowWebgl2:false restricts context creation on this system.",
+          ) ||
+            error ===
+              "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context.")
+        ),
+    ),
+  ).toEqual([]);
 });
 
 test("Topmate mentorship links and mobile navigation", async ({ page }) => {
@@ -286,35 +346,85 @@ test("mobile menu, keyboard navigation, and accessible controls", async ({
   await expect(page).toHaveURL(/#contact$/);
   await expect(page.getByRole("navigation")).toBeHidden();
   await expect(
-    page.getByRole("heading", { name: "Let’s build something that matters." }),
+    page.getByRole("heading", { name: "Get in touch." }),
   ).toBeInViewport();
 });
 
-test("email copy and resume print action", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("./");
-  await page.getByRole("button", { name: "Copy email", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Email copied" }),
-  ).toBeVisible();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    "aditya.vicky01@gmail.com",
-  );
-  await page.evaluate(() => {
-    window.print = () => {
-      document.body.dataset.printRequested = "true";
-    };
+test("contact form validates details and consent before sending", async ({
+  page,
+}) => {
+  await configureContact(page);
+  let requests = 0;
+  await page.route("https://api.emailjs.com/**", async (route) => {
+    requests++;
+    await route.fulfill({ status: 200, body: "OK" });
   });
-  await page.getByRole("button", { name: "Resume", exact: true }).click();
-  await expect(page.locator("body")).toHaveAttribute(
-    "data-print-requested",
-    "true",
-  );
-  await page.emulateMedia({ media: "print" });
-  await expect(page.locator(".systems-scene")).toBeHidden();
-  await expect(page.locator(".job").first()).toBeVisible();
-  await expect(page.locator(".print-skills")).toContainText("Agentic AI");
-  await expect(page.locator(".print-skills")).toContainText("C++");
+  await page.goto("./");
+  const submit = page.getByRole("button", {
+    name: "Send message",
+    exact: true,
+  });
+  await expect(submit).toBeEnabled();
+  await submit.click();
+  await expect(page.getByLabel("Name", { exact: true })).toBeFocused();
+  await fillContact(page);
+  await page.getByLabel("Your email", { exact: true }).fill("invalid-email");
+  await submit.click();
+  await expect(page.getByLabel("Your email", { exact: true })).toBeFocused();
+  await page
+    .getByLabel("Your email", { exact: true })
+    .fill("visitor@example.com");
+  await page.getByRole("checkbox").uncheck();
+  await submit.click();
+  await expect(page.getByRole("checkbox")).toBeFocused();
+  expect(requests).toBe(0);
+});
+
+test("contact form submits without exposing the recipient or duplicating requests", async ({
+  page,
+}) => {
+  await configureContact(page);
+  let requests = 0;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("https://api.emailjs.com/**", async (route) => {
+    requests++;
+    expect(route.request().postDataJSON()).toEqual({
+      service_id: "test_service",
+      template_id: "test_template",
+      user_id: "test_public_key",
+      template_params: {
+        from_name: "Test Visitor",
+        reply_to: "visitor@example.com",
+        message: "I would like to discuss a project opportunity.",
+      },
+    });
+    await pending;
+    await route.fulfill({ status: 200, body: "OK" });
+  });
+  await page.goto("./");
+  await fillContact(page);
+  await page.getByRole("button", { name: "Send message", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Sending...", exact: true }),
+  ).toBeDisabled();
+  await page
+    .getByRole("form", { name: "Get in touch", exact: true })
+    .evaluate((form) => {
+      form.dispatchEvent(
+        new Event("submit", { bubbles: true, cancelable: true }),
+      );
+    });
+  await expect.poll(() => requests).toBe(1);
+  release();
+  await expect(page.getByRole("status")).toContainText("Message submitted");
+  await expect(page.getByLabel("Message", { exact: true })).toHaveValue("");
+  await expect(
+    page.getByRole("button", { name: "Send message", exact: true }),
+  ).toBeDisabled();
+  expect(requests).toBe(1);
 });
 
 test("WebGL failure leaves content and discipline selection available", async ({
@@ -361,7 +471,9 @@ test("dynamic island tracks sections and exposes quick actions", async ({
   ).toBeGreaterThan(0);
   await page.getByRole("button", { name: "Open menu" }).click();
   await expect(
-    page.getByRole("button", { name: "Print resume" }),
+    page
+      .locator(".island-shortcuts")
+      .getByRole("link", { name: "LinkedIn", exact: true }),
   ).toBeVisible();
   await expect(
     page.locator(".island-actions").getByRole("link", { name: "GitHub" }),
@@ -432,10 +544,13 @@ test("short-screen menus stay reachable without overlapping shortcuts", async ({
     });
     expect(overlap).toBe(false);
     await page
-      .getByRole("button", { name: "Print resume", exact: true })
+      .locator(".island-shortcuts")
+      .getByRole("link", { name: "LinkedIn", exact: true })
       .scrollIntoViewIfNeeded();
     await expect(
-      page.getByRole("button", { name: "Print resume", exact: true }),
+      page
+        .locator(".island-shortcuts")
+        .getByRole("link", { name: "LinkedIn", exact: true }),
     ).toBeInViewport();
     await page.keyboard.press("Escape");
     await expect(
@@ -516,24 +631,85 @@ test("cross-browser navigation, assets, and expanded-menu accessibility", async 
   expect(errors).toEqual([]);
 });
 
-test("clipboard denial keeps email contact usable", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: {
-        writeText: async () => {
-          throw new DOMException("Denied", "NotAllowedError");
-        },
-      },
+test("contact form retains messages after service or network failures", async ({
+  page,
+}) => {
+  await configureContact(page);
+  for (const status of [400, 429, 500, 200, 0]) {
+    await page.route("https://api.emailjs.com/**", (route) =>
+      status === 0
+        ? route.abort()
+        : route.fulfill({ status, body: "Not accepted" }),
+    );
+    await page.goto("./");
+    await fillContact(page);
+    await page
+      .getByRole("button", { name: "Send message", exact: true })
+      .click();
+    await expect(page.getByRole("status")).toContainText(
+      "Submission could not be confirmed",
+    );
+    await expect(page.getByLabel("Message", { exact: true })).toHaveValue(
+      "I would like to discuss a project opportunity.",
+    );
+    await expect(
+      page.getByRole("button", { name: "Send message", exact: true }),
+    ).toBeEnabled();
+    await page.unroute("https://api.emailjs.com/**");
+  }
+});
+
+test("contact form is accessible and fits desktop and mobile", async ({
+  page,
+}, testInfo) => {
+  await configureContact(page);
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("./");
+    await expect(
+      page.getByRole("button", { name: "Send message", exact: true }),
+    ).toBeEnabled();
+    await page.locator("#contact-title").scrollIntoViewIfNeeded();
+    await expect(
+      page.getByRole("heading", { name: "Get in touch." }),
+    ).toBeInViewport();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    const results = await new AxeBuilder({ page })
+      .include("#contact")
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(
+      results.violations.map(({ id, nodes }) => ({
+        id,
+        targets: nodes.map(({ target }) => target),
+      })),
+    ).toEqual([]);
+    await page.screenshot({
+      path: testInfo.outputPath(`contact-${width}.png`),
     });
-  });
-  await page.goto("./");
-  await page.getByRole("button", { name: "Copy email", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Clipboard unavailable");
-  await expect(page.locator(".email-link")).toHaveAttribute(
-    "href",
-    "mailto:aditya.vicky01@gmail.com",
+  }
+});
+
+test("contact form without configuration stays disabled and offers LinkedIn", async ({
+  page,
+}) => {
+  await page.route("**/contact-config.json", (route) =>
+    route.fulfill({ json: {} }),
   );
+  await page.goto("./");
+  await expect(page.getByRole("status")).toContainText(
+    "contact form is currently unavailable",
+  );
+  await expect(
+    page.getByRole("button", { name: "Send message", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("link", { name: "Get in touch on LinkedIn" }),
+  ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
 });
 
 test("failed 3D download leaves resume and mentorship available", async ({

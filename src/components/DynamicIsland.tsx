@@ -7,7 +7,6 @@ import {
   Layers,
   Mail,
   Menu,
-  Printer,
   X,
 } from "lucide-react";
 
@@ -121,9 +120,10 @@ export default function DynamicIsland() {
         </nav>
         <a
           className="header-contact"
-          href="mailto:aditya.vicky01@gmail.com"
-          title="Email Aditya"
-          aria-label="Email Aditya"
+          href="#contact"
+          title="Get in touch"
+          aria-label="Get in touch"
+          onClick={() => setExpanded(false)}
         >
           <ArrowUpRight size={18} />
         </a>
@@ -149,14 +149,14 @@ export default function DynamicIsland() {
             </div>
           </div>
           <div className="island-shortcuts">
-            <button
-              onClick={() => {
-                setExpanded(false);
-                window.print();
-              }}
+            <a
+              href="https://www.linkedin.com/in/adityajamwal02/"
+              target="_blank"
+              rel="noreferrer"
             >
-              <Printer size={16} /> Print resume
-            </button>
+              <BriefcaseBusiness size={16} /> LinkedIn{" "}
+              <ArrowUpRight size={13} />
+            </a>
             <a
               href="https://github.com/adityajamwal02"
               target="_blank"
@@ -164,7 +164,7 @@ export default function DynamicIsland() {
             >
               <CodeXml size={16} /> GitHub <ArrowUpRight size={13} />
             </a>
-            <a href="mailto:aditya.vicky01@gmail.com">
+            <a href="#contact" onClick={() => setExpanded(false)}>
               <Mail size={16} /> Get in touch
             </a>
           </div>
