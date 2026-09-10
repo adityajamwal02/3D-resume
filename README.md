@@ -1,4 +1,4 @@
-# Aditya Jamwal / Systems Portfolio
+# 3D Resume Portfolio
 
 A resume-first portfolio with a floating, glossy Three.js sculpture. Built with React 19, TypeScript, Vite 8, and CSS. No backend, API keys, analytics, or remote model services.
 
