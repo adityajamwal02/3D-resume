@@ -612,7 +612,7 @@
       height: 35px;
     }
     .island-actions {
-      padding: 213px 10px 10px;
+      padding: 260px 10px 10px;
     }
     .island-shortcuts {
       gap: 7px;
@@ -794,5 +794,154 @@
     .contact-section .social-links a:hover {
       transform: none;
     }
+  }
+}
+
+@media screen {
+  .mentorship-section {
+    background: linear-gradient(
+      135deg,
+      rgba(111, 231, 202, 0.045),
+      transparent 55%
+    );
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .mentor-intro {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+  .mentor-portrait {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .mentor-bio {
+    max-width: 720px;
+  }
+  .mentor-bio h3 {
+    font-size: 25px;
+    font-weight: 500;
+  }
+  .mentor-bio > p:not(.eyebrow) {
+    color: #b9c1c9;
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 16px 0;
+  }
+  .mentor-bio .button {
+    margin-top: 8px;
+  }
+  .mentorship-services {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .mentorship-service {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(12px);
+    transition:
+      border-color 180ms,
+      background 180ms;
+  }
+  .mentorship-service:hover,
+  .mentorship-service:focus-visible {
+    border-color: #89e3c7;
+    background: rgba(137, 227, 199, 0.07);
+  }
+  .session-format {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #b9c1c9;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+  }
+  .session-format > span {
+    margin-left: auto;
+  }
+  .mentorship-service h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 24px 0 12px;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .mentorship-service svg {
+    flex-shrink: 0;
+  }
+  .mentorship-service p {
+    color: #b9c1c9;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0 0 24px;
+  }
+  .session-book {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #89e3c7;
+    font-size: 12px;
+    margin-top: auto;
+  }
+  .mentorship-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 28px;
+    padding-top: 24px;
+  }
+  .mentorship-footer p {
+    color: #b9c1c9;
+    font-size: 13px;
+    margin-right: auto;
+  }
+  .mentorship-section .text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  @media (max-width: 700px) {
+    .mentor-intro {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+    .mentor-portrait {
+      width: 180px;
+    }
+    .mentorship-services {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .mentorship-service {
+      padding: 22px;
+    }
+    .mentor-bio h3 {
+      font-size: 22px;
+    }
+    .mentor-bio .button {
+      padding-inline: 14px;
+      gap: 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media print {
+  .mentorship-section {
+    display: none !important;
   }
 }

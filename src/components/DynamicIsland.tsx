@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
+  CalendarDays,
   CodeXml,
   Layers,
   Mail,
@@ -14,6 +15,7 @@ const destinations = [
   { id: "experience", label: "Experience", icon: BriefcaseBusiness },
   { id: "work", label: "Work", icon: Layers },
   { id: "expertise", label: "Expertise", icon: CodeXml },
+  { id: "mentorship", label: "Mentorship", icon: CalendarDays },
   { id: "contact", label: "Contact", icon: Mail },
 ];
 

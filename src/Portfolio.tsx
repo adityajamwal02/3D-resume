@@ -3,6 +3,7 @@ import {
   ArrowDown,
   ArrowRight,
   ArrowUpRight,
+  CalendarDays,
   Check,
   Copy,
   CodeXml as Github,
@@ -14,6 +15,37 @@ import { experience, skillGroups } from "./content";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
 import "./island.css";
+
+const mentorshipSessions = [
+  {
+    name: "1:1 Mentorship",
+    detail:
+      "A focused conversation about your goals, preparation, and next steps.",
+    href: "https://topmate.io/adityajamwal/1828897",
+    duration: "45 min",
+  },
+  {
+    name: "Career Guidance",
+    detail:
+      "Find direction for your tech career and build a preparation roadmap.",
+    href: "https://topmate.io/adityajamwal/1552849",
+    duration: "45 min",
+  },
+  {
+    name: "Resume Review",
+    detail:
+      "Get feedback on how you present your experience, projects, and skills.",
+    href: "https://topmate.io/adityajamwal/1552120",
+    duration: "45 min",
+  },
+  {
+    name: "Mock Interview (DSA)",
+    detail:
+      "Practice problem solving and explaining your approach in an interview setting.",
+    href: "https://topmate.io/adityajamwal/1553022",
+    duration: "75 min",
+  },
+];
 
 export default function Portfolio() {
   const [selectedSkill, setSelectedSkill] = useState(0);
@@ -87,8 +119,8 @@ export default function Portfolio() {
                 </strong>
               </div>
             </div>
-            <a className="scroll-link" href="#experience">
-              SCROLL TO EXPLORE <ArrowDown size={15} />
+            <a className="scroll-link" href="#mentorship">
+              EXPLORE MENTORSHIP <ArrowDown size={15} />
             </a>
           </div>
         </section>
@@ -429,13 +461,118 @@ export default function Portfolio() {
           </div>
         </section>
         <section
+          className="section mentorship-section"
+          id="mentorship"
+          aria-labelledby="mentorship-title"
+        >
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">
+                <span>05 /</span> ABOUT & MENTORSHIP
+              </p>
+              <h2 id="mentorship-title">
+                Your next step.
+                <br />
+                <em>A shared perspective.</em>
+              </h2>
+            </div>
+            <a
+              className="text-link"
+              href="https://topmate.io/adityajamwal"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Meet me on Topmate <ArrowUpRight size={17} />
+            </a>
+          </div>
+          <div className="mentor-intro">
+            <img
+              className="mentor-portrait"
+              src={`${import.meta.env.BASE_URL}aditya-topmate.jpg`}
+              alt="Aditya Jamwal"
+              width="240"
+              height="240"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="mentor-bio">
+              <p className="eyebrow">ENGINEER. PROBLEM SOLVER. MENTOR.</p>
+              <h3>A little context. A clearer direction.</h3>
+              <p>
+                I'm a software engineer at Microsoft, previously at Cisco, with
+                a curiosity for software development, agentic AI, data, and the
+                web. Beyond building systems, I help people work through the
+                next step in their own tech journey.
+              </p>
+              <p>
+                I've interviewed at Microsoft, Amazon, Cisco, Adobe, and
+                Blinkit. I bring that firsthand preparation experience to resume
+                feedback, mock interviews, and conversations about ML/AI and
+                project roadmaps.
+              </p>
+              <a
+                className="button button-primary"
+                href="https://topmate.io/adityajamwal/1828897"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <CalendarDays size={17} /> Book 1:1 mentorship{" "}
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </div>
+          <div className="mentorship-services" aria-label="Mentorship sessions">
+            {mentorshipSessions.map((session) => (
+              <a
+                className="mentorship-service"
+                key={session.name}
+                href={session.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="session-format">
+                  <CalendarDays size={15} /> 1:1 VIDEO CALL{" "}
+                  <span>{session.duration}</span>
+                </span>
+                <h3>
+                  {session.name}
+                  <ArrowUpRight size={20} />
+                </h3>
+                <p>{session.detail}</p>
+                <span className="session-book">
+                  Book on Topmate <ArrowRight size={16} />
+                </span>
+              </a>
+            ))}
+          </div>
+          <div className="mentorship-footer">
+            <p>For a question between milestones.</p>
+            <a
+              className="text-link"
+              href="https://topmate.io/adityajamwal/1551326/pay"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Mail size={16} /> Send a priority DM <ArrowUpRight size={16} />
+            </a>
+            <a
+              className="text-link"
+              href="https://topmate.io/adityajamwal"
+              target="_blank"
+              rel="noreferrer"
+            >
+              All sessions & reviews <ArrowUpRight size={16} />
+            </a>
+          </div>
+        </section>
+        <section
           className="section contact-section"
           id="contact"
           aria-labelledby="contact-title"
         >
           <div className="contact-top">
             <p className="eyebrow">
-              <span>05 /</span> WHAT’S NEXT?
+              <span>06 /</span> WHAT’S NEXT?
             </p>
             <span className="contact-spark" aria-hidden="true">
               ✳

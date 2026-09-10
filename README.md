@@ -55,6 +55,7 @@ The remote repository was empty when work began on September 10, 2026. There was
 - HashImagin is the personal project from the resume. The agentic log analyser is explicitly identified as professional work at Cisco, not a separate personal project.
 - GitHub and LinkedIn links use the handles supplied in the resume. The parsed attachment did not contain the exact HashImagin, LeetCode, Codeforces, or standings URLs. These are not guessed; HashImagin links honestly to the GitHub profile.
 - The public contact surface includes the supplied email and professional profiles. The phone number is intentionally omitted to minimize public personal data.
+- The mentorship biography, portrait, session names, durations, and booking URLs come from [Aditya's public Topmate profile](https://topmate.io/adityajamwal), checked September 10, 2026. The portrait is served locally. Pricing, availability, payments, and reviews remain on Topmate; booking links open there directly, without an embedded third-party widget. Mentorship content is excluded from the printed resume.
 - The resume attachment was supplied as parsed text, not an accessible PDF binary. The Resume button opens a print-ready version of the portfolio, including all skill groups; it does not pretend to download the original PDF.
 - Project visuals are conceptual artwork, not screenshots of proprietary company products. No employer code, internal links, or environment configuration is exposed.
 
@@ -66,6 +67,8 @@ Screenshots and traces are written to ignored `test-results/`. GitHub Actions ru
 
 ## Deployment
 
+Live at [adityajamwal02.github.io/3D-resume](https://adityajamwal02.github.io/3D-resume/). Pushes to `main` deploy to GitHub Pages after lint, build, and browser tests pass.
+
 This is a static application. Publish the `dist/` directory from `npm run build` to a static host with HTTPS. No secrets or environment variables are required. Vite uses relative asset URLs so the build can also be hosted below a repository subpath, including `/3D-resume/`. Navigation uses local anchors rather than history routes.
 
 Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not publish the source repository, node_modules, or local test artifacts as the web root.
@@ -75,4 +78,4 @@ Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not
 - The lazy Three.js chunk is approximately 139 KB gzipped. Vite reports its uncompressed size above the default 500 KB advisory threshold; it is deliberately kept off the initial content bundle.
 - Validation covers Chromium and emulated viewport sizes, not physical low-power phones, Safari, or Firefox.
 - Add the original PDF and exact project/competitive-programming URLs when available.
-- Add a deployment-specific canonical URL, social preview image, and custom domain after choosing a public host. No live deployment has been performed.
+- Add a deployment-specific canonical URL, social preview image, and custom domain when needed.

@@ -45,6 +45,46 @@ test("resume content, navigation, skill filters, and professional links", async 
   expect(errors).toEqual([]);
 });
 
+test("Topmate mentorship links and mobile navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open menu", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Mentorship", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#mentorship$/);
+  await expect(page.locator("#mentorship-title")).toBeInViewport();
+  await page.locator(".mentor-portrait").scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      page
+        .locator(".mentor-portrait")
+        .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  await expect(
+    page.getByRole("button", { name: "Open menu", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),
+  ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1828897");
+  const destinations = await page
+    .locator(".mentorship-service")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(destinations).toEqual([
+    "https://topmate.io/adityajamwal/1828897",
+    "https://topmate.io/adityajamwal/1552849",
+    "https://topmate.io/adityajamwal/1552120",
+    "https://topmate.io/adityajamwal/1553022",
+  ]);
+  await expect(
+    page.getByRole("link", { name: "Send a priority DM" }),
+  ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1551326/pay");
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator("#mentorship")).toBeHidden();
+});
+
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 1920, height: 1080 },
