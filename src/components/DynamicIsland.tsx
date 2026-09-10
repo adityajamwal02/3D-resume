@@ -86,7 +86,13 @@ export default function DynamicIsland() {
           aria-label="Aditya Jamwal home"
           onClick={() => setExpanded(false)}
         >
-          aj<span>.</span>
+          <img
+            className="brand-mark"
+            src={`${import.meta.env.BASE_URL}monogram.svg`}
+            alt=""
+            width="44"
+            height="44"
+          />
         </a>
         <span className="island-divider" aria-hidden="true" />
         <span className="island-context" aria-hidden="true">

@@ -193,16 +193,14 @@ export default function Portfolio() {
                       {job.company}
                       <span>{job.role}</span>
                     </h3>
-                    <span
-                      className={`company-symbol company-${job.company.toLowerCase()}`}
-                      aria-hidden="true"
-                    >
-                      {job.company === "Microsoft"
-                        ? "M"
-                        : job.company === "Cisco"
-                          ? "cisco"
-                          : "a."}
-                    </span>
+                    {job.company !== "Cisco" && (
+                      <span
+                        className={`company-symbol company-${job.company.toLowerCase()}`}
+                        aria-hidden="true"
+                      >
+                        {job.company === "Microsoft" ? "M" : "a."}
+                      </span>
+                    )}
                   </div>
                   <ul>
                     {job.bullets.map((bullet) => (
@@ -624,7 +622,13 @@ export default function Portfolio() {
       </main>
       <footer className="site-footer">
         <a className="wordmark" href="#home" aria-label="Back to top">
-          aj<span>.</span>
+          <img
+            className="brand-mark"
+            src={`${import.meta.env.BASE_URL}monogram.svg`}
+            alt=""
+            width="44"
+            height="44"
+          />
         </a>
         <span>© {new Date().getFullYear()} Aditya Jamwal</span>
         <a href="#home">

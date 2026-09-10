@@ -13,12 +13,14 @@ export const experience = [
   {
     company: "Cisco",
     role: "Software Engineer",
-    date: "AUG 2024 — JAN 2026",
+    date: "FEB – JUN 2024 · AUG 2024 – JAN 2026",
     bullets: [
       "Architected a scalable C++ Exporter plugin for low-latency data transfer from 150M+ endpoints to Splunk HEC, using batch processing in a distributed environment.",
       "Led cloud-native microservice migration to GitHub Cloud with CMake, Conan, and GitHub Actions build pipelines.",
       "Optimized backend Splunk API scripts for NVM-to-SCC app updates and developed Process Tree analytics for the Splunk dashboard.",
       "Developed an agentic log analyser, improving debugging accuracy and reducing manual effort by 80%.",
+      "Designed ML-driven Python scripts to detect beacons in network traffic, improving detection accuracy by 37%.",
+      "Developed a multithreaded fallback mechanism to automate build-server backups in 25% less time.",
     ],
     skills: [
       "C++",
@@ -27,17 +29,10 @@ export const experience = [
       "Splunk",
       "GitHub Actions",
       "Agentic AI",
+      "Machine learning",
+      "Perforce",
+      "Web APIs",
     ],
-  },
-  {
-    company: "Cisco",
-    role: "Software Engineer Intern",
-    date: "FEB 2024 — JUN 2024",
-    bullets: [
-      "Designed ML-driven Python scripts to detect beacons in network traffic, improving detection accuracy by 37%.",
-      "Developed a multithreaded fallback mechanism to automate build-server backups in 25% less time.",
-    ],
-    skills: ["Python", "Machine learning", "C++", "Perforce", "Web APIs"],
   },
   {
     company: "Ambee",

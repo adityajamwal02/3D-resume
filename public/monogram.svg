@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="8" fill="#101211"/><text x="8" y="45" fill="#eceee8" font-family="sans-serif" font-size="40" font-weight="600">aj<tspan fill="#b6f4cc">.</tspan></text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+	<rect x="1" y="1" width="62" height="62" rx="16" fill="#14181d" stroke="#58616b"/>
+	<path d="M12 46 27 16h7L21 46Z" fill="#b0f0e4"/>
+	<path d="m27 16 15 30h-9l-8-16Z" fill="#e5edf2"/>
+	<path d="M40 16h12v23c0 8-5 12-12 12h-6l-4-7h10c3 0 5-2 5-5V23h-5Z" fill="#b0f0e4"/>
+	<path d="M23 35h10l3 6H20Z" fill="#e5edf2"/>
+</svg>

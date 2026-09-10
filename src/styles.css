@@ -1,12 +1,9 @@
-@import "@fontsource/manrope/latin-400.css";
-@import "@fontsource/manrope/latin-500.css";
-@import "@fontsource/manrope/latin-600.css";
-@import "@fontsource/space-grotesk/latin-400.css";
-@import "@fontsource/space-grotesk/latin-500.css";
-@import "@fontsource/space-grotesk/latin-600.css";
+@import "@fontsource/google-sans/latin-400.css";
+@import "@fontsource/google-sans/latin-500.css";
+@import "@fontsource/google-sans/latin-600.css";
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 :root {
-  font-family: "Manrope", sans-serif;
+  font-family: "Google Sans", sans-serif;
   color: #eceee8;
   background: #101211;
   font-synthesis: none;
@@ -19,7 +16,7 @@
   --accent: #b6f4cc;
   --line: #303631;
   --mono: "IBM Plex Mono", monospace;
-  --display: "Space Grotesk", sans-serif;
+  --display: "Google Sans", sans-serif;
   letter-spacing: 0;
 }
 * {
@@ -125,6 +122,10 @@ em {
   background: var(--bg);
 }
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   font-family: var(--display);
   font-size: 37px;
   font-weight: 600;
@@ -132,6 +133,11 @@ em {
 }
 .wordmark span {
   color: var(--accent);
+}
+.brand-mark {
+  display: block;
+  width: 44px;
+  height: 44px;
 }
 .navigation {
   display: flex;
@@ -471,7 +477,7 @@ em {
 .job h3 > span {
   display: block;
   font:
-    12px "Manrope",
+    12px "Google Sans",
     sans-serif;
   color: var(--muted);
   margin-top: 8px;
@@ -797,7 +803,7 @@ em {
 .achievements small {
   display: block;
   font:
-    11px/1.9 "Manrope",
+    11px/1.9 "Google Sans",
     sans-serif;
   color: var(--muted);
   margin-top: 4px;

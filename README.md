@@ -39,7 +39,7 @@ tests/portfolio.spec.ts       Production-browser regression suite
 playwright.config.ts         Isolated preview server and Chromium configuration
 ```
 
-The rendering engine is dynamically imported after the content mounts. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The minimalist typography uses self-hosted Manrope, with IBM Plex Mono for technical labels.
+The rendering engine is dynamically imported after the content mounts. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
 
 Mouse movement gently tilts the floating sculpture through damped interpolation. A subtle linear-gradient background animates behind the name and bio. The pause control freezes both the sculpture and ambient gradient; reduced-motion preferences disable automatic motion. The existing discipline selection, assembly, rotation, and reset controls remain available, as do the dynamic island, vertical experience timeline, skills, and contact sections.
 
@@ -51,7 +51,7 @@ If WebGL or the deferred chunk fails, a CSS illustration remains alongside funct
 
 The remote repository was empty when work began on September 10, 2026. There was no earlier implementation or checked-in CV to preserve. The resume text supplied in the coding session is the source for all employment dates, project descriptions, metrics, skills, education, and achievements.
 
-- Career: Microsoft, Cisco (engineer and intern), and Ambee.
+- Career: Microsoft, Cisco, and Ambee. Cisco engineering and internship achievements are combined under one Software Engineer entry at the owner's request; the two original employment periods are preserved in its date label.
 - HashImagin is the personal project from the resume. The agentic log analyser is explicitly identified as professional work at Cisco, not a separate personal project.
 - GitHub and LinkedIn links use the handles supplied in the resume. The parsed attachment did not contain the exact HashImagin, LeetCode, Codeforces, or standings URLs. These are not guessed; HashImagin links honestly to the GitHub profile.
 - The public contact surface includes the supplied email and professional profiles. The phone number is intentionally omitted to minimize public personal data.

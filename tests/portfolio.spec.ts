@@ -12,7 +12,39 @@ test("resume content, navigation, skill filters, and professional links", async 
   });
   await page.goto("/");
   await expect(page).toHaveTitle("Aditya Jamwal | Software Engineer");
-  await expect(page.locator(".job")).toHaveCount(4);
+  await page.evaluate(() => document.fonts.ready);
+  expect(
+    await page
+      .locator("body")
+      .evaluate((element) => getComputedStyle(element).fontFamily),
+  ).toContain("Google Sans");
+  expect(
+    await page.evaluate(() => document.fonts.check('16px "Google Sans"')),
+  ).toBe(true);
+  await expect(page.locator(".brand-mark")).toHaveCount(2);
+  for (const logo of await page.locator(".brand-mark").all()) {
+    expect(
+      await logo.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    ).toBeGreaterThan(0);
+  }
+  await expect(page.locator(".job")).toHaveCount(3);
+  const cisco = page.locator(".job").filter({
+    has: page.getByRole("heading", {
+      name: "Cisco Software Engineer",
+      exact: true,
+    }),
+  });
+  await expect(cisco).toHaveCount(1);
+  await expect(cisco.locator("li")).toHaveCount(6);
+  await expect(cisco).toContainText("FEB – JUN 2024 · AUG 2024 – JAN 2026");
+  await expect(cisco).toContainText("37%");
+  await expect(cisco).toContainText("25% less time");
+  await expect(
+    page.getByRole("heading", {
+      name: "Cisco Software Engineer Intern",
+      exact: true,
+    }),
+  ).toHaveCount(0);
   await page.getByRole("link", { name: "Explore my journey" }).click();
   await expect(page).toHaveURL(/#experience$/);
   await expect(
@@ -290,7 +322,7 @@ test("WebGL failure leaves content and discipline selection available", async ({
   });
   await page.goto("/");
   await expect(page.locator(".scene-fallback")).toBeVisible();
-  await expect(page.locator(".job")).toHaveCount(4);
+  await expect(page.locator(".job")).toHaveCount(3);
   await page.getByRole("button", { name: "Systems", exact: true }).click();
   await expect(page.locator(".scene-caption")).toContainText(
     "DISTRIBUTED SYSTEMS",
