@@ -177,6 +177,7 @@
   }
   [data-theme="light"] .job-body,
   [data-theme="light"] .project,
+  [data-theme="light"] .testimonial-card,
   [data-theme="light"] .mentorship-service {
     background: linear-gradient(125deg, #ffffffb3, #e9f0ed66 55%, #f0e5eb66);
     border-color: var(--line);

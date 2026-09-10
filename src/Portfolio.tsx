@@ -7,6 +7,9 @@ import {
   CodeXml as Github,
   BriefcaseBusiness as Linkedin,
   Mail,
+  Quote,
+  Star,
+  Zap,
 } from "lucide-react";
 import { experience, skillGroups } from "./content";
 import SystemsScene from "./components/SystemsScene";
@@ -42,6 +45,30 @@ const mentorshipSessions = [
       "Practice problem solving and explaining your approach in an interview setting.",
     href: "https://topmate.io/adityajamwal/1553022",
     duration: "75 min",
+  },
+];
+
+const testimonials = [
+  {
+    name: "Anushka Bhardwaj",
+    date: "22nd Aug, 2026",
+    dateTime: "2026-08-22",
+    quote:
+      "Attending the career guidance session with Aditya was truly a helpful for me. I was feeling quite uncertain about my next steps, but the insights and structured advice he provided brought complete clarity to my thoughts. His guidance was practical and gave me a clear sense of direction on moving forward. I highly recommend a session with Aditya to anyone looking to align their goals and elevate their career trajectory.",
+  },
+  {
+    name: "SHAIK NASHEERA",
+    date: "11th Jul, 2026",
+    dateTime: "2026-07-11",
+    quote:
+      "This was an incredibly valuable session. He broke down the importance of a well-crafted resume and an optimized LinkedIn profile in a way that was easy to understand. Beyond that, he gave me a clear roadmap on what to learn and how to approach my career growth. I walked away with actionable steps and a lot more clarity. Truly grateful for the time and advice.",
+  },
+  {
+    name: "Aditya Pratap Singh",
+    date: "30th May, 2026",
+    dateTime: "2026-05-30",
+    quote:
+      "The session gave me much-needed clarity on the next steps and boosted my confidence in the direction I'm taking and What stood out most was his ability to break down complex topics into simple, actionable advice. I truly appreciate the guidance and insights shared during the call.",
   },
 ];
 
@@ -548,6 +575,74 @@ export default function Portfolio() {
             >
               All sessions & reviews <ArrowUpRight size={16} />
             </a>
+          </div>
+          <div
+            className="testimonials"
+            role="region"
+            aria-labelledby="testimonials-title"
+          >
+            <div className="testimonials-heading">
+              <div>
+                <h3 id="testimonials-title">Testimonials</h3>
+                <div className="testimonial-summary">
+                  <span className="testimonial-rating">
+                    <Star size={19} fill="currentColor" aria-hidden="true" />
+                    <strong aria-label="5 out of 5 stars">5</strong>
+                    <span>(60 ratings)</span>
+                  </span>
+                  <span>
+                    <strong>58</strong> testimonials
+                  </span>
+                </div>
+              </div>
+              <a
+                className="text-link"
+                href="https://topmate.io/adityajamwal"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Reviews on Topmate <ArrowUpRight size={16} />
+              </a>
+            </div>
+            <ul
+              className="testimonial-highlights"
+              aria-label="Mentorship feedback"
+            >
+              <li>
+                <Zap size={16} aria-hidden="true" />
+                <strong>35</strong> Helpful
+              </li>
+              <li>
+                <Zap size={16} aria-hidden="true" />
+                <strong>28</strong> Insightful
+              </li>
+              <li>
+                <Zap size={16} aria-hidden="true" />
+                <strong>28</strong> Friendly
+              </li>
+            </ul>
+            <div className="testimonial-grid">
+              {testimonials.map((testimonial) => (
+                <figure className="testimonial-card" key={testimonial.name}>
+                  <Quote
+                    className="testimonial-quote-mark"
+                    size={24}
+                    aria-hidden="true"
+                  />
+                  <blockquote>
+                    <p>{testimonial.quote}</p>
+                  </blockquote>
+                  <figcaption>
+                    <span className="testimonial-author">
+                      {testimonial.name}
+                    </span>
+                    <time dateTime={testimonial.dateTime}>
+                      {testimonial.date}
+                    </time>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </section>
         <section

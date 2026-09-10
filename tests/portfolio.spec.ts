@@ -156,6 +156,140 @@ test("Topmate mentorship links and mobile navigation", async ({ page }) => {
   await expect(page.locator("#mentorship")).toBeHidden();
 });
 
+for (const theme of ["light", "dark"] as const) {
+  test(`testimonials align within mentorship in ${theme} mode`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const width of [1440, 768, 320]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("./");
+      await page.evaluate(() => document.fonts.ready);
+      const region = page.getByRole("region", {
+        name: "Testimonials",
+        exact: true,
+      });
+      await region.scrollIntoViewIfNeeded();
+      await expect(page.locator("#mentorship .testimonials")).toHaveCount(1);
+      await expect(region.locator(".testimonial-card")).toHaveCount(3);
+      await expect(region.locator(".testimonial-author")).toHaveText([
+        "Anushka Bhardwaj",
+        "SHAIK NASHEERA",
+        "Aditya Pratap Singh",
+      ]);
+      await expect(region.locator("time")).toHaveText([
+        "22nd Aug, 2026",
+        "11th Jul, 2026",
+        "30th May, 2026",
+      ]);
+      expect(
+        await region
+          .locator("time")
+          .evaluateAll((elements) =>
+            elements.map((element) => element.getAttribute("datetime")),
+          ),
+      ).toEqual(["2026-08-22", "2026-07-11", "2026-05-30"]);
+      await expect(region.locator(".testimonial-summary")).toContainText(
+        "60 ratings",
+      );
+      await expect(region.locator(".testimonial-summary")).toContainText(
+        "58 testimonials",
+      );
+      await expect(region.getByLabel("5 out of 5 stars")).toBeVisible();
+      await expect(region.locator(".testimonial-highlights li")).toHaveText([
+        "35 Helpful",
+        "28 Insightful",
+        "28 Friendly",
+      ]);
+      await expect(region.locator("blockquote").nth(0)).toContainText(
+        "I highly recommend a session with Aditya",
+      );
+      await expect(region.locator("blockquote").nth(1)).toContainText(
+        "Truly grateful for the time and advice.",
+      );
+      await expect(region.locator("blockquote").nth(2)).toContainText(
+        "I truly appreciate the guidance and insights shared during the call.",
+      );
+      await expect(
+        region.getByRole("link", { name: "Reviews on Topmate" }),
+      ).toHaveAttribute("href", "https://topmate.io/adityajamwal");
+      expect(
+        await region.evaluate((element) =>
+          element.previousElementSibling?.classList.contains(
+            "mentorship-footer",
+          ),
+        ),
+      ).toBe(true);
+      const cards = await region
+        .locator(".testimonial-card")
+        .evaluateAll((elements) =>
+          elements.map((element) => {
+            const bounds = element.getBoundingClientRect();
+            const caption = element
+              .querySelector("figcaption")!
+              .getBoundingClientRect();
+            const quote = element
+              .querySelector("blockquote")!
+              .getBoundingClientRect();
+            return {
+              top: bounds.top,
+              left: bounds.left,
+              right: bounds.right,
+              bottom: bounds.bottom,
+              caption: caption.top,
+              quoteBottom: quote.bottom,
+            };
+          }),
+        );
+      for (const card of cards) {
+        expect(card.left).toBeGreaterThanOrEqual(0);
+        expect(card.right).toBeLessThanOrEqual(width);
+        expect(card.quoteBottom).toBeLessThanOrEqual(card.caption);
+      }
+      if (width === 1440) {
+        expect(
+          Math.max(...cards.map((card) => card.top)) -
+            Math.min(...cards.map((card) => card.top)),
+        ).toBeLessThan(1);
+        expect(
+          Math.max(...cards.map((card) => card.caption)) -
+            Math.min(...cards.map((card) => card.caption)),
+        ).toBeLessThan(1);
+        expect(cards[1].left - cards[0].right).toBeGreaterThanOrEqual(19);
+      } else {
+        expect(cards[1].top - cards[0].bottom).toBeGreaterThanOrEqual(19);
+        expect(cards[2].top - cards[1].bottom).toBeGreaterThanOrEqual(19);
+      }
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      const accessibility = await new AxeBuilder({ page })
+        .include(".testimonials")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(accessibility.violations).toEqual([]);
+      await region.screenshot({
+        path: testInfo.outputPath(`testimonials-${theme}-${width}.png`),
+      });
+      await page
+        .getByRole("button", { name: "Open menu", exact: true })
+        .click();
+      const navigation = page.getByRole("navigation", {
+        name: "Main navigation",
+      });
+      await expect(navigation.getByRole("link")).toHaveCount(5);
+      await expect(
+        navigation.getByRole("link", { name: /testimonials/i }),
+      ).toHaveCount(0);
+      await page.keyboard.press("Escape");
+    }
+    await page.emulateMedia({ media: "print" });
+    await expect(page.locator(".testimonials")).toBeHidden();
+  });
+}
+
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 1920, height: 1080 },
