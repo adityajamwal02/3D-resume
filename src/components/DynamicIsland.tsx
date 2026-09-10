@@ -7,6 +7,8 @@ import {
   Layers,
   Mail,
   Menu,
+  Moon,
+  Sun,
   X,
 } from "lucide-react";
 
@@ -23,6 +25,61 @@ export default function DynamicIsland() {
   const [active, setActive] = useState("home");
   const island = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
+  const [theme, setTheme] = useState(() =>
+    document.documentElement.dataset.theme === "light" ? "light" : "dark",
+  );
+  const explicitTheme = useRef(false);
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-color-scheme: light)");
+    const applyTheme = (value: string) => {
+      document.documentElement.dataset.theme = value;
+      document.documentElement.style.colorScheme = value;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", value === "light" ? "#f4f7f6" : "#111216");
+      setTheme(value);
+    };
+    const syncPreference = () => {
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem("portfolio-theme");
+      } catch {}
+      if (saved === "light" || saved === "dark") {
+        explicitTheme.current = true;
+        applyTheme(saved);
+      } else if (!explicitTheme.current) {
+        applyTheme(preference.matches ? "light" : "dark");
+      }
+    };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "portfolio-theme" || event.key === null) {
+        explicitTheme.current = false;
+        syncPreference();
+      }
+    };
+    syncPreference();
+    preference.addEventListener("change", syncPreference);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      preference.removeEventListener("change", syncPreference);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  function switchTheme() {
+    const next = theme === "dark" ? "light" : "dark";
+    explicitTheme.current = true;
+    document.documentElement.dataset.theme = next;
+    document.documentElement.style.colorScheme = next;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", next === "light" ? "#f4f7f6" : "#111216");
+    setTheme(next);
+    try {
+      localStorage.setItem("portfolio-theme", next);
+    } catch {}
+  }
 
   useEffect(() => {
     let frame = 0;
@@ -118,15 +175,19 @@ export default function DynamicIsland() {
             </a>
           ))}
         </nav>
-        <a
-          className="header-contact"
-          href="#contact"
-          title="Get in touch"
-          aria-label="Get in touch"
-          onClick={() => setExpanded(false)}
+        <button
+          className="icon-button theme-toggle"
+          type="button"
+          title={
+            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+          }
+          aria-label={
+            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+          }
+          onClick={switchTheme}
         >
-          <ArrowUpRight size={18} />
-        </a>
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
         <button
           ref={toggle}
           className="icon-button island-toggle"

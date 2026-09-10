@@ -11,8 +11,8 @@ import {
 import { experience, skillGroups } from "./content";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
-import ContactForm from "./components/ContactForm";
 import "./island.css";
+import "./theme.css";
 
 const mentorshipSessions = [
   {
@@ -567,7 +567,33 @@ export default function Portfolio() {
             Get in touch<span className="name-period">.</span>
           </h2>
           <div className="contact-bottom">
-            <ContactForm />
+            <div className="contact-invitation">
+              <h3>A conversation can be a starting point.</h3>
+              <p>
+                Have an engineering challenge, a collaboration in mind, or a
+                question about your next career move? Let's connect.
+              </p>
+              <div className="contact-actions">
+                <a
+                  className="button contact-primary"
+                  href="https://www.linkedin.com/in/adityajamwal02/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Linkedin size={18} /> Connect on LinkedIn{" "}
+                  <ArrowUpRight size={16} />
+                </a>
+                <a
+                  className="text-link"
+                  href="https://topmate.io/adityajamwal"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <CalendarDays size={18} /> Book a conversation{" "}
+                  <ArrowUpRight size={16} />
+                </a>
+              </div>
+            </div>
             <div className="social-links">
               <a
                 href="https://github.com/adityajamwal02"

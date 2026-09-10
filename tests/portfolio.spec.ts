@@ -1,29 +1,6 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { PNG } from "pngjs";
-
-async function configureContact(page: Page) {
-  await page.route("**/contact-config.json", (route) =>
-    route.fulfill({
-      json: {
-        serviceId: "test_service",
-        templateId: "test_template",
-        publicKey: "test_public_key",
-      },
-    }),
-  );
-}
-
-async function fillContact(page: Page) {
-  await page.getByLabel("Name", { exact: true }).fill("Test Visitor");
-  await page
-    .getByLabel("Your email", { exact: true })
-    .fill("visitor@example.com");
-  await page
-    .getByLabel("Message", { exact: true })
-    .fill("I would like to discuss a project opportunity.");
-  await page.getByRole("checkbox").check();
-}
 
 test("portfolio content, navigation, skill filters, and professional links", async ({
   page,
@@ -350,81 +327,52 @@ test("mobile menu, keyboard navigation, and accessible controls", async ({
   ).toBeInViewport();
 });
 
-test("contact form validates details and consent before sending", async ({
+test("theme follows system preference and remembers an explicit choice", async ({
   page,
+  context,
 }) => {
-  await configureContact(page);
-  let requests = 0;
-  await page.route("https://api.emailjs.com/**", async (route) => {
-    requests++;
-    await route.fulfill({ status: 200, body: "OK" });
-  });
+  await page.emulateMedia({ colorScheme: "light" });
   await page.goto("./");
-  const submit = page.getByRole("button", {
-    name: "Send message",
-    exact: true,
-  });
-  await expect(submit).toBeEnabled();
-  await submit.click();
-  await expect(page.getByLabel("Name", { exact: true })).toBeFocused();
-  await fillContact(page);
-  await page.getByLabel("Your email", { exact: true }).fill("invalid-email");
-  await submit.click();
-  await expect(page.getByLabel("Your email", { exact: true })).toBeFocused();
-  await page
-    .getByLabel("Your email", { exact: true })
-    .fill("visitor@example.com");
-  await page.getByRole("checkbox").uncheck();
-  await submit.click();
-  await expect(page.getByRole("checkbox")).toBeFocused();
-  expect(requests).toBe(0);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  const toggle = page.getByRole("button", { name: "Switch to light mode" });
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(
+    await page.evaluate(() => localStorage.getItem("portfolio-theme")),
+  ).toBe("light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+    "content",
+    "#f4f7f6",
+  );
+  const second = await context.newPage();
+  await second.goto("./");
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(second.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await second.close();
 });
 
-test("contact form submits without exposing the recipient or duplicating requests", async ({
-  page,
-}) => {
-  await configureContact(page);
-  let requests = 0;
-  let release!: () => void;
-  const pending = new Promise<void>((resolve) => {
-    release = resolve;
+test("theme toggle works when local storage is blocked", async ({ page }) => {
+  await page.addInitScript(() => {
+    Storage.prototype.getItem = () => {
+      throw new DOMException("Blocked", "SecurityError");
+    };
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Blocked", "SecurityError");
+    };
   });
-  await page.route("https://api.emailjs.com/**", async (route) => {
-    requests++;
-    expect(route.request().postDataJSON()).toEqual({
-      service_id: "test_service",
-      template_id: "test_template",
-      user_id: "test_public_key",
-      template_params: {
-        from_name: "Test Visitor",
-        reply_to: "visitor@example.com",
-        message: "I would like to discuss a project opportunity.",
-      },
-    });
-    await pending;
-    await route.fulfill({ status: 200, body: "OK" });
-  });
+  await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("./");
-  await fillContact(page);
-  await page.getByRole("button", { name: "Send message", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Sending...", exact: true }),
-  ).toBeDisabled();
-  await page
-    .getByRole("form", { name: "Get in touch", exact: true })
-    .evaluate((form) => {
-      form.dispatchEvent(
-        new Event("submit", { bubbles: true, cancelable: true }),
-      );
-    });
-  await expect.poll(() => requests).toBe(1);
-  release();
-  await expect(page.getByRole("status")).toContainText("Message submitted");
-  await expect(page.getByLabel("Message", { exact: true })).toHaveValue("");
-  await expect(
-    page.getByRole("button", { name: "Send message", exact: true }),
-  ).toBeDisabled();
-  expect(requests).toBe(1);
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
 test("WebGL failure leaves content and discipline selection available", async ({
@@ -631,86 +579,105 @@ test("cross-browser navigation, assets, and expanded-menu accessibility", async 
   expect(errors).toEqual([]);
 });
 
-test("contact form retains messages after service or network failures", async ({
+test("contact invitation provides direct links without email delivery", async ({
   page,
 }) => {
-  await configureContact(page);
-  for (const status of [400, 429, 500, 200, 0]) {
-    await page.route("https://api.emailjs.com/**", (route) =>
-      status === 0
-        ? route.abort()
-        : route.fulfill({ status, body: "Not accepted" }),
-    );
-    await page.goto("./");
-    await fillContact(page);
-    await page
-      .getByRole("button", { name: "Send message", exact: true })
-      .click();
-    await expect(page.getByRole("status")).toContainText(
-      "Submission could not be confirmed",
-    );
-    await expect(page.getByLabel("Message", { exact: true })).toHaveValue(
-      "I would like to discuss a project opportunity.",
-    );
-    await expect(
-      page.getByRole("button", { name: "Send message", exact: true }),
-    ).toBeEnabled();
-    await page.unroute("https://api.emailjs.com/**");
-  }
-});
-
-test("contact form is accessible and fits desktop and mobile", async ({
-  page,
-}, testInfo) => {
-  await configureContact(page);
-  for (const width of [320, 390, 1440]) {
-    await page.setViewportSize({ width, height: 1000 });
-    await page.goto("./");
-    await expect(
-      page.getByRole("button", { name: "Send message", exact: true }),
-    ).toBeEnabled();
-    await page.locator("#contact-title").scrollIntoViewIfNeeded();
-    await expect(
-      page.getByRole("heading", { name: "Get in touch." }),
-    ).toBeInViewport();
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
-    const results = await new AxeBuilder({ page })
-      .include("#contact")
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
-      .analyze();
-    expect(
-      results.violations.map(({ id, nodes }) => ({
-        id,
-        targets: nodes.map(({ target }) => target),
-      })),
-    ).toEqual([]);
-    await page.screenshot({
-      path: testInfo.outputPath(`contact-${width}.png`),
-    });
-  }
-});
-
-test("contact form without configuration stays disabled and offers LinkedIn", async ({
-  page,
-}) => {
-  await page.route("**/contact-config.json", (route) =>
-    route.fulfill({ json: {} }),
-  );
+  const deliveryRequests: string[] = [];
+  page.on("request", (request) => {
+    if (/emailjs|contact-config/.test(request.url()))
+      deliveryRequests.push(request.url());
+  });
   await page.goto("./");
-  await expect(page.getByRole("status")).toContainText(
-    "contact form is currently unavailable",
-  );
+  await page.locator("#contact").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("button", { name: "Send message", exact: true }),
-  ).toBeDisabled();
+    page.locator("#contact form, #contact input, #contact textarea"),
+  ).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Get in touch on LinkedIn" }),
+    page.getByRole("link", { name: "Connect on LinkedIn" }),
   ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
+  await expect(
+    page.getByRole("link", { name: "Book a conversation" }),
+  ).toHaveAttribute("href", "https://topmate.io/adityajamwal");
+  expect(await page.locator("body").innerHTML()).not.toMatch(
+    /@gmail\.com|mailto:|EmailJS/,
+  );
+  expect(deliveryRequests).toEqual([]);
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`${theme} theme is accessible and responsive`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("./");
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await page.evaluate(() => document.fonts.ready);
+      if (
+        testInfo.project.use.browserName !== "firefox" &&
+        testInfo.project.use.browserName !== "webkit"
+      ) {
+        const canvas = page.locator(".scene-ready canvas");
+        await expect(canvas).toBeVisible();
+        const initial = await canvas.screenshot();
+        const pixels = PNG.sync.read(initial);
+        let visiblePixels = 0;
+        for (let offset = 0; offset < pixels.data.length; offset += 4) {
+          if (pixels.data[offset + 3] > 0 && pixels.data[offset + 1] > 70)
+            visiblePixels++;
+        }
+        expect(visiblePixels / (pixels.width * pixels.height)).toBeGreaterThan(
+          0.01,
+        );
+        if (width === 1440) {
+          await page
+            .getByRole("button", { name: "Rotate right", exact: true })
+            .click();
+          await expect
+            .poll(async () => (await canvas.screenshot()).equals(initial))
+            .toBe(false);
+        }
+      }
+      await page.screenshot({
+        path: testInfo.outputPath(`${theme}-hero-${width}.png`),
+      });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(
+        results.violations.map(({ id, nodes }) => ({
+          id,
+          targets: nodes.map(({ target, failureSummary }) => ({
+            target,
+            failureSummary,
+          })),
+        })),
+      ).toEqual([]);
+      await page
+        .getByRole("button", { name: "Open menu", exact: true })
+        .click();
+      const expanded = await new AxeBuilder({ page })
+        .include(".dynamic-island")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(expanded.violations).toEqual([]);
+      await page.keyboard.press("Escape");
+      await page.locator("#contact-title").scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: testInfo.outputPath(`${theme}-contact-${width}.png`),
+      });
+      await expect(
+        page.getByRole("link", { name: "Connect on LinkedIn" }),
+      ).toBeInViewport();
+    }
+  });
+}
 
 test("failed 3D download leaves resume and mentorship available", async ({
   page,
