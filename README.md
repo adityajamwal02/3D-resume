@@ -61,7 +61,23 @@ The remote repository was empty when work began on September 10, 2026. There was
 
 ## Validation
 
-The suite checks content, anchor navigation, skill filters, email clipboard handling, print behavior, mobile menus and keyboard focus, reduced motion, scene rotation/reset, actual canvas pixels, animated frame changes, and forced WebGL failure. Full-page screenshots are captured at 320, 390, 768, 1440, and 1920 pixels. Axe checks WCAG A/AA rules at desktop and mobile widths.
+The 19-test suite checks content, anchor navigation, skill filters, email clipboard success and denial, print behavior, mobile menus and keyboard focus, reduced motion, scene rotation/reset, actual canvas pixels, animated frame changes, and forced WebGL or renderer-download failure. Full-page screenshots are captured at 320, 375, 390, 768, 1440, and 1920 pixels. Axe checks WCAG 2.0, 2.1, and 2.2 A/AA rules at desktop and mobile widths, including expanded navigation.
+
+Focused Chromium, Firefox, and WebKit checks cover navigation, asset delivery, expanded-menu accessibility, clipboard denial, and renderer-download failure. Short-screen checks cover 320x568, 667x375, 844x390, and 1024x768. Expanded menus scroll within the viewport, and Escape closes them and restores toggle focus even when pointer clicks do not focus buttons.
+
+```sh
+npx playwright install chromium firefox webkit
+npx playwright test --browser all --grep 'cross-browser|short-screen|clipboard denial|failed 3D download'
+```
+
+To test a deployed build instead of starting the local preview, set `PLAYWRIGHT_BASE_URL` to its full URL including the trailing slash. For example, in PowerShell:
+
+```powershell
+$env:PLAYWRIGHT_BASE_URL = 'https://adityajamwal02.github.io/3D-resume/'
+try { npm test } finally { Remove-Item Env:PLAYWRIGHT_BASE_URL }
+```
+
+Full-page screenshots may omit offscreen compositor layers on very tall pages; inspect viewport screenshots when a full-page capture looks inconsistent.
 
 Screenshots and traces are written to ignored `test-results/`. GitHub Actions runs lint, production build, and the browser suite. The automated renderer uses Chromium software WebGL so CI does not require a GPU. Automated checks complement, rather than replace, device and assistive-technology testing.
 
@@ -76,6 +92,6 @@ Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not
 ## Known Limits and Next Steps
 
 - The lazy Three.js chunk is approximately 139 KB gzipped. Vite reports its uncompressed size above the default 500 KB advisory threshold; it is deliberately kept off the initial content bundle.
-- Validation covers Chromium and emulated viewport sizes, not physical low-power phones, Safari, or Firefox.
+- The full suite runs in Chromium; focused navigation, accessibility, and resilience checks also run in Firefox and Playwright WebKit. Emulated viewports and WebKit are not substitutes for physical iOS/Android devices, shipping Safari, manual screen-reader testing, or real Topmate booking/payment transactions.
 - Add the original PDF and exact project/competitive-programming URLs when available.
 - Add a deployment-specific canonical URL, social preview image, and custom domain when needed.

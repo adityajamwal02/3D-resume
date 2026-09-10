@@ -46,6 +46,9 @@
       box-shadow 0.35s;
   }
   .dynamic-island.is-expanded {
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     border-radius: 28px;
     box-shadow: 0 20px 70px #0009;
   }

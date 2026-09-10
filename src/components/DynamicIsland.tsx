@@ -64,20 +64,24 @@ export default function DynamicIsland() {
     const onPointer = (event: PointerEvent) => {
       if (!island.current?.contains(event.target as Node)) setExpanded(false);
     };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setExpanded(false);
+        toggle.current?.focus();
+      }
+    };
     document.addEventListener("pointerdown", onPointer);
-    return () => document.removeEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [expanded]);
 
   return (
     <header
       ref={island}
       className={`site-header dynamic-island ${expanded ? "is-expanded" : ""}`}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") {
-          setExpanded(false);
-          toggle.current?.focus();
-        }
-      }}
     >
       <div className="island-main">
         <a

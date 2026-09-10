@@ -10,7 +10,7 @@ test("resume content, navigation, skill filters, and professional links", async 
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
   });
-  await page.goto("/");
+  await page.goto("./");
   await expect(page).toHaveTitle("Aditya Jamwal | Software Engineer");
   await page.evaluate(() => document.fonts.ready);
   expect(
@@ -23,9 +23,11 @@ test("resume content, navigation, skill filters, and professional links", async 
   ).toBe(true);
   await expect(page.locator(".brand-mark")).toHaveCount(2);
   for (const logo of await page.locator(".brand-mark").all()) {
-    expect(
-      await logo.evaluate((image) => (image as HTMLImageElement).naturalWidth),
-    ).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        logo.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
   }
   await expect(page.locator(".job")).toHaveCount(3);
   const cisco = page.locator(".job").filter({
@@ -79,7 +81,7 @@ test("resume content, navigation, skill filters, and professional links", async 
 
 test("Topmate mentorship links and mobile navigation", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("./");
   await page.getByRole("button", { name: "Open menu", exact: true }).click();
   await page
     .getByRole("navigation", { name: "Main navigation" })
@@ -129,7 +131,7 @@ for (const viewport of [
     page,
   }, testInfo) => {
     await page.setViewportSize(viewport);
-    await page.goto("/");
+    await page.goto("./");
     await expect(page.locator(".scene-ready canvas")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
     const dimensions = await page.evaluate(() => ({
@@ -144,6 +146,14 @@ for (const viewport of [
       if (pixels.data[pixel + 1] > 70 && pixels.data[pixel + 3] > 0) bright++;
     }
     expect(bright / (pixels.width * pixels.height)).toBeGreaterThan(0.01);
+    const portrait = page.locator("#mentorship img");
+    await portrait.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        portrait.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
       path: testInfo.outputPath(`portfolio-${viewport.width}.png`),
       fullPage: true,
@@ -169,7 +179,7 @@ for (const viewport of [
 test("scene selection, reduced motion, rotation, reset, and animation", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   const canvas = page.locator("canvas");
   await expect(
     page.getByRole("button", { name: "Play animation" }),
@@ -213,7 +223,7 @@ test("sculpture cursor interaction and ambient motion honor pause", async ({
       difference += Math.abs(first.data[index] - second.data[index]);
     return difference / first.data.length;
   };
-  await page.goto("/");
+  await page.goto("./");
   const canvas = page.locator("canvas");
   await expect(
     page.getByRole("button", { name: "Play animation" }),
@@ -257,7 +267,7 @@ test("mobile menu, keyboard navigation, and accessible controls", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("./");
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to content" }),
@@ -282,7 +292,7 @@ test("mobile menu, keyboard navigation, and accessible controls", async ({
 
 test("email copy and resume print action", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/");
+  await page.goto("./");
   await page.getByRole("button", { name: "Copy email", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Email copied" }),
@@ -320,7 +330,7 @@ test("WebGL failure leaves content and discipline selection available", async ({
       return Reflect.apply(original, this, [type, ...args]);
     } as typeof original;
   });
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.locator(".scene-fallback")).toBeVisible();
   await expect(page.locator(".job")).toHaveCount(3);
   await page.getByRole("button", { name: "Systems", exact: true }).click();
@@ -332,7 +342,7 @@ test("WebGL failure leaves content and discipline selection available", async ({
 test("dynamic island tracks sections and exposes quick actions", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page
     .getByRole("navigation")
     .getByRole("link", { name: "Expertise" })
@@ -375,10 +385,10 @@ test("dynamic island tracks sections and exposes quick actions", async ({
 test("desktop and mobile WCAG accessibility checks", async ({ page }) => {
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
-    await page.goto("/");
+    await page.goto("./");
     await expect(page.locator(".scene-ready")).toBeVisible();
     const results = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(
       results.violations.map(({ id, nodes }) => ({
@@ -390,4 +400,152 @@ test("desktop and mobile WCAG accessibility checks", async ({ page }) => {
       })),
     ).toEqual([]);
   }
+});
+
+test("short-screen menus stay reachable without overlapping shortcuts", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 667, height: 375 },
+    { width: 844, height: 390 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("./");
+    await page.getByRole("button", { name: "Open menu", exact: true }).click();
+    const header = await page.locator(".dynamic-island").boundingBox();
+    expect(header!.y + header!.height).toBeLessThanOrEqual(viewport.height);
+    const overlap = await page.evaluate(() => {
+      const navigation = document
+        .querySelector(".navigation")!
+        .getBoundingClientRect();
+      const shortcuts = document
+        .querySelector(".island-actions")!
+        .getBoundingClientRect();
+      const identity = document
+        .querySelector(".island-identity")!
+        .getBoundingClientRect();
+      return (
+        navigation.bottom > identity.top && navigation.top < shortcuts.bottom
+      );
+    });
+    expect(overlap).toBe(false);
+    await page
+      .getByRole("button", { name: "Print resume", exact: true })
+      .scrollIntoViewIfNeeded();
+    await expect(
+      page.getByRole("button", { name: "Print resume", exact: true }),
+    ).toBeInViewport();
+    await page.keyboard.press("Escape");
+    await expect(
+      page.getByRole("button", { name: "Open menu", exact: true }),
+    ).toBeFocused();
+  }
+});
+
+test("cross-browser navigation, assets, and expanded-menu accessibility", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("response", (response) => {
+    if (response.status() >= 400)
+      errors.push(`${response.status()} ${response.url()}`);
+  });
+  page.on("requestfailed", (request) =>
+    errors.push(`${request.failure()?.errorText} ${request.url()}`),
+  );
+  for (const viewport of [
+    { width: 1440, height: 1000 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const response = await page.goto("./");
+    expect([200, 304]).toContain(response?.status());
+    await page.evaluate(() => document.fonts.ready);
+    for (const id of [
+      "experience",
+      "work",
+      "expertise",
+      "mentorship",
+      "contact",
+    ]) {
+      const navigation = page.getByRole("navigation", {
+        name: "Main navigation",
+      });
+      if (!(await navigation.isVisible()))
+        await page
+          .getByRole("button", { name: "Open menu", exact: true })
+          .click();
+      await navigation.locator(`a[href="#${id}"]`).click();
+      await expect(page.locator(`#${id} h2`)).toBeInViewport();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+    await page.locator(".mentor-portrait").scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        page
+          .locator(".mentor-portrait")
+          .evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    await page.getByRole("button", { name: "03 AI & development" }).click();
+    await expect(page.locator(".skill-panel")).toContainText("Agentic AI");
+    await page.getByRole("button", { name: "Open menu", exact: true }).click();
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(
+      results.violations.map((violation) => ({
+        id: violation.id,
+        targets: violation.nodes.map((node) => node.target),
+      })),
+    ).toEqual([]);
+    await page.keyboard.press("Escape");
+    await page
+      .getByRole("link", { name: "Back to top", exact: true })
+      .first()
+      .click();
+    await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
+  }
+  expect(errors).toEqual([]);
+});
+
+test("clipboard denial keeps email contact usable", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async () => {
+          throw new DOMException("Denied", "NotAllowedError");
+        },
+      },
+    });
+  });
+  await page.goto("./");
+  await page.getByRole("button", { name: "Copy email", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Clipboard unavailable");
+  await expect(page.locator(".email-link")).toHaveAttribute(
+    "href",
+    "mailto:aditya.vicky01@gmail.com",
+  );
+});
+
+test("failed 3D download leaves resume and mentorship available", async ({
+  page,
+}) => {
+  await page.route(/createSculptureScene.*\.js/, (route) => route.abort());
+  await page.goto("./");
+  await expect(page.locator(".scene-fallback")).toBeVisible();
+  await expect(page.locator(".job")).toHaveCount(3);
+  await page.getByRole("link", { name: "Explore my journey" }).click();
+  await expect(page.locator("#experience-title")).toBeInViewport();
+  await expect(
+    page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),
+  ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1828897");
 });
