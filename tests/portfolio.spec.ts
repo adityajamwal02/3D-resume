@@ -3,6 +3,16 @@ import AxeBuilder from "@axe-core/playwright";
 import { PNG } from "pngjs";
 import topmate from "../src/data/topmate.json" with { type: "json" };
 
+function pixelDifference(before: Buffer, after: Buffer) {
+  const first = PNG.sync.read(before);
+  const second = PNG.sync.read(after);
+  expect([first.width, first.height]).toEqual([second.width, second.height]);
+  let difference = 0;
+  for (let index = 0; index < first.data.length; index++)
+    difference += Math.abs(first.data[index] - second.data[index]);
+  return difference / first.data.length;
+}
+
 test("Microsoft experience uses the updated resume wording", async ({
   page,
 }) => {
@@ -42,7 +52,7 @@ test("portfolio content, navigation, skill filters, and professional links", asy
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto("./");
-  await expect(page).toHaveTitle("Aditya Jamwal | Software Engineer");
+  await expect(page).toHaveTitle("Aditya Jamwal | Software Engineer & Mentor");
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page
@@ -89,7 +99,7 @@ test("portfolio content, navigation, skill filters, and professional links", asy
       exact: true,
     }),
   ).toHaveCount(0);
-  await page.getByRole("link", { name: "Explore my journey" }).click();
+  await page.getByRole("link", { name: "Explore engineering work" }).click();
   await expect(page).toHaveURL(/#experience$/);
   await expect(
     page.getByRole("heading", {
@@ -104,7 +114,7 @@ test("portfolio content, navigation, skill filters, and professional links", asy
   await expect(
     page
       .locator(".hero-actions")
-      .getByRole("link", { name: "LinkedIn", exact: true }),
+      .getByRole("link", { name: "Connect on LinkedIn", exact: true }),
   ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
   await expect(
     page.getByRole("link", { name: "GitHub", exact: true }),
@@ -145,6 +155,145 @@ test("portfolio content, navigation, skill filters, and professional links", asy
     ),
   ).toEqual([]);
 });
+
+test("engineer and mentor introduction keeps both paths reachable", async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 667, height: 375 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("./");
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator(".hero-description")).toContainText(
+      "Software Engineer at Microsoft",
+    );
+    await expect(page.locator(".hero-description")).toContainText(
+      "distributed systems",
+    );
+    await expect(page.locator(".hero-mentorship")).toContainText(
+      "mentor students and engineers",
+    );
+    const engineering = page
+      .locator(".hero-actions")
+      .getByRole("link", { name: "Explore engineering work" });
+    await expect(engineering).toHaveAttribute("href", "#experience");
+    await expect(
+      page
+        .locator(".hero-actions")
+        .getByRole("link", { name: "Connect on LinkedIn" }),
+    ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
+    if (viewport.width <= 700) {
+      const layout = await page.evaluate(() => ({
+        copy: document.querySelector(".hero-copy")!.getBoundingClientRect()
+          .bottom,
+        scene: document.querySelector(".systems-scene")!.getBoundingClientRect()
+          .top,
+      }));
+      expect(layout.copy).toBeLessThanOrEqual(layout.scene);
+    }
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await engineering.focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#experience$/);
+    await page
+      .locator(".hero-footer")
+      .getByRole("link", { name: /explore mentorship/i })
+      .click();
+    await expect(page).toHaveURL(/#mentorship$/);
+    await expect(page.locator("#mentorship-title")).toBeInViewport();
+  }
+});
+
+for (const theme of ["light", "dark"] as const) {
+  test(`mentorship decision guide is clear and responsive in ${theme} mode`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ colorScheme: theme });
+    const sessions = [
+      {
+        name: "1:1 Mentorship",
+        goal: "Build a plan for your growth",
+        id: "1828897",
+      },
+      {
+        name: "Career Guidance",
+        goal: "Choose your next direction",
+        id: "1552849",
+      },
+      {
+        name: "Resume Review",
+        goal: "Make your resume tell your story",
+        id: "1552120",
+      },
+      {
+        name: "Mock Interview (DSA)",
+        goal: "Practice before the real interview",
+        id: "1553022",
+      },
+    ];
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("./");
+      const guide = page.getByRole("region", {
+        name: "Which session is right for you?",
+      });
+      await guide.scrollIntoViewIfNeeded();
+      await expect(guide.locator(".mentorship-service")).toHaveCount(4);
+      for (const session of sessions) {
+        const card = guide.locator(".mentorship-service").filter({
+          has: page.getByRole("heading", { name: session.name, exact: true }),
+        });
+        await expect(card).toContainText(session.goal);
+        await expect(card.locator("dt")).toHaveText([
+          "What to bring",
+          "What to take away",
+        ]);
+        for (const detail of await card.locator("dd").all()) {
+          expect((await detail.innerText()).length).toBeGreaterThan(30);
+        }
+        await expect(card).toHaveAttribute(
+          "href",
+          `https://topmate.io/adityajamwal/${session.id}`,
+        );
+        await expect(card).toHaveAttribute("target", "_blank");
+        await expect(card).toHaveAttribute("rel", "noreferrer");
+        await card.focus();
+        await expect(card).toBeFocused();
+        const bounds = await card.boundingBox();
+        expect(bounds!.x).toBeGreaterThanOrEqual(0);
+        expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+      }
+      await expect(guide).toContainText(
+        "Current pricing, availability, and booking details are on Topmate",
+      );
+      await expect(guide).toContainText("not placement or referral guarantees");
+      const accessibility = await new AxeBuilder({ page })
+        .include(".mentorship-guide")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(accessibility.violations).toEqual([]);
+      await guide.screenshot({
+        path: testInfo.outputPath(`guide-${theme}-${width}.png`),
+      });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+    await page.emulateMedia({ media: "print" });
+    await expect(page.locator(".mentorship-guide")).toBeHidden();
+  });
+}
 
 test("Topmate mentorship links and mobile navigation", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -396,10 +545,14 @@ test("scene selection, reduced motion, rotation, reset, and animation", async ({
   ).toBeVisible();
   const initial = await canvas.screenshot();
   await page.getByRole("button", { name: "Assemble layers" }).click();
-  expect((await canvas.screenshot()).equals(initial)).toBe(false);
+  expect(pixelDifference(initial, await canvas.screenshot())).toBeGreaterThan(
+    0.1,
+  );
   await page.getByRole("button", { name: "Explode layers" }).click();
   await page.getByRole("button", { name: "Rotate right", exact: true }).click();
-  expect((await canvas.screenshot()).equals(initial)).toBe(false);
+  expect(pixelDifference(initial, await canvas.screenshot())).toBeGreaterThan(
+    0.1,
+  );
   await page.getByRole("button", { name: "Intelligence", exact: true }).click();
   await expect(page.locator(".scene-caption")).toContainText(
     "APPLIED INTELLIGENCE",
@@ -409,30 +562,22 @@ test("scene selection, reduced motion, rotation, reset, and animation", async ({
     page.getByRole("button", { name: "Cloud", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   const paused = await canvas.screenshot();
-  expect((await canvas.screenshot()).equals(paused)).toBe(true);
+  // Allow subpixel compositing noise without accepting visible scene movement.
+  expect(pixelDifference(paused, await canvas.screenshot())).toBeLessThan(0.01);
   await page.getByRole("button", { name: "Play animation" }).click();
   await expect(
     page.getByRole("button", { name: "Pause animation" }),
   ).toBeVisible();
   const moving = await canvas.screenshot();
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(moving))
-    .toBe(false);
+    .poll(async () => pixelDifference(moving, await canvas.screenshot()))
+    .toBeGreaterThan(0.1);
   await page.getByRole("button", { name: "Pause animation" }).click();
 });
 
 test("sculpture cursor interaction and ambient motion honor pause", async ({
   page,
 }) => {
-  const pixelDifference = (before: Buffer, after: Buffer) => {
-    const first = PNG.sync.read(before);
-    const second = PNG.sync.read(after);
-    expect([first.width, first.height]).toEqual([second.width, second.height]);
-    let difference = 0;
-    for (let index = 0; index < first.data.length; index++)
-      difference += Math.abs(first.data[index] - second.data[index]);
-    return difference / first.data.length;
-  };
   await page.goto("./");
   const canvas = page.locator("canvas");
   await expect(
@@ -457,8 +602,8 @@ test("sculpture cursor interaction and ambient motion honor pause", async ({
   const moving = await canvas.screenshot();
   await page.mouse.move(1200, 220);
   await expect
-    .poll(async () => (await canvas.screenshot()).equals(moving))
-    .toBe(false);
+    .poll(async () => pixelDifference(moving, await canvas.screenshot()))
+    .toBeGreaterThan(0.1);
   await page.getByRole("button", { name: "Pause animation" }).click();
   expect(
     await page
@@ -766,7 +911,7 @@ test("contact invitation provides direct links without email delivery", async ({
     page.locator("#contact form, #contact input, #contact textarea"),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Connect on LinkedIn" }),
+    page.locator("#contact").getByRole("link", { name: "Connect on LinkedIn" }),
   ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
   await expect(
     page.getByRole("link", { name: "Book a conversation" }),
@@ -846,7 +991,9 @@ for (const theme of ["light", "dark"] as const) {
         path: testInfo.outputPath(`${theme}-contact-${width}.png`),
       });
       await expect(
-        page.getByRole("link", { name: "Connect on LinkedIn" }),
+        page
+          .locator("#contact")
+          .getByRole("link", { name: "Connect on LinkedIn" }),
       ).toBeInViewport();
     }
   });
@@ -859,7 +1006,7 @@ test("failed 3D download leaves resume and mentorship available", async ({
   await page.goto("./");
   await expect(page.locator(".scene-fallback")).toBeVisible();
   await expect(page.locator(".job")).toHaveCount(3);
-  await page.getByRole("link", { name: "Explore my journey" }).click();
+  await page.getByRole("link", { name: "Explore engineering work" }).click();
   await expect(page.locator("#experience-title")).toBeInViewport();
   await expect(
     page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),

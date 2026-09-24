@@ -23,6 +23,11 @@ const mentorshipSessions = [
     name: "1:1 Mentorship",
     detail:
       "A focused conversation about your goals, preparation, and next steps.",
+    goal: "Build a plan for your growth",
+    prepare:
+      "Your current experience, goals, and the questions holding you back.",
+    takeaway:
+      "Clearer priorities and practical next steps for your development.",
     href: "https://topmate.io/adityajamwal/1828897",
     duration: "45 min",
   },
@@ -30,6 +35,10 @@ const mentorshipSessions = [
     name: "Career Guidance",
     detail:
       "Find direction for your tech career and build a preparation roadmap.",
+    goal: "Choose your next direction",
+    prepare:
+      "The roles you are considering and where you are in your preparation.",
+    takeaway: "A clearer direction and a preparation roadmap to work toward.",
     href: "https://topmate.io/adityajamwal/1552849",
     duration: "45 min",
   },
@@ -37,6 +46,10 @@ const mentorshipSessions = [
     name: "Resume Review",
     detail:
       "Get feedback on how you present your experience, projects, and skills.",
+    goal: "Make your resume tell your story",
+    prepare: "Your latest resume and a target role or job description.",
+    takeaway:
+      "Actionable feedback on structure, clarity, and how you communicate impact.",
     href: "https://topmate.io/adityajamwal/1552120",
     duration: "45 min",
   },
@@ -44,6 +57,11 @@ const mentorshipSessions = [
     name: "Mock Interview (DSA)",
     detail:
       "Practice problem solving and explaining your approach in an interview setting.",
+    goal: "Practice before the real interview",
+    prepare:
+      "Your preferred coding language and the topics you want to practice.",
+    takeaway:
+      "Feedback on your approach, communication, and areas to practice next.",
     href: "https://topmate.io/adityajamwal/1553022",
     duration: "75 min",
   },
@@ -87,14 +105,12 @@ export default function Portfolio() {
           <div className="hero-grid" aria-hidden="true" />
           <div className="hero-topline">
             <span>
-              <i className="status-dot" /> SOFTWARE ENGINEER
+              <i className="status-dot" /> SOFTWARE ENGINEER & MENTOR
             </span>
             <span className="hero-edition">PORTFOLIO / 2026</span>
           </div>
           <div className="hero-copy">
-            <p className="eyebrow">
-              BUILDING SYSTEMS. CONNECTING POSSIBILITIES.
-            </p>
+            <p className="eyebrow">BUILDING SYSTEMS. SHARING EXPERIENCE.</p>
             <h1 id="hero-title">
               Aditya
               <br />
@@ -102,12 +118,16 @@ export default function Portfolio() {
               <span className="name-period">.</span>
             </h1>
             <p className="hero-description">
-              From cloud infrastructure to intelligent tools.
-              <br />I build software that makes complexity work.
+              Software Engineer at Microsoft, building cloud infrastructure,
+              distributed systems, and intelligent tools.
+            </p>
+            <p className="hero-mentorship">
+              I also mentor students and engineers on career direction, resumes,
+              and interview preparation.
             </p>
             <div className="hero-actions">
               <a className="button button-primary" href="#experience">
-                Explore my journey <ArrowDown size={17} />
+                Explore engineering work <ArrowDown size={17} />
               </a>
               <a
                 className="button button-secondary"
@@ -115,7 +135,8 @@ export default function Portfolio() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Linkedin size={16} /> LinkedIn <ArrowUpRight size={15} />
+                <Linkedin size={16} /> Connect on LinkedIn{" "}
+                <ArrowUpRight size={15} />
               </a>
             </div>
           </div>
@@ -510,12 +531,12 @@ export default function Portfolio() {
             />
             <div className="mentor-bio">
               <p className="eyebrow">ENGINEER. PROBLEM SOLVER. MENTOR.</p>
-              <h3>A little context. A clearer direction.</h3>
+              <h3>Engineering experience. Practical guidance.</h3>
               <p>
-                I'm a software engineer at Microsoft, previously at Cisco, with
-                a curiosity for software development, agentic AI, data, and the
-                web. Beyond building systems, I help people work through the
-                next step in their own tech journey.
+                I build cloud infrastructure and distributed systems at
+                Microsoft, with previous experience at Cisco and Ambee. As a
+                mentor, I help students and engineers turn career questions into
+                practical next steps.
               </p>
               <p>
                 I've interviewed at Microsoft, Amazon, Cisco, Adobe, and
@@ -534,30 +555,70 @@ export default function Portfolio() {
               </a>
             </div>
           </div>
-          <div className="mentorship-services" aria-label="Mentorship sessions">
-            {mentorshipSessions.map((session) => (
+          <section
+            className="mentorship-guide"
+            id="session-guide"
+            aria-labelledby="session-guide-title"
+          >
+            <div className="mentorship-guide-heading">
+              <p className="eyebrow">START WITH YOUR GOAL</p>
+              <h3 id="session-guide-title">Which session is right for you?</h3>
+              <p>
+                Choose the conversation that fits where you are today. Bring
+                your questions; we will work through the next step together.
+              </p>
+            </div>
+            <div
+              className="mentorship-services"
+              aria-label="Mentorship sessions"
+            >
+              {mentorshipSessions.map((session) => (
+                <a
+                  className="mentorship-service"
+                  key={session.name}
+                  href={session.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="session-format">
+                    <CalendarDays size={15} /> 1:1 VIDEO CALL{" "}
+                    <span>{session.duration}</span>
+                  </span>
+                  <span className="session-goal">{session.goal}</span>
+                  <h4>
+                    {session.name}
+                    <ArrowUpRight size={20} />
+                  </h4>
+                  <p>{session.detail}</p>
+                  <dl className="session-expectations">
+                    <div>
+                      <dt>What to bring</dt>
+                      <dd>{session.prepare}</dd>
+                    </div>
+                    <div>
+                      <dt>What to take away</dt>
+                      <dd>{session.takeaway}</dd>
+                    </div>
+                  </dl>
+                  <span className="session-book">
+                    Book {session.name} <ArrowUpRight size={16} />
+                  </span>
+                </a>
+              ))}
+            </div>
+            <p className="mentorship-booking-note">
+              Practical feedback, not placement or referral guarantees. Current
+              pricing, availability, and booking details are on{" "}
               <a
-                className="mentorship-service"
-                key={session.name}
-                href={session.href}
+                href="https://topmate.io/adityajamwal"
                 target="_blank"
                 rel="noreferrer"
               >
-                <span className="session-format">
-                  <CalendarDays size={15} /> 1:1 VIDEO CALL{" "}
-                  <span>{session.duration}</span>
-                </span>
-                <h3>
-                  {session.name}
-                  <ArrowUpRight size={20} />
-                </h3>
-                <p>{session.detail}</p>
-                <span className="session-book">
-                  Book on Topmate <ArrowRight size={16} />
-                </span>
+                Topmate <ArrowUpRight size={13} aria-hidden="true" />
               </a>
-            ))}
-          </div>
+              .
+            </p>
+          </section>
           <div className="mentorship-footer">
             <p>For a question between milestones.</p>
             <a
