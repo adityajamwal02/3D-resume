@@ -15,6 +15,7 @@ Vite prints the local URL, normally `http://localhost:5173`. To choose another p
 
 ```sh
 npm run lint
+npm run test:sync
 npm run build
 npx playwright install chromium
 npm test
@@ -29,6 +30,7 @@ src/
   main.tsx                    React entry point and styles
   Portfolio.tsx               Semantic resume sections and contact interactions
   content.ts                  Career history and skill category data
+  data/topmate.json           Last verified public Topmate metrics and timestamp
   components/SystemsScene.tsx Accessible scene controls and deferred loading
   components/DynamicIsland.tsx Floating navigation, reading progress, quick actions
   scene/createSculptureScene.ts Three.js sculpture, studio reflections, cursor response
@@ -38,6 +40,8 @@ src/
   theme.css                   Light palette, theme control, and contact invitation
 tests/portfolio.spec.ts       Production-browser regression suite
 playwright.config.ts         Isolated preview server and Chromium configuration
+scripts/refresh-topmate.mjs   Validated, atomic public-profile metric refresh
+scripts/refresh-topmate.test.mjs Parser, freshness, and failure regression tests
 ```
 
 The rendering engine is dynamically imported after the content mounts. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
@@ -57,14 +61,15 @@ The remote repository was empty when work began on September 10, 2026. There was
 - GitHub and LinkedIn links use the handles supplied in the resume. The parsed attachment did not contain the exact HashImagin, LeetCode, Codeforces, or standings URLs. These are not guessed; HashImagin links honestly to the GitHub profile.
 - The public contact surface contains a conversation invitation and direct professional-profile and mentorship links. There is no form or email delivery service. Personal recipient addresses, mailto links, and phone numbers are omitted from the frontend. Previous Git history may contain older public contact details; deployment does not rewrite repository history.
 - The mentorship biography, portrait, session names, durations, and booking URLs come from [Aditya's public Topmate profile](https://topmate.io/adityajamwal), checked September 10, 2026. The portrait is served locally. Pricing, availability, payments, and the full review collection remain on Topmate; booking links open there directly, without an embedded third-party widget. Mentorship content is excluded from the printed resume.
-- Three selected testimonials preserve the quotes, author names, and dates supplied by the owner. The rating summary (5/5 from 60 ratings, 58 testimonials) and feedback counts (35 Helpful, 28 Insightful, 28 Friendly) reproduce the supplied screenshot. These are a static snapshot supplied September 10, 2026, not live-synced data or individual reviewer ratings. Testimonials sit inside mentorship without a separate navigation destination.
+- Three selected testimonials preserve the quotes, author names, and dates supplied by the owner. The aggregate rating, ratings count, bookings, testimonials count, and Helpful/Insightful/Friendly feedback counts are refreshed from the public Topmate profile every three days. The visible update date identifies the last verified snapshot; these are periodically refreshed aggregates, not real-time figures or individual reviewer ratings. Testimonials sit inside mentorship without a separate navigation destination.
+- Microsoft's experience bullets use the owner's updated wording supplied September 24, 2026. The footer copyright derives its year from the visitor's current date on render, independently of build or deployment dates.
 - No resume download or print controls are offered. The hero and expanded menu link to LinkedIn instead. Visitors can still use their browser's built-in print/save features, as with any public webpage. Topmate's Resume Review service is independent of downloading the owner's resume.
 - Experience logos are self-hosted: [Microsoft mark](https://commons.wikimedia.org/wiki/File:Microsoft_logo.svg), [Cisco logo](https://commons.wikimedia.org/wiki/File:Cisco_logo_blue_2016.svg), and [Ambee's official white logo](https://cdn.prod.website-files.com/6242a3f6d206db221c2b13e8/627de922222f9769ff40c945_Ambee%20White%20logo.svg). Logos identify employers; their trademarks belong to their respective owners.
 - Project visuals are conceptual artwork, not screenshots of proprietary company products. No employer code, internal links, or environment configuration is exposed.
 
 ## Validation
 
-Testimonial checks cover the supplied content and summary, unchanged navigation, desktop author alignment, mobile stacking, print exclusion, and accessibility in both themes at 320, 768, and 1440 pixels.
+Testimonial checks cover the supplied quotes, current snapshot metrics and update date, unchanged navigation, desktop author alignment, mobile stacking, print exclusion, and accessibility in both themes at 320, 768, and 1440 pixels. Additional tests verify the exact Microsoft bullets and copyright rendering in 2026, 2027, and 2030. Sync tests cover parsing, true zero counts, invalid/missing data, the exact 72-hour threshold across month/year/leap-day boundaries, skipped network requests, successful persistence, and preservation of the previous snapshot on HTTP, network, timeout, or markup failures.
 
 The suite checks content, company logos, LinkedIn links, absence of public email/download controls, anchor navigation, skill filters, direct contact links, theme preferences and persistence, blocked local storage, mobile menus and keyboard focus, reduced motion, scene rotation/reset, actual canvas pixels, animated frame changes, and forced WebGL or renderer-download failure. Full-page screenshots are captured at 320, 375, 390, 768, 1440, and 1920 pixels. Axe checks WCAG 2.0, 2.1, and 2.2 A/AA rules in both themes at desktop and mobile widths, including expanded navigation.
 
@@ -89,6 +94,18 @@ Screenshots and traces are written to ignored `test-results/`. GitHub Actions ru
 ## Deployment
 
 Live at [adityajamwal02.github.io/3D-resume](https://adityajamwal02.github.io/3D-resume/). Pushes to `main` deploy to GitHub Pages after lint, build, and browser tests pass.
+
+### Scheduled Topmate refresh
+
+GitHub Actions checks freshness hourly at minute 23 and fetches the public profile only when the checked-in snapshot is at least 72 hours old. This avoids the short intervals at month boundaries caused by day-of-month `*/3` cron schedules. GitHub may delay scheduled runs; the normal refresh window is 72–73 hours, not a real-time guarantee. Fresh snapshots skip installation, build, tests, and deployment.
+
+The fetch uses the profile's public JSON-LD rating, visible booking/testimonial badges, and public feedback data. It validates the account identity, rating range, integer counts, and consistency with the visible rating before atomically replacing the JSON snapshot. It requires no account credentials, browser-side third-party requests, or extra dependencies. The three selected testimonial quotes are deliberately unchanged.
+
+Due refreshes run sync tests, lint, build, and browser tests before committing the snapshot and deploying **in the same workflow**. A bot commit does not need to trigger another workflow. Workflow concurrency serializes releases; a conflicting branch update makes the push fail rather than overwriting changes. The workflow needs `contents: write` to persist the snapshot, plus the existing Pages deployment permissions.
+
+On fetch, schema, or test failure, the workflow fails visibly and the last verified site stays live; its update date remains visible. Check the Actions run and enable GitHub workflow-failure notifications. Scheduled workflows in inactive public repositories can be disabled by GitHub after 60 days without repository activity; verify scheduling remains enabled if automated commits stop.
+
+To refresh immediately locally, run `npm run refresh:topmate`, then run the validation commands above and commit the updated snapshot. To check without fetching early, run `npm run refresh:topmate -- --if-due`. A manual **Run workflow** also checks the 72-hour threshold and validates/deploys the current site; select **Refresh Topmate now** to explicitly bypass the freshness check, for example when verifying the complete automated refresh and deployment path.
 
 This is a static application. Publish the `dist/` directory from `npm run build` to a static host with HTTPS. No private secrets or environment variables belong in the frontend. Vite uses relative asset URLs so the build can also be hosted below a repository subpath, including `/3D-resume/`. Navigation uses local anchors rather than history routes.
 

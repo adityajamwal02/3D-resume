@@ -4,9 +4,9 @@ export const experience = [
     role: "Software Engineer",
     date: "FEB 2026 — PRESENT",
     bullets: [
-      "Developing RMSv2 to move Azure resources across regions through intelligent discovery and copilot integrations.",
-      "Architected a load balancer to provision OpenAI endpoints and implemented MoveApp CRUD APIs.",
-      "Migrated classic release pipelines to Ev2 Managed SDP as part of a security-first initiative.",
+      "Developing Azure Resource Mover v2 to move Azure resources across regions via intelligent discovery, execution and co-pilot integrations.",
+      "Architected end-to-end load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded MoveApplications CRUD APIs",
+      "Planned Geneva telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure to support alerting, mapped KQL queries and incident management (IcM) calls",
     ],
     skills: [".NET", "Azure", "Cloud management", "Agentic AI", "REST APIs"],
   },

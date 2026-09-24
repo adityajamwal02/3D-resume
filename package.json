@@ -9,6 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "playwright test",
+    "test:sync": "node --test scripts/refresh-topmate.test.mjs",
+    "refresh:topmate": "node scripts/refresh-topmate.mjs",
     "format": "prettier --write src tests playwright.config.ts vite.config.ts index.html README.md"
   },
   "dependencies": {

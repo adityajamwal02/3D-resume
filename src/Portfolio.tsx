@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { experience, skillGroups } from "./content";
+import topmate from "./data/topmate.json";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
 import "./island.css";
@@ -587,11 +588,16 @@ export default function Portfolio() {
                 <div className="testimonial-summary">
                   <span className="testimonial-rating">
                     <Star size={19} fill="currentColor" aria-hidden="true" />
-                    <strong aria-label="5 out of 5 stars">5</strong>
-                    <span>(60 ratings)</span>
+                    <strong aria-label={`${topmate.rating} out of 5 stars`}>
+                      {topmate.rating}
+                    </strong>
+                    <span>({topmate.ratings} ratings)</span>
                   </span>
                   <span>
-                    <strong>58</strong> testimonials
+                    <strong>{topmate.bookings}</strong> bookings
+                  </span>
+                  <span>
+                    <strong>{topmate.testimonials}</strong> testimonials
                   </span>
                 </div>
               </div>
@@ -604,22 +610,28 @@ export default function Portfolio() {
                 Reviews on Topmate <ArrowUpRight size={16} />
               </a>
             </div>
+            <p className="testimonial-freshness">
+              Topmate stats updated{" "}
+              <time dateTime={topmate.fetchedAt}>
+                {new Date(topmate.fetchedAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                  timeZone: "UTC",
+                })}
+              </time>
+              . Refreshes every 3 days; latest figures on Topmate.
+            </p>
             <ul
               className="testimonial-highlights"
               aria-label="Mentorship feedback"
             >
-              <li>
-                <Zap size={16} aria-hidden="true" />
-                <strong>35</strong> Helpful
-              </li>
-              <li>
-                <Zap size={16} aria-hidden="true" />
-                <strong>28</strong> Insightful
-              </li>
-              <li>
-                <Zap size={16} aria-hidden="true" />
-                <strong>28</strong> Friendly
-              </li>
+              {topmate.feedback.map((feedback) => (
+                <li key={feedback.label}>
+                  <Zap size={16} aria-hidden="true" />
+                  <strong>{feedback.count}</strong> {feedback.label}
+                </li>
+              ))}
             </ul>
             <div className="testimonial-grid">
               {testimonials.map((testimonial) => (

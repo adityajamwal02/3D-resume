@@ -1,6 +1,36 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { PNG } from "pngjs";
+import topmate from "../src/data/topmate.json" with { type: "json" };
+
+test("Microsoft experience uses the updated resume wording", async ({
+  page,
+}) => {
+  await page.goto("./");
+  const microsoft = page.locator(".job").filter({
+    has: page.getByRole("heading", {
+      name: "Microsoft Software Engineer",
+      exact: true,
+    }),
+  });
+  await expect(microsoft.locator("li")).toHaveText([
+    "Developing Azure Resource Mover v2 to move Azure resources across regions via intelligent discovery, execution and co-pilot integrations.",
+    "Architected end-to-end load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded MoveApplications CRUD APIs",
+    "Planned Geneva telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure to support alerting, mapped KQL queries and incident management (IcM) calls",
+  ]);
+});
+
+for (const year of [2026, 2027, 2030]) {
+  test(`footer copyright uses the visitor's current year ${year}`, async ({
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date(`${year}-06-15T12:00:00Z`));
+    await page.goto("./");
+    await expect(page.locator(".site-footer")).toContainText(
+      `© ${year} Aditya Jamwal`,
+    );
+  });
+}
 
 test("portfolio content, navigation, skill filters, and professional links", async ({
   page,
@@ -177,30 +207,39 @@ for (const theme of ["light", "dark"] as const) {
         "SHAIK NASHEERA",
         "Aditya Pratap Singh",
       ]);
-      await expect(region.locator("time")).toHaveText([
+      await expect(region.locator(".testimonial-card time")).toHaveText([
         "22nd Aug, 2026",
         "11th Jul, 2026",
         "30th May, 2026",
       ]);
       expect(
         await region
-          .locator("time")
+          .locator(".testimonial-card time")
           .evaluateAll((elements) =>
             elements.map((element) => element.getAttribute("datetime")),
           ),
       ).toEqual(["2026-08-22", "2026-07-11", "2026-05-30"]);
       await expect(region.locator(".testimonial-summary")).toContainText(
-        "60 ratings",
+        `${topmate.ratings} ratings`,
       );
       await expect(region.locator(".testimonial-summary")).toContainText(
-        "58 testimonials",
+        `${topmate.bookings} bookings`,
       );
-      await expect(region.getByLabel("5 out of 5 stars")).toBeVisible();
-      await expect(region.locator(".testimonial-highlights li")).toHaveText([
-        "35 Helpful",
-        "28 Insightful",
-        "28 Friendly",
-      ]);
+      await expect(region.locator(".testimonial-summary")).toContainText(
+        `${topmate.testimonials} testimonials`,
+      );
+      await expect(
+        region.getByLabel(`${topmate.rating} out of 5 stars`),
+      ).toBeVisible();
+      await expect(region.locator(".testimonial-highlights li")).toHaveText(
+        topmate.feedback.map((item) => `${item.count} ${item.label}`),
+      );
+      await expect(
+        region.locator(".testimonial-freshness time"),
+      ).toHaveAttribute("datetime", topmate.fetchedAt);
+      await expect(region.locator(".testimonial-freshness")).toContainText(
+        "Refreshes every 3 days",
+      );
       await expect(region.locator("blockquote").nth(0)).toContainText(
         "I highly recommend a session with Aditya",
       );

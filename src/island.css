@@ -969,6 +969,12 @@
     padding: 0;
     margin: 22px 0 28px;
   }
+  .testimonial-freshness {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
   .testimonial-highlights li {
     display: flex;
     align-items: center;
