@@ -8,6 +8,7 @@ import {
   Mail,
   Menu,
   Moon,
+  PenLine,
   Sun,
   X,
 } from "lucide-react";
@@ -17,6 +18,7 @@ const destinations = [
   { id: "work", label: "Work", icon: Layers },
   { id: "expertise", label: "Expertise", icon: CodeXml },
   { id: "mentorship", label: "Mentorship", icon: CalendarDays },
+  { id: "content", label: "Content", icon: PenLine },
   { id: "contact", label: "Contact", icon: Mail },
 ];
 

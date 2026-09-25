@@ -719,13 +719,72 @@ export default function Portfolio() {
           </div>
         </section>
         <section
+          className="section creator-section"
+          id="content"
+          aria-labelledby="creator-title"
+        >
+          <div className="creator-layout">
+            <div className="creator-copy">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">
+                    <span>06 /</span> CONTENT CREATION
+                  </p>
+                  <h2 id="creator-title">
+                    Ideas worth
+                    <br />
+                    <em>sharing.</em>
+                  </h2>
+                </div>
+              </div>
+              <p className="creator-description">
+                Beyond building software, I create content on LinkedIn about
+                technology, AI, and tech marketing. I bring an engineer's
+                perspective to the ideas, tools, and stories shaping how we
+                work.
+              </p>
+              <ul className="creator-topics" aria-label="Content topics">
+                <li>Technology</li>
+                <li>Artificial intelligence</li>
+                <li>Tech marketing</li>
+              </ul>
+            </div>
+            <div className="creator-community">
+              <p className="eyebrow">THE LINKEDIN COMMUNITY</p>
+              <p className="creator-followers">
+                <strong>
+                  85,000<span>+</span>
+                </strong>
+                <span>followers on LinkedIn</span>
+              </p>
+              <p className="creator-community-note">
+                Sharing ideas. Starting conversations. Connect with me for
+                perspectives on tech, AI, and the stories behind the products.
+              </p>
+              <a
+                className="button button-primary"
+                href="https://www.linkedin.com/in/adityajamwal02/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Linkedin size={18} /> Connect with me{" "}
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </div>
+          <div className="creator-collaborations">
+            <h3>Brand collaborations</h3>
+            <p>Selected brand collaborations will be featured here soon.</p>
+          </div>
+        </section>
+        <section
           className="section contact-section"
           id="contact"
           aria-labelledby="contact-title"
         >
           <div className="contact-top">
             <p className="eyebrow">
-              <span>06 /</span> WHAT’S NEXT?
+              <span>07 /</span> WHAT’S NEXT?
             </p>
             <span className="contact-spark" aria-hidden="true">
               ✳

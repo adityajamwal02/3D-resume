@@ -39,6 +39,7 @@ src/
   island.css                  Gradient glass theme and vertical career timeline
   theme.css                   Light palette, theme control, and contact invitation
 tests/portfolio.spec.ts       Production-browser regression suite
+tests/creator.spec.ts         Content-creation layout, navigation, and outbound-link checks
 playwright.config.ts         Isolated preview server and Chromium configuration
 scripts/refresh-topmate.mjs   Validated, atomic public-profile metric refresh
 scripts/refresh-topmate.test.mjs Parser, freshness, and failure regression tests
@@ -67,12 +68,15 @@ The remote repository was empty when work began on September 10, 2026. There was
 - Experience logos are self-hosted: [Microsoft mark](https://commons.wikimedia.org/wiki/File:Microsoft_logo.svg), [Cisco logo](https://commons.wikimedia.org/wiki/File:Cisco_logo_blue_2016.svg), and [Ambee's official white logo](https://cdn.prod.website-files.com/6242a3f6d206db221c2b13e8/627de922222f9769ff40c945_Ambee%20White%20logo.svg). Logos identify employers; their trademarks belong to their respective owners.
 - Project visuals are conceptual artwork, not screenshots of proprietary company products. No employer code, internal links, or environment configuration is exposed.
 - The introduction highlights both software engineering and mentorship, with separate paths into engineering experience, LinkedIn, and mentorship. The session guide pairs each existing service with a visitor goal, suggested preparation, and practical takeaways. These are guidance rather than placement/referral guarantees; pricing, availability, and bookings remain on Topmate. On mobile, the sculpture follows the hero copy in document flow so longer text and wrapped actions do not overlap the scene controls.
+- The content-creation section sits directly after mentorship and highlights technology, AI, and tech marketing on LinkedIn. Its **85,000+ followers** figure was supplied by the owner on September 25, 2026; it is not a live-synced LinkedIn metric. The "Connect with me" link opens the existing LinkedIn profile. A compact brand-collaboration placeholder reserves space for a future narrow logo carousel once the owner supplies the brand list and approved assets. No logos, endorsements, carousel controls, or third-party embeds are fabricated. Content creation is included in navigation and reading progress but excluded from the printed resume.
 
 ## Validation
 
 Testimonial checks cover the supplied quotes, current snapshot metrics and update date, unchanged navigation, desktop author alignment, mobile stacking, print exclusion, and accessibility in both themes at 320, 768, and 1440 pixels. Additional tests verify the exact Microsoft bullets and copyright rendering in 2026, 2027, and 2030. Sync tests cover parsing, true zero counts, invalid/missing data, the exact 72-hour threshold across month/year/leap-day boundaries, skipped network requests, successful persistence, and preservation of the previous snapshot on HTTP, network, timeout, or markup failures.
 
 Introduction checks verify both professional roles, keyboard navigation to engineering experience, the mentorship path, and non-overlapping mobile hero content. Session-guide checks cover all four goal/service mappings, preparation and takeaway content, unchanged booking destinations, keyboard focus, responsive layout, print exclusion, and accessibility in both themes.
+
+Content-creation checks verify placement immediately after mentorship, the owner-supplied follower count and topics, the honest empty brand showcase, both themes, mobile/desktop layout, print exclusion, and accessibility. Navigation tests cover six destinations and the compact-menu breakpoint; expanded navigation now uses document flow rather than a fixed spacer. A keyboard-driven popup test verifies the LinkedIn destination with a stubbed third-party response, without relying on LinkedIn availability or authentication. The section remains functional when the 3D download fails.
 
 The suite checks content, company logos, LinkedIn links, absence of public email/download controls, anchor navigation, skill filters, direct contact links, theme preferences and persistence, blocked local storage, mobile menus and keyboard focus, reduced motion, scene rotation/reset, actual canvas pixels, animated frame changes, and forced WebGL or renderer-download failure. Full-page screenshots are captured at 320, 375, 390, 768, 1440, and 1920 pixels. Axe checks WCAG 2.0, 2.1, and 2.2 A/AA rules in both themes at desktop and mobile widths, including expanded navigation.
 

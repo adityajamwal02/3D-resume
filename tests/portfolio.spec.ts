@@ -467,7 +467,7 @@ for (const theme of ["light", "dark"] as const) {
       const navigation = page.getByRole("navigation", {
         name: "Main navigation",
       });
-      await expect(navigation.getByRole("link")).toHaveCount(5);
+      await expect(navigation.getByRole("link")).toHaveCount(6);
       await expect(
         navigation.getByRole("link", { name: /testimonials/i }),
       ).toHaveCount(0);
@@ -850,6 +850,7 @@ test("cross-browser navigation, assets, and expanded-menu accessibility", async 
       "work",
       "expertise",
       "mentorship",
+      "content",
       "contact",
     ]) {
       const navigation = page.getByRole("navigation", {
@@ -1011,4 +1012,10 @@ test("failed 3D download leaves resume and mentorship available", async ({
   await expect(
     page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),
   ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1828897");
+  await expect(page.locator("#content .creator-followers strong")).toHaveText(
+    "85,000+",
+  );
+  await expect(
+    page.locator("#content").getByRole("link", { name: "Connect with me" }),
+  ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
 });
