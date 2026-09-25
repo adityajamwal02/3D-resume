@@ -173,7 +173,7 @@ export default function Portfolio() {
             <strong>
               85K<span>+</span>
             </strong>
-            <p>Connections in my LinkedIn community</p>
+            <p>Connections - LinkedIn community</p>
           </div>
           <div>
             <strong>

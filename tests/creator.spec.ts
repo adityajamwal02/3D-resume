@@ -13,6 +13,12 @@ const brandNames = [
   "MuscleBlaze",
   "CodeAnt AI",
   "Wispr Flow",
+  "Nimbalyst",
+  "Replit",
+  "AON Meetings",
+  "takeUforward",
+  "Paytm",
+  "Matiks",
 ];
 
 test("career highlights and selected work reflect the community and collaboration platform", async ({
@@ -22,9 +28,7 @@ test("career highlights and selected work reflect the community and collaboratio
   const highlights = page.getByLabel("Career highlights");
   await expect(highlights).toContainText("150M+");
   await expect(highlights).toContainText("85K+");
-  await expect(highlights).toContainText(
-    "Connections in my LinkedIn community",
-  );
+  await expect(highlights).toContainText("Connections - LinkedIn community");
   await expect(highlights).not.toContainText("Less manual log-analysis effort");
   const work = page.locator("#work");
   await expect(work.locator(".project")).toHaveCount(2);
@@ -50,7 +54,7 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }, testInfo) => {
     await page.emulateMedia({ colorScheme: theme });
-    for (const width of [320, 768, 1440]) {
+    for (const width of [320, 390, 768, 1440, 1920]) {
       await page.setViewportSize({ width, height: 1000 });
       await page.goto("./#content");
       await page.evaluate(() => document.fonts.ready);
@@ -97,8 +101,8 @@ for (const theme of ["light", "dark"] as const) {
         name: "Collaborating brands",
       });
       await expect(brands.getByRole("listitem")).toHaveText(brandNames);
-      await expect(brands.locator("img")).toHaveCount(8);
-      await expect(brands.locator(".brand-name-only")).toHaveText("Gamma");
+      await expect(brands.locator("img")).toHaveCount(15);
+      await expect(brands.locator(".brand-name-only")).toHaveCount(0);
       for (const logo of await brands.locator("img").all()) {
         await expect
           .poll(() =>
@@ -106,12 +110,81 @@ for (const theme of ["light", "dark"] as const) {
           )
           .toBeGreaterThan(0);
       }
+      const geometry = await brands
+        .locator(".brand-carousel-item")
+        .evaluateAll((items) =>
+          items.map((item) => {
+            const bounds = item.getBoundingClientRect();
+            const frame = item
+              .querySelector(".brand-logo-frame")!
+              .getBoundingClientRect();
+            const image = item.querySelector("img")!;
+            const logo = image.getBoundingClientRect();
+            const label = item.querySelector(".brand-carousel-name")!;
+            const caption = label.getBoundingClientRect();
+            const style = getComputedStyle(label);
+            const tileStyle = getComputedStyle(item);
+            return {
+              width: bounds.width,
+              height: bounds.height,
+              frameWidth: frame.width,
+              frameHeight: frame.height,
+              imageWidth: logo.width,
+              imageHeight: logo.height,
+              imageTop: logo.top - bounds.top,
+              imageCenter: logo.left + logo.width / 2 - bounds.left,
+              captionTop: caption.top - bounds.top,
+              captionHeight: caption.height,
+              font: style.fontFamily,
+              weight: style.fontWeight,
+              alignment: style.textAlign,
+              color: style.color,
+              background: tileStyle.backgroundColor,
+              fit: getComputedStyle(image).objectFit,
+            };
+          }),
+        );
+      for (const item of geometry) {
+        expect([item.width, item.height]).toEqual([176, 108]);
+        expect([item.frameWidth, item.frameHeight]).toEqual([128, 48]);
+        expect([item.imageWidth, item.imageHeight]).toEqual([120, 40]);
+        expect(item.imageCenter).toBe(88);
+        expect(item.fit).toBe("contain");
+        expect(item.font).toContain("Google Sans");
+        expect(item.weight).toBe("700");
+        expect(item.alignment).toBe("center");
+        expect(item.imageTop).toBe(geometry[0].imageTop);
+        expect(item.captionTop).toBe(geometry[0].captionTop);
+        expect(item.captionHeight).toBe(18);
+        expect(item.background).toBe(
+          theme === "dark" ? "rgb(28, 32, 40)" : "rgb(231, 238, 236)",
+        );
+        expect(item.color).toBe(
+          theme === "dark" ? "rgb(240, 242, 246)" : "rgb(28, 43, 48)",
+        );
+      }
+      expect(
+        await page.evaluate(() =>
+          document.fonts.check('700 12px "Google Sans"'),
+        ),
+      ).toBe(true);
+      const gamma = brands
+        .getByRole("listitem")
+        .filter({ hasText: /^Gamma$/ })
+        .locator("img");
+      await expect(gamma).toHaveAttribute("src", /brands\/gamma\.png$/);
+      expect(
+        await gamma.evaluate((image) => ({
+          width: (image as HTMLImageElement).naturalWidth,
+          height: (image as HTMLImageElement).naturalHeight,
+        })),
+      ).toEqual({ width: 148, height: 148 });
       await expect(collaborations.getByRole("button")).toHaveCount(0);
       expect(
         await collaborations
           .locator(".brand-carousel-viewport")
           .evaluate((element) => element.getBoundingClientRect().height),
-      ).toBeLessThanOrEqual(120);
+      ).toBeLessThanOrEqual(132);
       await expect(section.locator("iframe")).toHaveCount(0);
       for (const selector of [
         ".creator-copy",
@@ -347,7 +420,7 @@ test("brand carousel honors reduced motion and all brands remain reachable", asy
   const brands = page
     .getByRole("list", { name: "Collaborating brands" })
     .getByRole("listitem");
-  await expect(brands).toHaveCount(9);
+  await expect(brands).toHaveCount(15);
   for (const item of await brands.all()) {
     await item.scrollIntoViewIfNeeded();
     await expect(item).toBeInViewport();
@@ -381,17 +454,55 @@ test("missing brand logos leave readable brand names and social links", async ({
   await page.route("**/brands/*", (route) => route.abort());
   await page.goto("./#content");
   const brands = page.getByRole("list", { name: "Collaborating brands" });
-  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(8);
+  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(15);
   await expect(brands.locator("img")).toHaveCount(0);
   for (const name of brandNames) {
     await expect(brands.getByText(name, { exact: true })).toHaveCount(1);
-    if (name !== "Gamma") {
-      expect(warnings).toContain(
-        `Unable to load the ${name} collaboration logo.`,
-      );
-    }
+    expect(warnings).toContain(
+      `Unable to load the ${name} collaboration logo.`,
+    );
   }
   await expect(
     page.locator("#content").getByRole("link", { name: "Connect on X" }),
   ).toHaveAttribute("href", xURL);
+});
+
+test("carousel changes theme immediately while keeping pause state and logo alignment", async ({
+  page,
+}) => {
+  await page.emulateMedia({
+    colorScheme: "light",
+    reducedMotion: "no-preference",
+  });
+  await page.goto("./#content");
+  const carousel = page.locator(".creator-collaborations");
+  await carousel.scrollIntoViewIfNeeded();
+  await carousel.getByRole("button", { name: "Pause brand carousel" }).click();
+  const tile = carousel.locator(".brand-carousel-item").first();
+  const name = tile.locator(".brand-carousel-name");
+  await expect(tile).toHaveCSS("background-color", "rgb(231, 238, 236)");
+  for (const theme of ["dark", "light"] as const) {
+    await page.getByRole("button", { name: `Switch to ${theme} mode` }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expect(tile).toHaveCSS(
+      "background-color",
+      theme === "dark" ? "rgb(28, 32, 40)" : "rgb(231, 238, 236)",
+    );
+    await expect(name).toHaveCSS(
+      "color",
+      theme === "dark" ? "rgb(240, 242, 246)" : "rgb(28, 43, 48)",
+    );
+    await expect(name).toHaveCSS("font-weight", "700");
+    await expect(
+      carousel.getByRole("button", { name: "Resume brand carousel" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(carousel.locator(".brand-carousel-track")).toHaveCSS(
+      "animation-name",
+      "none",
+    );
+    await page.keyboard.press("Tab");
+  }
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(tile).toHaveCSS("background-color", "rgb(231, 238, 236)");
 });

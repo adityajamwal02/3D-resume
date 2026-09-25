@@ -4,6 +4,7 @@
     padding-top: 24px;
     border-top: 1px solid var(--line);
     min-width: 0;
+    font-family: var(--display);
   }
   .brand-carousel-heading {
     display: flex;
@@ -45,7 +46,7 @@
   .brand-carousel-track {
     display: flex;
     width: max-content;
-    animation: brand-scroll 40s linear infinite;
+    animation: brand-scroll 66s linear infinite;
   }
   .brand-carousel-group {
     display: flex;
@@ -57,7 +58,7 @@
   }
   .brand-carousel-item {
     width: 176px;
-    height: 96px;
+    height: 108px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -65,27 +66,47 @@
     justify-content: center;
     gap: 10px;
     padding: 12px;
-    border: 1px solid #dbe1df;
+    border: 1px solid var(--line);
     border-radius: 8px;
-    background: #fff;
-    color: #1c2b30;
+    background: var(--surface);
+    color: var(--text);
     font-size: 12px;
+  }
+  .brand-logo-frame {
+    display: grid;
+    place-items: center;
+    width: 128px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: #c8d3cf;
+  }
+  [data-theme="light"] .brand-logo-frame {
+    background: #fff;
   }
   .brand-carousel-item img {
     width: 120px;
-    height: 36px;
+    height: 40px;
     object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+  .brand-carousel-name {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 700;
+    line-height: 18px;
+    color: var(--text);
   }
   .brand-logo-unavailable {
     display: grid;
     place-items: center;
-    height: 36px;
-    color: #4d626b;
+    width: 120px;
+    height: 40px;
+    color: #1c2b30;
     font-size: 11px;
-  }
-  .brand-name-only {
-    font-size: 22px;
-    font-weight: 500;
   }
   .brand-carousel-viewport:hover .brand-carousel-track {
     animation-play-state: paused;

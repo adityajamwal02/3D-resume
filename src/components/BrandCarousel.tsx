@@ -2,39 +2,46 @@ import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import "./brand-carousel.css";
 
-const brands: { name: string; logo?: string }[] = [
+const brands = [
   { name: "CodeRabbit", logo: "coderabbit.svg" },
   { name: "Cursor", logo: "cursor.svg" },
-  { name: "Gamma" },
+  { name: "Gamma", logo: "gamma.png" },
   { name: "magicpin", logo: "magicpin.svg" },
   { name: "ProPeers", logo: "propeers.svg" },
   { name: "Nebius", logo: "nebius.svg" },
   { name: "MuscleBlaze", logo: "muscleblaze.svg" },
   { name: "CodeAnt AI", logo: "codeant-ai.png" },
   { name: "Wispr Flow", logo: "wispr-flow.svg" },
+  { name: "Nimbalyst", logo: "nimbalyst.svg" },
+  { name: "Replit", logo: "replit.png" },
+  { name: "AON Meetings", logo: "aonmeetings.webp" },
+  { name: "takeUforward", logo: "takeuforward.png" },
+  { name: "Paytm", logo: "paytm.svg" },
+  { name: "Matiks", logo: "matiks.png" },
 ];
 
 function BrandLogo({ name, logo }: (typeof brands)[number]) {
   const [failed, setFailed] = useState(false);
-  if (!logo) return <span className="brand-name-only">{name}</span>;
   return (
     <>
-      {failed ? (
-        <span className="brand-logo-unavailable">Logo unavailable</span>
-      ) : (
-        <img
-          src={`${import.meta.env.BASE_URL}brands/${logo}`}
-          alt=""
-          width="120"
-          height="36"
-          decoding="async"
-          onError={() => {
-            console.warn(`Unable to load the ${name} collaboration logo.`);
-            setFailed(true);
-          }}
-        />
-      )}
-      <span>{name}</span>
+      <span className="brand-logo-frame">
+        {failed ? (
+          <span className="brand-logo-unavailable">Logo unavailable</span>
+        ) : (
+          <img
+            src={`${import.meta.env.BASE_URL}brands/${logo}`}
+            alt=""
+            width="120"
+            height="40"
+            decoding="async"
+            onError={() => {
+              console.warn(`Unable to load the ${name} collaboration logo.`);
+              setFailed(true);
+            }}
+          />
+        )}
+      </span>
+      <strong className="brand-carousel-name">{name}</strong>
     </>
   );
 }
