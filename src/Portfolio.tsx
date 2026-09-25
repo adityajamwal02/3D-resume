@@ -15,6 +15,7 @@ import { experience, skillGroups } from "./content";
 import topmate from "./data/topmate.json";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
+import BrandCarousel from "./components/BrandCarousel";
 import "./island.css";
 import "./theme.css";
 
@@ -170,9 +171,9 @@ export default function Portfolio() {
           </div>
           <div>
             <strong>
-              80<span>%</span>
+              85K<span>+</span>
             </strong>
-            <p>Less manual log-analysis effort</p>
+            <p>Connections in my LinkedIn community</p>
           </div>
           <div>
             <strong>
@@ -321,48 +322,51 @@ export default function Portfolio() {
             <article className="project">
               <div className="project-visual log-visual" aria-hidden="true">
                 <span className="visual-caption">
-                  CISCO / ENGINEERING HIGHLIGHT
+                  MULTI-AGENTIC SYSTEM / BRAND COLLABORATIONS
                 </span>
                 <div className="log-art">
                   <div>
-                    <span>01</span> ingest.log_stream
+                    <span>01</span> discover.brands
                     <span className="log-state">READY</span>
                   </div>
                   <div>
-                    <span>02</span> agent.analyze
+                    <span>02</span> curate.leads
                     <span className="log-state">READY</span>
                   </div>
                   <div>
-                    <span>03</span> surface.insights
+                    <span>03</span> coordinate.outreach
                     <span className="log-state">READY</span>
                   </div>
                   <p>
-                    <span>−80%</span> manual effort
+                    <span>AI</span> collaboration workflows
                   </p>
                 </div>
                 <span className="visual-footer">
-                  FROM LOGS TO CLARITY.
+                  FROM BRAND DISCOVERY TO CONNECTION.
                   <ArrowUpRight size={20} />
                 </span>
               </div>
               <div className="project-content">
                 <div className="project-type">
-                  PROFESSIONAL WORK <span>CISCO</span>
+                  COLLABORATION PLATFORM <span>AGENTIC AI</span>
                 </div>
                 <h3>
-                  Agentic log analyser<span>02</span>
+                  Multi-Agentic System<span>02</span>
                 </h3>
                 <p>
-                  Developed an agentic log analyser to improve debugging
-                  accuracy and reduce manual effort by 80%.
+                  Developed a multi-agentic system to curate brand-deal leads
+                  for social media collaborations. The platform helps identify
+                  brands and coordinate outreach to growth and marketing
+                  specialists, connecting creators with collaboration
+                  opportunities.
                 </p>
                 <div className="tags">
                   <span>Agentic AI</span>
-                  <span>Developer tooling</span>
-                  <span>Log analysis</span>
+                  <span>Lead curation</span>
+                  <span>Brand collaborations</span>
                 </div>
-                <a className="text-link" href="#experience">
-                  View role context <ArrowUpRight size={16} />
+                <a className="text-link" href="#content">
+                  Explore collaborations <ArrowUpRight size={16} />
                 </a>
               </div>
             </article>
@@ -746,7 +750,6 @@ export default function Portfolio() {
               <ul className="creator-topics" aria-label="Content topics">
                 <li>Technology</li>
                 <li>Artificial intelligence</li>
-                <li>Tech marketing</li>
               </ul>
             </div>
             <div className="creator-community">
@@ -755,27 +758,35 @@ export default function Portfolio() {
                 <strong>
                   85,000<span>+</span>
                 </strong>
-                <span>followers on LinkedIn</span>
+                <span>community connections on LinkedIn</span>
               </p>
               <p className="creator-community-note">
                 Sharing ideas. Starting conversations. Connect with me for
                 perspectives on tech, AI, and the stories behind the products.
               </p>
-              <a
-                className="button button-primary"
-                href="https://www.linkedin.com/in/adityajamwal02/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Linkedin size={18} /> Connect with me{" "}
-                <ArrowUpRight size={16} />
-              </a>
+              <div className="creator-social-links">
+                <a
+                  className="button button-primary"
+                  href="https://www.linkedin.com/in/adityajamwal02/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Linkedin size={18} /> Connect on LinkedIn{" "}
+                  <ArrowUpRight size={16} />
+                </a>
+                <a
+                  className="button button-secondary"
+                  href="https://x.com/AdityaJamwal02"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span aria-hidden="true">X</span> Connect on X{" "}
+                  <ArrowUpRight size={16} />
+                </a>
+              </div>
             </div>
           </div>
-          <div className="creator-collaborations">
-            <h3>Brand collaborations</h3>
-            <p>Selected brand collaborations will be featured here soon.</p>
-          </div>
+          <BrandCarousel />
         </section>
         <section
           className="section contact-section"

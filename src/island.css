@@ -1199,26 +1199,14 @@
     font-size: 14px;
     color: var(--muted);
   }
-  .creator-community .button {
-    margin-top: 24px;
-    gap: 12px;
-  }
-  .creator-collaborations {
+  .creator-social-links {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 32px;
-    margin-top: 40px;
-    padding: 24px 0 0;
-    border-top: 1px solid var(--line);
+    gap: 12px;
+    margin-top: 24px;
   }
-  .creator-collaborations h3 {
-    font-size: 16px;
-  }
-  .creator-collaborations p {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.7;
+  .creator-social-links .button {
+    gap: 12px;
   }
   @media (max-width: 900px) {
     .creator-layout {

@@ -1,0 +1,122 @@
+@media screen {
+  .creator-collaborations {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    min-width: 0;
+  }
+  .brand-carousel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .brand-carousel-heading h3 {
+    font-size: 18px;
+  }
+  .brand-carousel-heading p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .brand-carousel-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    font-size: 12px;
+  }
+  .brand-carousel-viewport {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  .brand-carousel-viewport:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .brand-carousel-track {
+    display: flex;
+    width: max-content;
+    animation: brand-scroll 40s linear infinite;
+  }
+  .brand-carousel-group {
+    display: flex;
+    flex-shrink: 0;
+    gap: 16px;
+    margin: 0;
+    padding: 0 16px 0 0;
+    list-style: none;
+  }
+  .brand-carousel-item {
+    width: 176px;
+    height: 96px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #dbe1df;
+    border-radius: 8px;
+    background: #fff;
+    color: #1c2b30;
+    font-size: 12px;
+  }
+  .brand-carousel-item img {
+    width: 120px;
+    height: 36px;
+    object-fit: contain;
+  }
+  .brand-logo-unavailable {
+    display: grid;
+    place-items: center;
+    height: 36px;
+    color: #4d626b;
+    font-size: 11px;
+  }
+  .brand-name-only {
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .brand-carousel-viewport:hover .brand-carousel-track {
+    animation-play-state: paused;
+  }
+  .is-paused .brand-carousel-viewport,
+  .brand-carousel-viewport:focus-within {
+    overflow-x: auto;
+  }
+  .is-paused .brand-carousel-track,
+  .brand-carousel-viewport:focus-within .brand-carousel-track {
+    animation: none;
+  }
+  .is-paused .brand-carousel-copy,
+  .brand-carousel-viewport:focus-within .brand-carousel-copy {
+    display: none;
+  }
+  @keyframes brand-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-carousel-track {
+      animation: none;
+    }
+    .brand-carousel-copy,
+    .brand-carousel-toggle {
+      display: none;
+    }
+    .brand-carousel-viewport {
+      overflow-x: auto;
+    }
+  }
+}

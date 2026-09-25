@@ -1016,6 +1016,6 @@ test("failed 3D download leaves resume and mentorship available", async ({
     "85,000+",
   );
   await expect(
-    page.locator("#content").getByRole("link", { name: "Connect with me" }),
+    page.locator("#content").getByRole("link", { name: "Connect on LinkedIn" }),
   ).toHaveAttribute("href", "https://www.linkedin.com/in/adityajamwal02/");
 });
