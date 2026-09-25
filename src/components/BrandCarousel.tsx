@@ -46,7 +46,7 @@ export default function BrandCarousel() {
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const resetScroll = () => {
-      if (viewport.current) viewport.current.scrollLeft = 0;
+      viewport.current?.scrollTo({ left: 0, behavior: "instant" });
     };
     preference.addEventListener("change", resetScroll);
     return () => preference.removeEventListener("change", resetScroll);
@@ -69,7 +69,7 @@ export default function BrandCarousel() {
           aria-controls="brand-carousel-viewport"
           aria-label={paused ? "Resume brand carousel" : "Pause brand carousel"}
           onClick={() => {
-            if (viewport.current) viewport.current.scrollLeft = 0;
+            viewport.current?.scrollTo({ left: 0, behavior: "instant" });
             setPaused(!paused);
           }}
         >
@@ -89,7 +89,23 @@ export default function BrandCarousel() {
         role="region"
         aria-label="Collaborating brands; focus or pause to scroll through all brands"
         onBlur={() => {
-          if (!paused && viewport.current) viewport.current.scrollLeft = 0;
+          if (!paused)
+            viewport.current?.scrollTo({ left: 0, behavior: "instant" });
+        }}
+        onKeyDown={(event) => {
+          if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+            return;
+          const element = event.currentTarget;
+          const step = element.clientWidth * 0.75;
+          const offsets: Record<string, number> = {
+            ArrowLeft: element.scrollLeft - step,
+            ArrowRight: element.scrollLeft + step,
+            Home: 0,
+            End: element.scrollWidth,
+          };
+          if (!(event.key in offsets)) return;
+          event.preventDefault();
+          element.scrollTo({ left: offsets[event.key], behavior: "instant" });
         }}
       >
         <div className="brand-carousel-track">

@@ -296,6 +296,29 @@ test("brand carousel moves, loops seamlessly, and supports pause and keyboard br
   await expect
     .poll(() => viewport.evaluate((element) => element.scrollLeft))
     .toBeGreaterThan(0);
+  await page.keyboard.press("Home");
+  await expect
+    .poll(() => viewport.evaluate((element) => element.scrollLeft))
+    .toBe(0);
+  await page.keyboard.press("End");
+  await expect
+    .poll(() =>
+      viewport.evaluate((element) =>
+        Math.abs(
+          element.scrollLeft - (element.scrollWidth - element.clientWidth),
+        ),
+      ),
+    )
+    .toBeLessThanOrEqual(1);
+  await page.keyboard.press("ArrowLeft");
+  await expect
+    .poll(() =>
+      viewport.evaluate(
+        (element) =>
+          element.scrollLeft < element.scrollWidth - element.clientWidth,
+      ),
+    )
+    .toBe(true);
   await carousel.getByRole("button", { name: "Pause brand carousel" }).focus();
   await expect
     .poll(() => viewport.evaluate((element) => element.scrollLeft))
