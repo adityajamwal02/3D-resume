@@ -1,22 +1,22 @@
 {
   "source": "https://topmate.io/adityajamwal",
-  "fetchedAt": "2026-09-24T11:56:56.695Z",
+  "fetchedAt": "2026-09-27T14:08:02.772Z",
   "rating": 5,
-  "ratings": 65,
+  "ratings": 66,
   "bookings": 132,
-  "testimonials": 63,
+  "testimonials": 64,
   "feedback": [
     {
       "label": "Helpful",
-      "count": 38
+      "count": 39
     },
     {
       "label": "Insightful",
-      "count": 31
+      "count": 32
     },
     {
       "label": "Friendly",
-      "count": 30
+      "count": 31
     }
   ]
 }
