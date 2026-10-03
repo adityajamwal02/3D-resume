@@ -31,6 +31,8 @@ src/
   Portfolio.tsx               Semantic resume sections and contact interactions
   content.ts                  Career history and skill category data
   data/topmate.json           Last verified public Topmate metrics and timestamp
+  data/linkedin.json          Exact public LinkedIn count and polling state
+  linkedin.ts                Shared floor-to-thousand audience formatting
   components/SystemsScene.tsx Accessible scene controls and deferred loading
   components/DynamicIsland.tsx Floating navigation, reading progress, quick actions
   components/BrandCarousel.tsx Accessible moving brand strip, pause and image fallback
@@ -42,9 +44,12 @@ src/
   theme.css                   Light palette, theme control, and contact invitation
 tests/portfolio.spec.ts       Production-browser regression suite
 tests/creator.spec.ts         Content-creation layout, navigation, and outbound-link checks
+tests/linkedin.spec.ts        Consistent audience displays with no browser-side polling
 playwright.config.ts         Isolated preview server and Chromium configuration
 scripts/refresh-topmate.mjs   Validated, atomic public-profile metric refresh
 scripts/refresh-topmate.test.mjs Parser, freshness, and failure regression tests
+scripts/refresh-linkedin.mjs  Credential-free public-profile follower refresh
+scripts/refresh-linkedin.test.mjs Formatting, parser, network-safety, and interval tests
 ```
 
 The rendering engine is dynamically imported after the content mounts. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
@@ -70,7 +75,7 @@ The remote repository was empty when work began on September 10, 2026. There was
 - Experience logos are self-hosted: [Microsoft mark](https://commons.wikimedia.org/wiki/File:Microsoft_logo.svg), [Cisco logo](https://commons.wikimedia.org/wiki/File:Cisco_logo_blue_2016.svg), and [Ambee's official white logo](https://cdn.prod.website-files.com/6242a3f6d206db221c2b13e8/627de922222f9769ff40c945_Ambee%20White%20logo.svg). Logos identify employers; their trademarks belong to their respective owners.
 - Project visuals are conceptual artwork, not screenshots of proprietary company products. No employer code, internal links, or environment configuration is exposed.
 - The introduction highlights both software engineering and mentorship, with separate paths into engineering experience, LinkedIn, and mentorship. The session guide pairs each existing service with a visitor goal, suggested preparation, and practical takeaways. These are guidance rather than placement/referral guarantees; pricing, availability, and bookings remain on Topmate. On mobile, the sculpture follows the hero copy in document flow so longer text and wrapped actions do not overlap the scene controls.
-- The content-creation section sits directly after mentorship, with Technology and Artificial intelligence topic tags. The owner's **85,000+** audience figure (September 25, 2026) uses the requested community-oriented wording, "community connections on LinkedIn"; it is not a live-synced metric or a verified count of first-degree connections. The same audience highlight replaces the manual-effort metric above Experience. "Connect on LinkedIn" and "Connect on X" open the owner-supplied profiles.
+- The content-creation section sits directly after mentorship, with Technology and Artificial intelligence topic tags. The community audience figure comes from the exact follower count in the public LinkedIn profile's structured data, not its rounded badge or first-degree connection count. Both displays share floor-to-thousand formatting: 86,676 becomes **86K+** and **86,000+**; 98,352 becomes **98K+** and **98,000+**. The requested community wording is retained. "Connect on LinkedIn" and "Connect on X" open the owner-supplied profiles.
 - Brand collaborations display the fifteen brands supplied by the owner: CodeRabbit, Cursor, Gamma, magicpin, ProPeers, Nebius, MuscleBlaze, CodeAnt AI, Wispr Flow, Nimbalyst, Replit, AON Meetings, takeUforward, Paytm, and Matiks. Gamma uses the owner's supplied image, copied without changing the attachment. All logos are self-hosted; see [logo source attribution](public/brands/README.md). Marks identify the stated collaborations and remain the property of their respective owners. The narrow logo strip moves automatically, pauses on hover, and offers a Pause button that switches to a manually scrollable list. Keyboard focus also makes the list static and scrollable. Reduced-motion preferences disable automatic movement and hide unnecessary playback controls. Visual loop duplicates are hidden from assistive technology. Failed logos show an explicit fallback alongside the brand name and emit a warning. Content creation is included in navigation and reading progress but excluded from the printed resume.
 - Carousel tiles use the active theme's surface, border, and text colors. Every tile is 176 by 108 pixels with a centered 128 by 48 logo frame and a 120 by 40 image box; `object-fit: contain` preserves each brand's original proportions without cropping or stretching. A small neutral logo backing keeps original dark/color marks visible while the surrounding card and labels follow the theme. Captions use the locally served Google Sans bold (700) font and share a consistent baseline. The animation duration grows with the expanded brand list to preserve a comfortable scrolling speed.
 
@@ -108,15 +113,27 @@ Live at [adityajamwal02.github.io/3D-resume](https://adityajamwal02.github.io/3D
 
 ### Scheduled Topmate refresh
 
-GitHub Actions checks freshness hourly at minute 23 and fetches the public profile only when the checked-in snapshot is at least 72 hours old. This avoids the short intervals at month boundaries caused by day-of-month `*/3` cron schedules. GitHub may delay scheduled runs; the normal refresh window is 72–73 hours, not a real-time guarantee. Fresh snapshots skip installation, build, tests, and deployment.
+GitHub Actions checks freshness hourly at minute 23 and fetches the public profile only when the checked-in snapshot is at least 72 hours old. This avoids the short intervals at month boundaries caused by day-of-month `*/3` cron schedules. GitHub may delay scheduled runs; the normal refresh window is 72–73 hours, not a real-time guarantee. When neither profile snapshot changes, scheduled runs skip installation, build, tests, and deployment.
 
 The fetch uses the profile's public JSON-LD rating, visible booking/testimonial badges, and public feedback data. It validates the account identity, rating range, integer counts, and consistency with the visible rating before atomically replacing the JSON snapshot. It requires no account credentials, browser-side third-party requests, or extra dependencies. The three selected testimonial quotes are deliberately unchanged.
 
 Due refreshes run sync tests, lint, build, and browser tests before committing the snapshot and deploying **in the same workflow**. A bot commit does not need to trigger another workflow. Workflow concurrency serializes releases; a conflicting branch update makes the push fail rather than overwriting changes. The workflow needs `contents: write` to persist the snapshot, plus the existing Pages deployment permissions.
 
-On fetch, schema, or test failure, the workflow fails visibly and the last verified site stays live; its update date remains visible. Check the Actions run and enable GitHub workflow-failure notifications. Scheduled workflows in inactive public repositories can be disabled by GitHub after 60 days without repository activity; verify scheduling remains enabled if automated commits stop.
+On fetch or schema failure, the workflow fails visibly while retaining the last verified data and update date for that source; unaffected profile changes can still deploy. Build or test failures prevent deployment entirely. Check the Actions run and enable GitHub workflow-failure notifications. Scheduled workflows in inactive public repositories can be disabled by GitHub after 60 days without repository activity; verify scheduling remains enabled if automated commits stop.
 
 To refresh immediately locally, run `npm run refresh:topmate`, then run the validation commands above and commit the updated snapshot. To check without fetching early, run `npm run refresh:topmate -- --if-due`. A manual **Run workflow** also checks the 72-hour threshold and validates/deploys the current site; select **Refresh Topmate now** to explicitly bypass the freshness check, for example when verifying the complete automated refresh and deployment path.
+
+### Public LinkedIn follower refresh
+
+The same hourly workflow independently checks a **15-day (360-hour)** interval before requesting `https://www.linkedin.com/in/adityajamwal02`. It uses Node's public HTTP fetch with no credentials, cookies, account session, browser automation, LinkedIn API, scraping service, or other profile. The frontend makes no LinkedIn data requests and contains no refresh-frequency text.
+
+The parser accepts only an exact, nonnegative safe-integer `FollowAction` count attached to Aditya Jamwal's matching `Person` structured-data object. It does not use connection counts, post likes, rounded `87K` badges, or login/challenge pages. Requests have a shared 30-second timeout, a 2 MiB streamed response limit, and at most three redirects restricted to the same profile on `www.linkedin.com` or the observed `in.linkedin.com` regional host. Remote scripts are never executed; HTML is not stored or published.
+
+The snapshot stores the exact count, last verified fetch time, last attempted time, and success status. Every scheduled attempt is separated by at least 15 days, including failed attempts, so a blocked response does not cause hourly retries. A failure preserves the last verified count and fetch time, records the failed attempt, and reports an Actions failure after any unaffected profile changes have validated and deployed. LinkedIn failure does not block Topmate refreshes, and vice versa. Invalid local snapshots, write failures, and test failures remain explicit errors; no zero or invented count is substituted.
+
+GitHub can delay scheduled execution; unauthenticated LinkedIn availability and markup are outside this site's control. Last-known values remain available when the source is blocked. Use Actions notifications and the refresh logs to investigate failures. An authorized manual run can enable **Fetch the public LinkedIn follower count now**, or run `npm run refresh:linkedin` locally. `npm run refresh:linkedin -- --if-due` preserves the interval. These commands never sign in.
+
+`npm run test:sync` covers both profile integrations, including exact thousand boundaries, the provided examples, month/year/leap-day intervals, credential omission, safe redirects, size limits, network failures, malformed/ambiguous data, and independent-source failures. Browser tests check both audience displays and confirm there is no browser-side polling or public refresh copy.
 
 This is a static application. Publish the `dist/` directory from `npm run build` to a static host with HTTPS. No private secrets or environment variables belong in the frontend. Vite uses relative asset URLs so the build can also be hosted below a repository subpath, including `/3D-resume/`. Navigation uses local anchors rather than history routes.
 

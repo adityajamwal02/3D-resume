@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { PNG } from "pngjs";
 import topmate from "../src/data/topmate.json" with { type: "json" };
+import linkedin from "../src/data/linkedin.json" with { type: "json" };
 
 function pixelDifference(before: Buffer, after: Buffer) {
   const first = PNG.sync.read(before);
@@ -1013,7 +1014,7 @@ test("failed 3D download leaves resume and mentorship available", async ({
     page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),
   ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1828897");
   await expect(page.locator("#content .creator-followers strong")).toHaveText(
-    "85,000+",
+    `${(Math.floor(linkedin.followers / 1000) * 1000).toLocaleString("en-US")}+`,
   );
   await expect(
     page.locator("#content").getByRole("link", { name: "Connect on LinkedIn" }),

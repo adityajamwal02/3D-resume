@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import linkedin from "../src/data/linkedin.json" with { type: "json" };
+
+const linkedinThousands = Math.floor(linkedin.followers / 1000);
 
 const linkedinURL = "https://www.linkedin.com/in/adityajamwal02/";
 const xURL = "https://x.com/AdityaJamwal02";
@@ -27,7 +30,7 @@ test("career highlights and selected work reflect the community and collaboratio
   await page.goto("./");
   const highlights = page.getByLabel("Career highlights");
   await expect(highlights).toContainText("150M+");
-  await expect(highlights).toContainText("85K+");
+  await expect(highlights).toContainText(`${linkedinThousands}K+`);
   await expect(highlights).toContainText("Connections - LinkedIn community");
   await expect(highlights).not.toContainText("Less manual log-analysis effort");
   const work = page.locator("#work");
@@ -68,7 +71,7 @@ for (const theme of ["light", "dark"] as const) {
         })),
       ).toEqual({ before: "mentorship", after: "contact" });
       await expect(section.locator(".creator-followers strong")).toHaveText(
-        "85,000+",
+        `${(linkedinThousands * 1000).toLocaleString("en-US")}+`,
       );
       await expect(section.locator(".creator-followers")).toContainText(
         "community connections on LinkedIn",

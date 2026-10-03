@@ -13,11 +13,15 @@ import {
 } from "lucide-react";
 import { experience, skillGroups } from "./content";
 import topmate from "./data/topmate.json";
+import linkedin from "./data/linkedin.json";
+import { formatLinkedInFollowers } from "./linkedin";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
 import BrandCarousel from "./components/BrandCarousel";
 import "./island.css";
 import "./theme.css";
+
+const linkedinAudience = formatLinkedInFollowers(linkedin.followers);
 
 const mentorshipSessions = [
   {
@@ -171,7 +175,8 @@ export default function Portfolio() {
           </div>
           <div>
             <strong>
-              85K<span>+</span>
+              {linkedinAudience.compact}
+              <span>+</span>
             </strong>
             <p>Connections - LinkedIn community</p>
           </div>
@@ -756,7 +761,8 @@ export default function Portfolio() {
               <p className="eyebrow">THE LINKEDIN COMMUNITY</p>
               <p className="creator-followers">
                 <strong>
-                  85,000<span>+</span>
+                  {linkedinAudience.full}
+                  <span>+</span>
                 </strong>
                 <span>community connections on LinkedIn</span>
               </p>

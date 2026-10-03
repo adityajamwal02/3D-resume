@@ -9,8 +9,12 @@ on:
         description: Refresh Topmate now, even if the snapshot is not due
         type: boolean
         default: false
+      refresh_linkedin:
+        description: Fetch the public LinkedIn follower count now
+        type: boolean
+        default: false
   schedule:
-    # The script fetches only when the last successful snapshot is 72+ hours old.
+    # Scripts enforce independent 3-day Topmate and 15-day LinkedIn intervals.
     - cron: "23 * * * *"
 
 permissions:
@@ -28,6 +32,7 @@ jobs:
       contents: write
     outputs:
       deploy: ${{ github.event_name != 'schedule' || steps.refresh.outputs.changed == 'true' }}
+      refresh_failed: ${{ steps.refresh.outputs.failed }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,8 +40,9 @@ jobs:
           node-version: 24
           cache: npm
       - name: Refresh Topmate when due
-        id: refresh
+        id: topmate
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
         env:
           FORCE_REFRESH: ${{ inputs.refresh_topmate || false }}
         run: |
@@ -44,6 +50,35 @@ jobs:
             npm run refresh:topmate
           else
             npm run refresh:topmate -- --if-due
+          fi
+      - name: Refresh public LinkedIn count when due
+        id: linkedin
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        env:
+          FORCE_REFRESH: ${{ inputs.refresh_linkedin || false }}
+        run: |
+          if [ "$FORCE_REFRESH" = "true" ]; then
+            npm run refresh:linkedin
+          else
+            npm run refresh:linkedin -- --if-due
+          fi
+      - name: Collect independent refresh results
+        id: refresh
+        env:
+          TOPMATE_FAILED: ${{ steps.topmate.outcome == 'failure' }}
+          LINKEDIN_FAILED: ${{ steps.linkedin.outcome == 'failure' }}
+        run: |
+          if [ -n "$(git status --porcelain -- src/data/topmate.json src/data/linkedin.json)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$TOPMATE_FAILED" = "true" ] || [ "$LINKEDIN_FAILED" = "true" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::A public profile refresh failed. Last verified counts are retained; inspect the refresh step."
+          else
+            echo "failed=false" >> "$GITHUB_OUTPUT"
           fi
       - run: npm ci
         if: github.event_name != 'schedule' || steps.refresh.outputs.changed == 'true'
@@ -57,13 +92,13 @@ jobs:
         if: github.event_name != 'schedule' || steps.refresh.outputs.changed == 'true'
       - run: npm test
         if: github.event_name != 'schedule' || steps.refresh.outputs.changed == 'true'
-      - name: Persist verified Topmate snapshot
+      - name: Persist validated profile snapshots
         if: github.ref == 'refs/heads/main' && steps.refresh.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/topmate.json
-          git commit -m "Refresh public Topmate statistics" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+          git add src/data/topmate.json src/data/linkedin.json
+          git commit -m "Refresh public profile statistics" -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
           git push origin HEAD:main
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.refresh.outputs.changed == 'true')
@@ -93,3 +128,13 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  report-refresh-failure:
+    if: always() && needs.validate.outputs.refresh_failed == 'true'
+    needs: [validate, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report failed public profile refresh
+        run: |
+          echo "::error::A public profile could not be refreshed. Last verified counts were retained; see the refresh logs. Unaffected profile updates were allowed to deploy."
+          exit 1
