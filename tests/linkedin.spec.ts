@@ -18,7 +18,7 @@ test("LinkedIn audience stays consistent in both sections without browser pollin
       page.locator(".impact-strip > div").nth(1).locator("strong"),
     ).toHaveText(`${thousands}K+`);
     const audience = page.locator(".creator-followers");
-    await expect(audience.locator("strong")).toHaveText(
+    await expect(audience.locator(".count-up-visual")).toHaveText(
       `${(thousands * 1000).toLocaleString("en-US")}+`,
     );
     await expect(page.locator("#content")).not.toContainText(

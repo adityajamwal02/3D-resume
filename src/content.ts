@@ -1,3 +1,5 @@
+export const creatorImpressions = 14_453_081;
+
 export const experience = [
   {
     company: "Microsoft",

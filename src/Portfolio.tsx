@@ -11,17 +11,21 @@ import {
   Star,
   Zap,
 } from "lucide-react";
-import { experience, skillGroups } from "./content";
+import { creatorImpressions, experience, skillGroups } from "./content";
 import topmate from "./data/topmate.json";
 import linkedin from "./data/linkedin.json";
 import { formatLinkedInFollowers } from "./linkedin";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
 import BrandCarousel from "./components/BrandCarousel";
+import CountUp from "./components/CountUp";
 import "./island.css";
 import "./theme.css";
 
 const linkedinAudience = formatLinkedInFollowers(linkedin.followers);
+const formatCommunityCount = (value: number) => value.toLocaleString("en-US");
+const formatImpressionCount = (value: number) =>
+  `${(Math.floor(value / 100_000) / 10).toFixed(1)}M`;
 
 const mentorshipSessions = [
   {
@@ -759,13 +763,27 @@ export default function Portfolio() {
             </div>
             <div className="creator-community">
               <p className="eyebrow">THE LINKEDIN COMMUNITY</p>
-              <p className="creator-followers">
-                <strong>
-                  {linkedinAudience.full}
-                  <span>+</span>
-                </strong>
-                <span>community connections on LinkedIn</span>
-              </p>
+              <div className="creator-metrics">
+                <p className="creator-stat creator-followers">
+                  <CountUp
+                    value={Math.floor(linkedin.followers / 1000) * 1000}
+                    format={formatCommunityCount}
+                    suffix="+"
+                  />
+                  <span className="creator-stat-label">
+                    community connections on LinkedIn
+                  </span>
+                </p>
+                <p className="creator-stat creator-impressions">
+                  <CountUp
+                    value={creatorImpressions}
+                    format={formatImpressionCount}
+                  />
+                  <span className="creator-stat-label">
+                    impressions on LinkedIn
+                  </span>
+                </p>
+              </div>
               <p className="creator-community-note">
                 Sharing ideas. Starting conversations. Connect with me for
                 perspectives on tech, AI, and the stories behind the products.

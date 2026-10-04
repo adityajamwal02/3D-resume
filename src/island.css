@@ -1180,23 +1180,35 @@
     border-radius: 12px;
     background: var(--surface);
   }
-  .creator-followers {
+  .creator-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+    gap: 24px;
     margin: 24px 0;
   }
-  .creator-followers strong {
+  .creator-stat {
+    min-width: 0;
+  }
+  .creator-stat .count-up {
     display: block;
-    font-size: clamp(44px, 5vw, 76px);
+    font-size: clamp(36px, 3.5vw, 56px);
     line-height: 1.15;
     font-weight: 500;
     letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
   }
-  .creator-followers strong span {
+  .count-up-visual {
+    white-space: nowrap;
+  }
+  .creator-stat .count-up-suffix {
     color: var(--accent);
   }
-  .creator-followers > span {
+  .creator-stat-label {
     display: block;
     margin-top: 10px;
     font-size: 14px;
+    line-height: 1.6;
     color: var(--muted);
   }
   .creator-social-links {

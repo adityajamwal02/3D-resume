@@ -70,9 +70,36 @@ for (const theme of ["light", "dark"] as const) {
           after: element.nextElementSibling?.id,
         })),
       ).toEqual({ before: "mentorship", after: "contact" });
-      await expect(section.locator(".creator-followers strong")).toHaveText(
-        `${(linkedinThousands * 1000).toLocaleString("en-US")}+`,
+      await expect(
+        section.locator(".creator-followers .count-up-visual"),
+      ).toHaveText(`${(linkedinThousands * 1000).toLocaleString("en-US")}+`);
+      await expect(
+        section.locator(".creator-impressions .count-up-visual"),
+      ).toHaveText("14.4M");
+      await expect(section.locator(".creator-impressions")).toContainText(
+        "impressions on LinkedIn",
       );
+      const metrics = await section
+        .locator(".creator-stat")
+        .evaluateAll((items) =>
+          items.map((item) => {
+            const rect = item.getBoundingClientRect();
+            return {
+              left: rect.left,
+              right: rect.right,
+              top: rect.top,
+              bottom: rect.bottom,
+            };
+          }),
+        );
+      for (const metric of metrics) {
+        expect(metric.left).toBeGreaterThanOrEqual(0);
+        expect(metric.right).toBeLessThanOrEqual(width);
+      }
+      expect(
+        metrics[0].right <= metrics[1].left ||
+          metrics[0].bottom <= metrics[1].top,
+      ).toBe(true);
       await expect(section.locator(".creator-followers")).toContainText(
         "community connections on LinkedIn",
       );

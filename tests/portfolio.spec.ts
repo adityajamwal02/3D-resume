@@ -1013,7 +1013,9 @@ test("failed 3D download leaves resume and mentorship available", async ({
   await expect(
     page.getByRole("link", { name: "Book 1:1 mentorship", exact: true }),
   ).toHaveAttribute("href", "https://topmate.io/adityajamwal/1828897");
-  await expect(page.locator("#content .creator-followers strong")).toHaveText(
+  await expect(
+    page.locator("#content .creator-followers .count-up-visual"),
+  ).toHaveText(
     `${(Math.floor(linkedin.followers / 1000) * 1000).toLocaleString("en-US")}+`,
   );
   await expect(
