@@ -35,6 +35,8 @@ src/
   Portfolio.tsx               Semantic resume sections and contact interactions
   content.ts                  Career history and skill category data
   components/CountUp.tsx       Once-per-mount, viewport-triggered metric animation
+  components/BorderGlow.tsx    Project-card pointer-reactive border glow
+  components/border-glow.css  Theme palettes, edge masks, focus and motion fallbacks
   data/topmate.json           Last verified public Topmate metrics and timestamp
   data/linkedin.json          Exact public LinkedIn count and polling state
   linkedin.ts                Shared floor-to-thousand audience formatting
@@ -173,6 +175,34 @@ This is a static application. Publish the `dist/` directory from `npm run build`
 Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not publish the source repository, node_modules, or local test artifacts as the web root.
 
 ## Appearance
+
+### Project-card border glow
+
+Both selected Work cards use [BorderGlow](../src/components/BorderGlow.tsx),
+adapted from [React Bits Border Glow](https://reactbits.dev/c/components/border-glow).
+The upstream [TypeScript component](https://github.com/DavidHDev/react-bits/tree/main/src/ts-default/Components/BorderGlow)
+provides the edge-proximity and directional-mask approach. Its
+[MIT + Commons Clause notice](../public/licenses/react-bits.txt) is included in
+the published assets. The adaptation is part of this portfolio, not a standalone
+component redistribution.
+
+Pointer movement updates CSS custom properties directly, without React state,
+global listeners, timers, or an idle animation loop. Dark mode uses saturated
+mint, blue, and rose; light mode uses deeper teal, blue, and rose. Theme changes
+apply through the existing `data-theme` CSS tokens, not a second theme state.
+The glow stays outside the card while an inner layer clips the artwork to the
+existing rounded corners. Decoration ignores pointer events; articles and links
+retain their original semantics and destinations.
+
+Keyboard focus shows a full border glow alongside the existing link outline.
+Touch devices and reduced-motion users get a static glow instead of cursor
+tracking. There is no automatic intro sweep. Print styles remove the effect.
+The remaining cards and the 3D hero are unchanged.
+
+[Project browser tests](../tests/projects.spec.ts) cover both cards and themes,
+320/768/1440 pixel layouts, visible border-pixel changes near the pointer,
+keyboard activation, touch/reduced-motion fallbacks, theme switching,
+non-intercepting decoration, and print exclusion.
 
 The sun/moon control in the navigation switches between dark and light palettes using the same mint, cool-neutral, and rose accents. The system color preference is applied before React renders, avoiding a wrong-theme flash. An explicit choice is stored as `portfolio-theme` in local storage and synchronized between tabs. Without a saved choice, system preference changes apply automatically. When storage is unavailable, the toggle still works for the current page. Browser chrome and native controls follow the selected mode; reduced-motion behavior remains unchanged. The contact section retains its pastel accent band in both themes.
 

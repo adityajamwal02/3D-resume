@@ -1,0 +1,132 @@
+/* Adapted from React Bits Border Glow; license: public/licenses/react-bits.txt. */
+@media screen {
+  .border-glow-card.project {
+    --edge-proximity: 0;
+    --cursor-angle: 45deg;
+    --glow-primary: #36d9b6;
+    --glow-secondary: #669fff;
+    --glow-rose: #db8bae;
+    --glow-rgb: 54 217 182;
+    --glow-surface: #171c24;
+    --glow-fill: 0.12;
+    --glow-padding: 12px;
+    --glow-mesh:
+      radial-gradient(at 80% 55%, var(--glow-primary) 0, transparent 50%),
+      radial-gradient(at 69% 34%, var(--glow-secondary) 0, transparent 50%),
+      radial-gradient(at 8% 6%, var(--glow-rose) 0, transparent 50%),
+      radial-gradient(at 41% 38%, var(--glow-primary) 0, transparent 50%),
+      radial-gradient(at 86% 85%, var(--glow-secondary) 0, transparent 50%),
+      linear-gradient(var(--glow-primary) 0 100%);
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+    background: var(--glow-surface);
+  }
+  [data-theme="light"] .border-glow-card.project {
+    --glow-primary: #087b68;
+    --glow-secondary: #285eb5;
+    --glow-rose: #a64374;
+    --glow-rgb: 8 123 104;
+    --glow-surface: #edf3f0;
+    --glow-fill: 0.07;
+  }
+  .border-glow-inner {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    transition: opacity 200ms ease-out;
+  }
+  .border-glow-card::before {
+    z-index: 0;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--glow-surface) 0 100%) padding-box,
+      var(--glow-mesh) border-box;
+    opacity: clamp(0, (var(--edge-proximity) - 50) / 50, 1);
+    mask-image: conic-gradient(
+      from var(--cursor-angle),
+      black 25%,
+      transparent 40%,
+      transparent 60%,
+      black 75%
+    );
+  }
+  .border-glow-card::after {
+    z-index: 0;
+    background: var(--glow-mesh);
+    opacity: calc(
+      var(--glow-fill) * clamp(0, (var(--edge-proximity) - 50) / 50, 1)
+    );
+    mask-image: radial-gradient(ellipse at center, transparent 55%, black 100%);
+  }
+  .border-glow-card > .edge-light {
+    z-index: 2;
+    inset: calc(-1 * var(--glow-padding));
+    opacity: clamp(0, (var(--edge-proximity) - 30) / 70, 1);
+    mask-image: conic-gradient(
+      from var(--cursor-angle),
+      black 2.5%,
+      transparent 15%,
+      transparent 85%,
+      black 97.5%
+    );
+  }
+  .border-glow-card > .edge-light::before {
+    content: "";
+    position: absolute;
+    inset: var(--glow-padding);
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 0 1px rgb(var(--glow-rgb)),
+      inset 0 0 4px rgb(var(--glow-rgb) / 0.75),
+      inset 0 0 12px rgb(var(--glow-rgb) / 0.35),
+      0 0 2px rgb(var(--glow-rgb) / 0.9),
+      0 0 8px rgb(var(--glow-rgb) / 0.65),
+      0 0 18px rgb(var(--glow-rgb) / 0.4),
+      0 0 30px rgb(var(--glow-rgb) / 0.18);
+  }
+  .border-glow-card:where(:not(:hover):not(:focus-within))::before,
+  .border-glow-card:where(:not(:hover):not(:focus-within))::after,
+  .border-glow-card:where(:not(:hover):not(:focus-within)) > .edge-light {
+    opacity: 0;
+    transition-duration: 450ms;
+  }
+  .border-glow-card:focus-within::before,
+  .border-glow-card:focus-within > .edge-light {
+    opacity: 1;
+    mask-image: none;
+  }
+  .border-glow-card:focus-within::after {
+    opacity: var(--glow-fill);
+  }
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .border-glow-card.project::before,
+    .border-glow-card.project > .edge-light {
+      opacity: 0.65;
+      mask-image: none;
+      transition: none;
+    }
+    .border-glow-card.project::after {
+      opacity: 0;
+      transition: none;
+    }
+  }
+}
+@media print {
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light {
+    display: none;
+  }
+}

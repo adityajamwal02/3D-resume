@@ -19,6 +19,7 @@ import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
 import BrandCarousel from "./components/BrandCarousel";
 import CountUp from "./components/CountUp";
+import BorderGlow from "./components/BorderGlow";
 import "./island.css";
 import "./theme.css";
 
@@ -285,7 +286,7 @@ export default function Portfolio() {
             </a>
           </div>
           <div className="project-grid">
-            <article className="project">
+            <BorderGlow className="project">
               <div className="project-visual hash-visual" aria-hidden="true">
                 <span className="visual-caption">
                   HASHIMAGIN / CONTENT ENGINE
@@ -327,8 +328,8 @@ export default function Portfolio() {
                   GitHub profile <ArrowUpRight size={16} />
                 </a>
               </div>
-            </article>
-            <article className="project">
+            </BorderGlow>
+            <BorderGlow className="project">
               <div className="project-visual log-visual" aria-hidden="true">
                 <span className="visual-caption">
                   MULTI-AGENTIC SYSTEM / BRAND COLLABORATIONS
@@ -378,7 +379,7 @@ export default function Portfolio() {
                   Explore collaborations <ArrowUpRight size={16} />
                 </a>
               </div>
-            </article>
+            </BorderGlow>
           </div>
         </section>
         <section
