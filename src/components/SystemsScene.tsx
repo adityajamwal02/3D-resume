@@ -9,6 +9,7 @@ import {
   Box,
 } from "lucide-react";
 import type { SceneController } from "../scene/createSculptureScene";
+import useViewportActivity from "../hooks/useViewportActivity";
 
 const layers = [
   {
@@ -38,17 +39,31 @@ export default function SystemsScene() {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   const [exploded, setExploded] = useState(true);
+  const { active: visible } = useViewportActivity(host);
 
   useEffect(() => {
-    const element = host.current!;
-    let disposed = false;
     const preferences = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onPreference = () => setPaused(preferences.matches);
     preferences.addEventListener("change", onPreference);
-    const timer = window.setTimeout(() => {
+    return () => {
+      preferences.removeEventListener("change", onPreference);
+      controller.current?.dispose();
+      controller.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!visible || failed || controller.current) return;
+    const element = host.current!;
+    let cancelled = false;
+    let frame = 0;
+    let idle: number | undefined;
+    let timer: number | undefined;
+    const load = () => {
+      if (cancelled || document.hidden) return;
       import("../scene/createSculptureScene")
         .then(({ createSystemScene }) => {
-          if (disposed) return;
+          if (cancelled) return;
           controller.current = createSystemScene(
             element,
             setActive,
@@ -56,22 +71,37 @@ export default function SystemsScene() {
               setFailed(true);
               setReady(false);
             },
-            preferences.matches,
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches,
           );
           setReady(true);
         })
-        .catch(() => {
-          if (!disposed) setFailed(true);
+        .catch((error: unknown) => {
+          if (!cancelled) {
+            console.warn(
+              "3D scene unavailable; keeping the accessible illustration.",
+              error,
+            );
+            setFailed(true);
+          }
         });
-    }, 120);
-    return () => {
-      disposed = true;
-      window.clearTimeout(timer);
-      preferences.removeEventListener("change", onPreference);
-      controller.current?.dispose();
-      controller.current = null;
     };
-  }, []);
+    // Let the content paint before allocating the renderer, including on warm reloads.
+    frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        if (typeof window.requestIdleCallback === "function") {
+          idle = window.requestIdleCallback(load, { timeout: 1000 });
+        } else {
+          timer = window.setTimeout(load, 0);
+        }
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [visible, failed]);
 
   useEffect(() => {
     controller.current?.select(active);
@@ -84,7 +114,10 @@ export default function SystemsScene() {
   }, [exploded, ready]);
 
   return (
-    <div className={`systems-scene ${ready ? "scene-ready" : ""}`}>
+    <div
+      className={`systems-scene ${ready ? "scene-ready" : ""}`}
+      data-scene-state={failed ? "unavailable" : ready ? "ready" : "deferred"}
+    >
       {!ready && (
         <div className="scene-fallback" aria-hidden="true">
           <div className="system-block block-one" />

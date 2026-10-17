@@ -127,6 +127,7 @@ for (const theme of ["light", "dark"] as const) {
       await expect(connectOnX).toHaveAttribute("target", "_blank");
       await expect(connectOnX).toHaveAttribute("rel", "noreferrer");
       const collaborations = section.locator(".creator-collaborations");
+      await collaborations.scrollIntoViewIfNeeded();
       const brands = collaborations.getByRole("list", {
         name: "Collaborating brands",
       });

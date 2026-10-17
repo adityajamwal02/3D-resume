@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
+import useViewportActivity from "../hooks/useViewportActivity";
 import "./brand-carousel.css";
 
 const brands = [
@@ -20,14 +21,18 @@ const brands = [
   { name: "Matiks", logo: "matiks.png" },
 ];
 
-function BrandLogo({ name, logo }: (typeof brands)[number]) {
+function BrandLogo({
+  name,
+  logo,
+  load,
+}: (typeof brands)[number] & { load: boolean }) {
   const [failed, setFailed] = useState(false);
   return (
     <>
       <span className="brand-logo-frame">
         {failed ? (
           <span className="brand-logo-unavailable">Logo unavailable</span>
-        ) : (
+        ) : load ? (
           <img
             src={`${import.meta.env.BASE_URL}brands/${logo}`}
             alt=""
@@ -39,7 +44,7 @@ function BrandLogo({ name, logo }: (typeof brands)[number]) {
               setFailed(true);
             }}
           />
-        )}
+        ) : null}
       </span>
       <strong className="brand-carousel-name">{name}</strong>
     </>
@@ -49,6 +54,8 @@ function BrandLogo({ name, logo }: (typeof brands)[number]) {
 export default function BrandCarousel() {
   const [paused, setPaused] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
+  const section = useRef<HTMLElement>(null);
+  const { entered, active } = useViewportActivity(section, "300px");
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -61,6 +68,8 @@ export default function BrandCarousel() {
 
   return (
     <section
+      ref={section}
+      data-active={active}
       className={`creator-collaborations${paused ? " is-paused" : ""}`}
       aria-labelledby="brand-collaborations-title"
     >
@@ -125,7 +134,7 @@ export default function BrandCarousel() {
             >
               {brands.map((brand) => (
                 <li key={brand.name} className="brand-carousel-item">
-                  <BrandLogo {...brand} />
+                  <BrandLogo {...brand} load={entered} />
                 </li>
               ))}
             </ul>

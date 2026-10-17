@@ -40,6 +40,8 @@ src/
   data/topmate.json           Last verified public Topmate metrics and timestamp
   data/linkedin.json          Exact public LinkedIn count and polling state
   linkedin.ts                Shared floor-to-thousand audience formatting
+  hooks/useViewportActivity.ts Deferred visibility and background-tab activity
+  hooks/useScrollRestoration.ts Initial hash and tab-local reload reading position
   components/SystemsScene.tsx Accessible scene controls and deferred loading
   components/DynamicIsland.tsx Floating navigation, reading progress, quick actions
   components/BrandCarousel.tsx Accessible moving brand strip, pause and image fallback
@@ -60,7 +62,7 @@ scripts/refresh-linkedin.mjs  Credential-free public-profile follower refresh
 scripts/refresh-linkedin.test.mjs Formatting, parser, network-safety, and interval tests
 ```
 
-The rendering engine is dynamically imported after the content mounts. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
+The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
 
 Mouse movement gently tilts the floating sculpture through damped interpolation. A subtle linear-gradient background animates behind the name and bio. The pause control freezes both the sculpture and ambient gradient; reduced-motion preferences disable automatic motion. The existing discipline selection, assembly, rotation, and reset controls remain available, as do the dynamic island, vertical experience timeline, skills, and contact sections.
 
@@ -69,6 +71,13 @@ The renderer targets 30 fps, caps device pixel ratio at 1 on mobile and 1.5 on d
 If WebGL or the deferred chunk fails, a CSS illustration remains alongside functional discipline selection. Every resume section is ordinary HTML and independent of the renderer. Fonts are self-hosted through Fontsource.
 
 ## Content Provenance
+
+On October 17, 2026, the owner set the audience display to **90K+ / 90,000+**.
+The exact override is recorded in `src/data/linkedin.json` with a provenance
+note. The last automated request timestamps remain unchanged so the existing
+15-day refresh schedule is preserved; a successful future fetch replaces the
+manual value and note. Wispr Flow already exists once in the fifteen-brand
+source list with its official logo; do not add a duplicate.
 
 The remote repository was empty when work began on September 10, 2026. There was no earlier implementation or checked-in CV to preserve. The resume text supplied in the coding session is the source for all employment dates, project descriptions, metrics, skills, education, and achievements.
 
@@ -88,6 +97,46 @@ The remote repository was empty when work began on September 10, 2026. There was
 - Carousel tiles use the active theme's surface, border, and text colors. Every tile is 176 by 108 pixels with a centered 128 by 48 logo frame and a 120 by 40 image box; `object-fit: contain` preserves each brand's original proportions without cropping or stretching. A small neutral logo backing keeps original dark/color marks visible while the surrounding card and labels follow the theme. Captions use the locally served Google Sans bold (700) font and share a consistent baseline. The animation duration grows with the expanded brand list to preserve a comfortable scrolling speed.
 
 ## Validation
+
+### Load and reload behavior
+
+- Brand logos keep their fixed frames and readable names in the document but
+  acquire image sources only when the carousel approaches the viewport.
+  Images stay mounted after the first visit; the moving track pauses while
+  offscreen or in a hidden tab. Wispr Flow shares the same 120 by 40 image box
+  and bold Google Sans caption as the other brands.
+- The 3D module waits for visibility, two animation frames, and idle time before
+  startup. Its instance is retained when scrolling away and disposed only on
+  unmount. Pending initialization is cancelled on hide/unmount. CSS illustration
+  and discipline controls remain usable before loading and if the renderer fails.
+- Initial section fragments are resolved after React creates the DOM. Reloads
+  restore a tab-local reading position saved in session storage on page hide,
+  only when the saved URL matches and the browser reports a reload. Blocked
+  storage logs a warning and leaves normal navigation available. Font-ready
+  alignment corrects layout movement only if the visitor has not navigated or
+  scrolled elsewhere; native anchor navigation and history behavior are retained.
+- Critical regular/medium Google Sans WOFF2 files are preloaded, using Vite's
+  hashed subpath-safe asset URLs. React, React DOM, and Scheduler have a separate
+  hashed vendor chunk, so content-only updates do not invalidate those libraries.
+  No service worker or custom stale-content cache is introduced.
+- The lazy mentorship portrait is a 480 by 480 WebP, generated from the original
+  640 by 640 portrait at quality 0.85: **58,758 bytes instead of 120,671**. The
+  original JPEG is retained as source material, not referenced by the frontend.
+
+Before/after production-preview measurements (Chromium, 1440 by 1000, reduced
+motion, fresh browser contexts) found **27 to 13 initial home resource requests**
+and about **390,666 to 340,707 encoded resource bytes** after deferring the
+offscreen brand images. Direct section loads now omit the roughly **138 KB
+compressed renderer** entirely until the hero is visited. The content-changing
+entry bundle fell from about **74 KB to 15 KB gzipped**, with about 60 KB of stable
+React code in the reusable vendor chunk; total JavaScript is not claimed to have
+shrunk by that amount. Warm reloads use browser caching/revalidation where the
+host permits it. These measurements are not universal latency guarantees.
+
+`tests/loading.spec.ts` verifies fresh loads, real section landing, reloads,
+asset reuse, the small entry bundle, offscreen deferral, Wispr Flow uniqueness,
+portrait size, and fallbacks. Existing browser suites continue to check all
+sections, motion, accessibility, links, and narrow-screen layouts.
 
 ### Content metric maintenance and animation
 

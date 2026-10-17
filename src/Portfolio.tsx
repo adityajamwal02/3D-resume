@@ -20,6 +20,7 @@ import DynamicIsland from "./components/DynamicIsland";
 import BrandCarousel from "./components/BrandCarousel";
 import CountUp from "./components/CountUp";
 import BorderGlow from "./components/BorderGlow";
+import useScrollRestoration from "./hooks/useScrollRestoration";
 import "./island.css";
 import "./theme.css";
 
@@ -102,6 +103,7 @@ const testimonials = [
 ];
 
 export default function Portfolio() {
+  useScrollRestoration();
   const [selectedSkill, setSelectedSkill] = useState(0);
 
   return (
@@ -536,7 +538,7 @@ export default function Portfolio() {
           <div className="mentor-intro">
             <img
               className="mentor-portrait"
-              src={`${import.meta.env.BASE_URL}aditya-topmate.jpg`}
+              src={`${import.meta.env.BASE_URL}aditya-topmate.webp`}
               alt="Aditya Jamwal"
               width="240"
               height="240"

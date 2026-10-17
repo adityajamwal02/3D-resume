@@ -47,6 +47,10 @@
     display: flex;
     width: max-content;
     animation: brand-scroll 66s linear infinite;
+    animation-play-state: paused;
+  }
+  .creator-collaborations[data-active="true"] .brand-carousel-track {
+    animation-play-state: running;
   }
   .brand-carousel-group {
     display: flex;
@@ -108,7 +112,7 @@
     color: #1c2b30;
     font-size: 11px;
   }
-  .brand-carousel-viewport:hover .brand-carousel-track {
+  .creator-collaborations .brand-carousel-viewport:hover .brand-carousel-track {
     animation-play-state: paused;
   }
   .is-paused .brand-carousel-viewport,
