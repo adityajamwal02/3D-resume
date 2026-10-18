@@ -60,7 +60,7 @@ export const skillGroups = [
       "Algorithms",
       "Problem solving",
       "Software development",
-      "HTML & CSS",
+      "JavaScript",
     ],
     description:
       "Grounded in object-oriented programming, operating systems, networking, databases, and distributed systems coursework.",

@@ -43,6 +43,47 @@ for (const year of [2026, 2027, 2030]) {
   });
 }
 
+test("Core engineering lists JavaScript in both screen and print views", async ({
+  page,
+}) => {
+  const skills = [
+    "C++",
+    "Python",
+    "Data structures",
+    "Algorithms",
+    "Problem solving",
+    "Software development",
+    "JavaScript",
+  ];
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const width of [320, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("./#expertise");
+      const panel = page.locator(".skill-panel");
+      await expect(panel.getByRole("heading")).toHaveText(
+        "The fundamentals come first.",
+      );
+      await expect(panel.locator(".skill-list > span")).toHaveText(skills);
+      await expect(panel).not.toContainText("HTML & CSS");
+      await page.getByRole("button", { name: "02 Cloud & platforms" }).click();
+      await expect(panel).toContainText("Azure");
+      await page.getByRole("button", { name: "01 Core engineering" }).click();
+      await expect(panel.locator(".skill-list > span")).toHaveText(skills);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+  }
+  await page.emulateMedia({ media: "print" });
+  const printed = page.locator(".print-skills > div").first();
+  await expect(printed).toBeVisible();
+  await expect(printed).toContainText(skills.join(" · "));
+  await expect(printed).not.toContainText("HTML & CSS");
+});
+
 test("portfolio content, navigation, skill filters, and professional links", async ({
   page,
   browserName,
