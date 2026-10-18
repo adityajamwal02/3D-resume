@@ -19,6 +19,8 @@ const brands = [
   { name: "takeUforward", logo: "takeuforward.png" },
   { name: "Paytm", logo: "paytm.svg" },
   { name: "Matiks", logo: "matiks.png" },
+  { name: "Wellbeing Nutrition", logo: "wellbeing-nutrition.jpg" },
+  { name: "Switch AI", logo: "switch-ai.jpg" },
 ];
 
 function BrandLogo({

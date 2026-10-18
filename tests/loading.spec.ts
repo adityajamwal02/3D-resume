@@ -55,7 +55,7 @@ test("fresh home defers brand images; scrolling loads Wispr Flow exactly once in
     "true",
   );
   const list = page.getByRole("list", { name: "Collaborating brands" });
-  await expect(list.locator("img")).toHaveCount(15);
+  await expect(list.locator("img")).toHaveCount(17);
   const wispr = list.getByRole("listitem").filter({ hasText: /^Wispr Flow$/ });
   await expect(wispr).toHaveCount(1);
   const logo = wispr.locator("img");

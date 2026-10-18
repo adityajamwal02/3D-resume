@@ -781,6 +781,7 @@ export default function Portfolio() {
                   <CountUp
                     value={creatorImpressions}
                     format={formatImpressionCount}
+                    suffix="+"
                   />
                   <span className="creator-stat-label">
                     impressions on LinkedIn

@@ -22,6 +22,8 @@ const brandNames = [
   "takeUforward",
   "Paytm",
   "Matiks",
+  "Wellbeing Nutrition",
+  "Switch AI",
 ];
 
 test("career highlights and selected work reflect the community and collaboration platform", async ({
@@ -75,7 +77,7 @@ for (const theme of ["light", "dark"] as const) {
       ).toHaveText(`${(linkedinThousands * 1000).toLocaleString("en-US")}+`);
       await expect(
         section.locator(".creator-impressions .count-up-visual"),
-      ).toHaveText("14.4M");
+      ).toHaveText("16.2M+");
       await expect(section.locator(".creator-impressions")).toContainText(
         "impressions on LinkedIn",
       );
@@ -132,7 +134,18 @@ for (const theme of ["light", "dark"] as const) {
         name: "Collaborating brands",
       });
       await expect(brands.getByRole("listitem")).toHaveText(brandNames);
-      await expect(brands.locator("img")).toHaveCount(15);
+      await expect(brands.locator("img")).toHaveCount(17);
+      for (const [name, file] of [
+        ["Wellbeing Nutrition", "wellbeing-nutrition.jpg"],
+        ["Switch AI", "switch-ai.jpg"],
+      ]) {
+        const item = brands.getByRole("listitem").filter({ hasText: name });
+        await expect(item).toHaveCount(1);
+        await expect(item.locator("img")).toHaveAttribute(
+          "src",
+          `./brands/${file}`,
+        );
+      }
       await expect(brands.locator(".brand-name-only")).toHaveCount(0);
       for (const logo of await brands.locator("img").all()) {
         await expect
@@ -451,7 +464,7 @@ test("brand carousel honors reduced motion and all brands remain reachable", asy
   const brands = page
     .getByRole("list", { name: "Collaborating brands" })
     .getByRole("listitem");
-  await expect(brands).toHaveCount(15);
+  await expect(brands).toHaveCount(17);
   for (const item of await brands.all()) {
     await item.scrollIntoViewIfNeeded();
     await expect(item).toBeInViewport();
@@ -485,7 +498,7 @@ test("missing brand logos leave readable brand names and social links", async ({
   await page.route("**/brands/*", (route) => route.abort());
   await page.goto("./#content");
   const brands = page.getByRole("list", { name: "Collaborating brands" });
-  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(15);
+  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(17);
   await expect(brands.locator("img")).toHaveCount(0);
   for (const name of brandNames) {
     await expect(brands.getByText(name, { exact: true })).toHaveCount(1);

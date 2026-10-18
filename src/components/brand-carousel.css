@@ -46,7 +46,7 @@
   .brand-carousel-track {
     display: flex;
     width: max-content;
-    animation: brand-scroll 66s linear infinite;
+    animation: brand-scroll 75s linear infinite;
     animation-play-state: paused;
   }
   .creator-collaborations[data-active="true"] .brand-carousel-track {
