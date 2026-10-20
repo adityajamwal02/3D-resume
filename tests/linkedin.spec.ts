@@ -10,16 +10,16 @@ test("LinkedIn audience stays consistent in both sections without browser pollin
       linkedinRequests.push(request.url());
     }
   });
-  const thousands = Math.floor(linkedin.followers / 1000);
+  const hundreds = Math.floor(linkedin.followers / 100);
   for (const width of [320, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("./");
     await expect(
       page.locator(".impact-strip > div").nth(1).locator("strong"),
-    ).toHaveText(`${thousands}K+`);
+    ).toHaveText(`${hundreds / 10}K+`);
     const audience = page.locator(".creator-followers");
     await expect(audience.locator(".count-up-visual")).toHaveText(
-      `${(thousands * 1000).toLocaleString("en-US")}+`,
+      `${(hundreds * 100).toLocaleString("en-US")}+`,
     );
     await expect(page.locator("#content")).not.toContainText(
       /refresh|polling|15 days|last updated/i,

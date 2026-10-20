@@ -1057,7 +1057,7 @@ test("failed 3D download leaves resume and mentorship available", async ({
   await expect(
     page.locator("#content .creator-followers .count-up-visual"),
   ).toHaveText(
-    `${(Math.floor(linkedin.followers / 1000) * 1000).toLocaleString("en-US")}+`,
+    `${(Math.floor(linkedin.followers / 100) * 100).toLocaleString("en-US")}+`,
   );
   await expect(
     page.locator("#content").getByRole("link", { name: "Connect on LinkedIn" }),

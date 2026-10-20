@@ -2,12 +2,12 @@ import { test, expect } from "@playwright/test";
 import { creatorImpressions } from "../src/content";
 import linkedin from "../src/data/linkedin.json" with { type: "json" };
 
-const community = `${(Math.floor(linkedin.followers / 1000) * 1000).toLocaleString("en-US")}+`;
-const impressions = "16.2M+";
+const community = `${(Math.floor(linkedin.followers / 100) * 100).toLocaleString("en-US")}+`;
+const impressions = "17.2M+";
 const clockStart = new Date("2026-10-04T18:00:00.000Z");
 const clockPause = new Date("2026-10-04T18:01:00.000Z");
 
-test("impressions use the supplied manual total and show 16.2M+ without fetching", async ({
+test("impressions use the supplied manual total and show 17.2M+ without fetching", async ({
   page,
 }) => {
   const dataRequests: string[] = [];
@@ -15,7 +15,7 @@ test("impressions use the supplied manual total and show 16.2M+ without fetching
     if (["fetch", "xhr"].includes(request.resourceType()))
       dataRequests.push(request.url());
   });
-  expect(creatorImpressions).toBe(16_200_000);
+  expect(creatorImpressions).toBe(17_200_000);
   await page.goto("./");
   const metrics = page.locator(".creator-metrics");
   await expect(metrics.locator(".count-up-visual")).toHaveText([
@@ -28,7 +28,7 @@ test("impressions use the supplied manual total and show 16.2M+ without fetching
   ]);
   await expect(metrics.locator("[aria-live]")).toHaveCount(0);
   await expect(page.locator(".creator-impressions")).not.toContainText(
-    /refresh|fetch|monitor|14\.4M|14\.5M/i,
+    /refresh|fetch|monitor|14\.4M|14\.5M|16\.2M/i,
   );
   await expect(
     page.locator(".creator-community .creator-impressions"),
@@ -72,11 +72,9 @@ test("both content metrics count up once on entry and retain stable accessible v
   const partial = await numbers.allTextContents();
   const connections = Number(partial[0].replace(/[,+]/g, ""));
   expect(connections).toBeGreaterThan(0);
-  expect(connections).toBeLessThan(
-    Math.floor(linkedin.followers / 1000) * 1000,
-  );
+  expect(connections).toBeLessThan(Math.floor(linkedin.followers / 100) * 100);
   expect(Number.parseFloat(partial[1])).toBeGreaterThan(0);
-  expect(Number.parseFloat(partial[1])).toBeLessThan(16.2);
+  expect(Number.parseFloat(partial[1])).toBeLessThan(17.2);
   expect(partial[1]).toMatch(/M\+$/);
   await expect(metrics.locator(".sr-only")).toHaveText([
     community,
@@ -167,9 +165,9 @@ test("unavailable intersection observation keeps readable final metrics", async 
     community,
     impressions,
   ]);
-  expect(warnings).toContain(
-    "Count-up animation unavailable; showing the final metric.",
-  );
+  await expect
+    .poll(() => warnings)
+    .toContain("Count-up animation unavailable; showing the final metric.");
   await expect(
     page
       .locator(".creator-social-links")

@@ -2,9 +2,11 @@ export function formatLinkedInFollowers(followers: number) {
   if (!Number.isSafeInteger(followers) || followers < 0) {
     throw new Error("LinkedIn followers must be a nonnegative safe integer");
   }
-  const thousands = Math.floor(followers / 1000);
+  const hundreds = Math.floor(followers / 100);
+  const count = hundreds * 100;
   return {
-    compact: `${thousands}K`,
-    full: (thousands * 1000).toLocaleString("en-US"),
+    count,
+    compact: `${hundreds / 10}K`,
+    full: count.toLocaleString("en-US"),
   };
 }

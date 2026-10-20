@@ -78,7 +78,7 @@ export default function BrandCarousel() {
       <div className="brand-carousel-heading">
         <div>
           <h3 id="brand-collaborations-title">Brand collaborations</h3>
-          <p>Brands I have collaborated with.</p>
+          <p>Brands I have partnered with.</p>
         </div>
         <button
           className="brand-carousel-toggle"

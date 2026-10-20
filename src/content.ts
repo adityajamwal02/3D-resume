@@ -1,4 +1,4 @@
-export const creatorImpressions = 16_200_000;
+export const creatorImpressions = 17_200_000;
 
 export const experience = [
   {

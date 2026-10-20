@@ -39,7 +39,7 @@ src/
   components/border-glow.css  Theme palettes, edge masks, focus and motion fallbacks
   data/topmate.json           Last verified public Topmate metrics and timestamp
   data/linkedin.json          Exact public LinkedIn count and polling state
-  linkedin.ts                Shared floor-to-thousand audience formatting
+  linkedin.ts                Shared floor-to-hundred audience formatting
   hooks/useViewportActivity.ts Deferred visibility and background-tab activity
   hooks/useScrollRestoration.ts Initial hash and tab-local reload reading position
   components/SystemsScene.tsx Accessible scene controls and deferred loading
@@ -72,11 +72,11 @@ If WebGL or the deferred chunk fails, a CSS illustration remains alongside funct
 
 ## Content Provenance
 
-On October 17, 2026, the owner set the audience display to **90K+ / 90,000+**.
+On October 21, 2026, the owner set the audience display to **90.5K+ / 90,500+**.
 The exact override is recorded in `src/data/linkedin.json` with a provenance
 note. The last automated request timestamps remain unchanged so the existing
 15-day refresh schedule is preserved; a successful future fetch replaces the
-manual value and note. Wispr Flow already exists once in the fifteen-brand
+manual value and note. Wispr Flow already exists once in the brand
 source list with its official logo; do not add a duplicate.
 
 The remote repository was empty when work began on September 10, 2026. There was no earlier implementation or checked-in CV to preserve. The resume text supplied in the coding session is the source for all employment dates, project descriptions, metrics, skills, education, and achievements.
@@ -92,7 +92,7 @@ The remote repository was empty when work began on September 10, 2026. There was
 - Experience logos are self-hosted: [Microsoft mark](https://commons.wikimedia.org/wiki/File:Microsoft_logo.svg), [Cisco logo](https://commons.wikimedia.org/wiki/File:Cisco_logo_blue_2016.svg), and [Ambee's official white logo](https://cdn.prod.website-files.com/6242a3f6d206db221c2b13e8/627de922222f9769ff40c945_Ambee%20White%20logo.svg). Logos identify employers; their trademarks belong to their respective owners.
 - Project visuals are conceptual artwork, not screenshots of proprietary company products. No employer code, internal links, or environment configuration is exposed.
 - The introduction highlights both software engineering and mentorship, with separate paths into engineering experience, LinkedIn, and mentorship. The session guide pairs each existing service with a visitor goal, suggested preparation, and practical takeaways. These are guidance rather than placement/referral guarantees; pricing, availability, and bookings remain on Topmate. On mobile, the sculpture follows the hero copy in document flow so longer text and wrapped actions do not overlap the scene controls.
-- The content-creation section sits directly after mentorship, with Technology and Artificial intelligence topic tags. The community audience figure comes from the exact follower count in the public LinkedIn profile's structured data, not its rounded badge or first-degree connection count. Both displays share floor-to-thousand formatting: 86,676 becomes **86K+** and **86,000+**; 98,352 becomes **98K+** and **98,000+**. The requested community wording is retained. "Connect on LinkedIn" and "Connect on X" open the owner-supplied profiles.
+- The content-creation section sits directly after mentorship, with Technology and Artificial intelligence topic tags. The community audience figure comes from the exact follower count in the public LinkedIn profile's structured data or an explicitly documented owner update, not its rounded badge or first-degree connection count. Both displays share floor-to-hundred formatting: 90,500 becomes **90.5K+** and **90,500+**; 98,352 becomes **98.3K+** and **98,300+**. This replaces thousand-only precision following the owner's October 21 request. The count-up target uses the same rounded value as the static summary. Whole thousands omit an unnecessary decimal zero. The requested community wording is retained. "Connect on LinkedIn" and "Connect on X" open the owner-supplied profiles.
 - Brand collaborations display the seventeen brands supplied by the owner: CodeRabbit, Cursor, Gamma, magicpin, ProPeers, Nebius, MuscleBlaze, CodeAnt AI, Wispr Flow, Nimbalyst, Replit, AON Meetings, takeUforward, Paytm, Matiks, Wellbeing Nutrition, and Switch AI. The last two logos were sourced from the owner-specified official LinkedIn pages on October 18, 2026. Gamma uses the owner's supplied image, copied without changing the attachment. All logos are self-hosted; see [logo source attribution](../public/brands/README.md). Marks identify the stated collaborations and remain the property of their respective owners. The narrow logo strip moves automatically, pauses on hover, and offers a Pause button that switches to a manually scrollable list. Keyboard focus also makes the list static and scrollable. Reduced-motion preferences disable automatic movement and hide unnecessary playback controls. Visual loop duplicates are hidden from assistive technology. Failed logos show an explicit fallback alongside the brand name and emit a warning. Content creation is included in navigation and reading progress but excluded from the printed resume.
 - Carousel tiles use the active theme's surface, border, and text colors. Every tile is 176 by 108 pixels with a centered 128 by 48 logo frame and a 120 by 40 image box; `object-fit: contain` preserves each brand's original proportions without cropping or stretching. A small neutral logo backing keeps original dark/color marks visible while the surrounding card and labels follow the theme. Captions use the locally served Google Sans bold (700) font and share a consistent baseline. The animation duration grows with the expanded brand list to preserve a comfortable scrolling speed.
 
@@ -140,16 +140,16 @@ sections, motion, accessibility, links, and narrow-screen layouts.
 
 ### Content metric maintenance and animation
 
-The owner updated LinkedIn impressions to **16.2M+** on October 18, 2026,
-replacing the previous 14.4M display. The maintained lower-bound value is
-**16,200,000**; no more precise total was supplied.
+The owner updated LinkedIn impressions to **17.2M+** on October 21, 2026,
+replacing the previous 16.2M+ display. The maintained lower-bound value is
+**17,200,000**; no more precise total was supplied.
 Update `creatorImpressions` in [src/content.ts](../src/content.ts) when the
 owner provides a new value. There is no fetch, schedule, analytics SDK, or
 monitoring for impressions. The display truncates to one decimal million:
 `Math.floor(value / 100_000) / 10`, followed by an explicit `+` suffix, so the
-visible and screen-reader values both show **16.2M+**.
+visible and screen-reader values both show **17.2M+**.
 Community connections retain the public LinkedIn snapshot and existing
-floor-to-thousand rule. The top career strip remains a static summary.
+floor-to-hundred rule. The top career strip remains a static summary.
 
 Both lower-section metrics use [CountUp](../src/components/CountUp.tsx):
 `IntersectionObserver` starts a 1.2-second eased count-up as the number enters
@@ -165,7 +165,7 @@ Screen readers receive a stable final value; animated digits are hidden from
 the accessibility tree. Tabular digits and fixed line heights preserve metric
 alignment. The metrics form two columns when space permits and stack on narrow
 cards; both colors follow the current theme. Browser regression coverage checks
-the exact 16.2M+ result, no network polling, in-view start, once-only behavior,
+the exact 17.2M+ result, no network polling, in-view start, once-only behavior,
 reduced-motion changes, missing-observer fallback, and responsive accessibility.
 
 Testimonial checks cover the supplied quotes, current snapshot metrics and update date, unchanged navigation, desktop author alignment, mobile stacking, print exclusion, and accessibility in both themes at 320, 768, and 1440 pixels. Additional tests verify the exact Microsoft bullets and copyright rendering in 2026, 2027, and 2030. Sync tests cover parsing, true zero counts, invalid/missing data, the exact 72-hour threshold across month/year/leap-day boundaries, skipped network requests, successful persistence, and preservation of the previous snapshot on HTTP, network, timeout, or markup failures.
@@ -220,7 +220,7 @@ The snapshot stores the exact count, last verified fetch time, last attempted ti
 
 GitHub can delay scheduled execution; unauthenticated LinkedIn availability and markup are outside this site's control. Last-known values remain available when the source is blocked. Use Actions notifications and the refresh logs to investigate failures. An authorized manual run can enable **Fetch the public LinkedIn follower count now**, or run `npm run refresh:linkedin` locally. `npm run refresh:linkedin -- --if-due` preserves the interval. These commands never sign in.
 
-`npm run test:sync` covers both profile integrations, including exact thousand boundaries, the provided examples, month/year/leap-day intervals, credential omission, safe redirects, size limits, network failures, malformed/ambiguous data, and independent-source failures. Browser tests check both audience displays and confirm there is no browser-side polling or public refresh copy.
+`npm run test:sync` covers both profile integrations, including exact hundred and thousand boundaries, the provided examples, month/year/leap-day intervals, credential omission, safe redirects, size limits, network failures, malformed/ambiguous data, and independent-source failures. Browser tests check both audience displays and confirm there is no browser-side polling or public refresh copy. The carousel introduction uses the owner's wording, "Brands I have partnered with.", while its heading remains "Brand collaborations".
 
 This is a static application. Publish the `dist/` directory from `npm run build` to a static host with HTTPS. No private secrets or environment variables belong in the frontend. Vite uses relative asset URLs so the build can also be hosted below a repository subpath, including `/3D-resume/`. Navigation uses local anchors rather than history routes.
 

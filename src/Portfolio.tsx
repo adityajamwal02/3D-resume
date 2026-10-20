@@ -769,7 +769,7 @@ export default function Portfolio() {
               <div className="creator-metrics">
                 <p className="creator-stat creator-followers">
                   <CountUp
-                    value={Math.floor(linkedin.followers / 1000) * 1000}
+                    value={linkedinAudience.count}
                     format={formatCommunityCount}
                     suffix="+"
                   />

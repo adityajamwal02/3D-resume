@@ -218,12 +218,12 @@ test("optimized portrait uses a small WebP and the follower update reaches both 
     .toBe(480);
   const image = await page.request.get((await portrait.getAttribute("src"))!);
   expect((await image.body()).length).toBeLessThan(65_000);
-  const thousands = Math.floor(linkedin.followers / 1000);
+  const hundreds = Math.floor(linkedin.followers / 100);
   await expect(
     page.locator(".impact-strip > div").nth(1).locator("strong"),
-  ).toHaveText(`${thousands}K+`);
+  ).toHaveText(`${hundreds / 10}K+`);
   await expect(page.locator(".creator-followers .count-up-visual")).toHaveText(
-    `${(thousands * 1000).toLocaleString("en-US")}+`,
+    `${(hundreds * 100).toLocaleString("en-US")}+`,
   );
 });
 

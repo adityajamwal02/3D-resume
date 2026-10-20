@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import linkedin from "../src/data/linkedin.json" with { type: "json" };
 
-const linkedinThousands = Math.floor(linkedin.followers / 1000);
+const linkedinHundreds = Math.floor(linkedin.followers / 100);
 
 const linkedinURL = "https://www.linkedin.com/in/adityajamwal02/";
 const xURL = "https://x.com/AdityaJamwal02";
@@ -32,7 +32,7 @@ test("career highlights and selected work reflect the community and collaboratio
   await page.goto("./");
   const highlights = page.getByLabel("Career highlights");
   await expect(highlights).toContainText("150M+");
-  await expect(highlights).toContainText(`${linkedinThousands}K+`);
+  await expect(highlights).toContainText(`${linkedinHundreds / 10}K+`);
   await expect(highlights).toContainText("Connections - LinkedIn community");
   await expect(highlights).not.toContainText("Less manual log-analysis effort");
   const work = page.locator("#work");
@@ -74,10 +74,10 @@ for (const theme of ["light", "dark"] as const) {
       ).toEqual({ before: "mentorship", after: "contact" });
       await expect(
         section.locator(".creator-followers .count-up-visual"),
-      ).toHaveText(`${(linkedinThousands * 1000).toLocaleString("en-US")}+`);
+      ).toHaveText(`${(linkedinHundreds * 100).toLocaleString("en-US")}+`);
       await expect(
         section.locator(".creator-impressions .count-up-visual"),
-      ).toHaveText("16.2M+");
+      ).toHaveText("17.2M+");
       await expect(section.locator(".creator-impressions")).toContainText(
         "impressions on LinkedIn",
       );
@@ -129,6 +129,12 @@ for (const theme of ["light", "dark"] as const) {
       await expect(connectOnX).toHaveAttribute("target", "_blank");
       await expect(connectOnX).toHaveAttribute("rel", "noreferrer");
       const collaborations = section.locator(".creator-collaborations");
+      await expect(
+        collaborations.locator(".brand-carousel-heading p"),
+      ).toHaveText("Brands I have partnered with.");
+      await expect(collaborations).not.toContainText(
+        "Brands I have collaborated with.",
+      );
       await collaborations.scrollIntoViewIfNeeded();
       const brands = collaborations.getByRole("list", {
         name: "Collaborating brands",

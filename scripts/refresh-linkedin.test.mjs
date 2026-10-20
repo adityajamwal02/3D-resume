@@ -48,21 +48,31 @@ const response = (body = html()) =>
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 
-test("rounds down at every thousand, not to the nearest thousand", () => {
+test("rounds down to hundreds with one-decimal thousands and no unnecessary trailing zero", () => {
   for (const [count, compact, full] of [
     [0, "0K", "0"],
-    [999, "0K", "0"],
+    [99, "0K", "0"],
+    [100, "0.1K", "100"],
+    [999, "0.9K", "900"],
     [1000, "1K", "1,000"],
-    [85999, "85K", "85,000"],
+    [85999, "85.9K", "85,900"],
     [86000, "86K", "86,000"],
-    [86676, "86K", "86,000"],
-    [86999, "86K", "86,000"],
+    [86676, "86.6K", "86,600"],
+    [86999, "86.9K", "86,900"],
     [87000, "87K", "87,000"],
-    [98352, "98K", "98,000"],
-    [999999, "999K", "999,000"],
+    [90499, "90.4K", "90,400"],
+    [90500, "90.5K", "90,500"],
+    [90599, "90.5K", "90,500"],
+    [90600, "90.6K", "90,600"],
+    [98352, "98.3K", "98,300"],
+    [999999, "999.9K", "999,900"],
     [1000000, "1000K", "1,000,000"],
   ]) {
-    assert.deepEqual(formatLinkedInFollowers(count), { compact, full });
+    assert.deepEqual(formatLinkedInFollowers(count), {
+      count: Number(full.replaceAll(",", "")),
+      compact,
+      full,
+    });
   }
 });
 
@@ -277,8 +287,9 @@ test("successful update persists exact counts and shared display values", async 
       lastAttemptSucceeded: true,
     });
     assert.deepEqual(formatLinkedInFollowers(saved.followers), {
-      compact: "98K",
-      full: "98,000",
+      count: 98300,
+      compact: "98.3K",
+      full: "98,300",
     });
     assert.deepEqual(await readdir(directory), ["linkedin.json"]);
   });
@@ -457,6 +468,6 @@ test("manual refresh can bypass the interval but never changes the request targe
     );
     const saved = JSON.parse(await readFile(path, "utf8"));
     assert.equal(saved.followers, 86999);
-    assert.equal(formatLinkedInFollowers(saved.followers).compact, "86K");
+    assert.equal(formatLinkedInFollowers(saved.followers).compact, "86.9K");
   });
 });
