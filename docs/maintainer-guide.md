@@ -112,6 +112,8 @@ The two-column format grid stacks below 700px and inherits the existing
 Google Sans font, palette, border, and surface tokens. Tests verify all four
 formats, no pricing, both themes at 320/390/768/1440/1920px, accessible headings,
 keyboard inquiry navigation with no opener or POST body, and print exclusion.
+The full validation job has a 30-minute limit to accommodate the expanded
+single-worker software-WebGL and accessibility suite on hosted runners.
 
 ### Load and reload behavior
 
