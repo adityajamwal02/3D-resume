@@ -103,6 +103,33 @@ test("extracts only the exact profile FollowAction, ignoring rounded badges and 
   assert.equal(parseProfile(html([person(0)])), 0);
 });
 
+test("profile scripts and markup are never evaluated or copied into the snapshot", async () => {
+  await withSnapshot(async (path) => {
+    const malicious = `<script>throw new Error("Remote scripts must never execute")</script>${html()}`;
+    assert.equal(
+      await refreshSnapshot({
+        path,
+        now,
+        fetchProfile: async () => response(malicious),
+      }),
+      true,
+    );
+    const saved = JSON.parse(await readFile(path, "utf8"));
+    assert.equal(saved.followers, 86676);
+    assert.deepEqual(
+      Object.keys(saved).sort(),
+      [
+        "source",
+        "followers",
+        "fetchedAt",
+        "lastAttemptedAt",
+        "lastAttemptSucceeded",
+      ].sort(),
+    );
+    assert.equal(JSON.stringify(saved).includes("<script>"), false);
+  });
+});
+
 test("accepts matching duplicate structured counts and statistics arrays", () => {
   const entry = person();
   entry.interactionStatistic = [
@@ -153,26 +180,19 @@ for (const [name, body] of [
   });
 }
 
-test("15-day polling boundary holds across month, year and leap-day boundaries", () => {
+test("weekly polling is due at exactly 168 hours across calendar boundaries", () => {
+  const week = 604_800_000;
+  assert.equal(REFRESH_INTERVAL_MS, week);
   for (const date of [
-    "2026-10-03T00:00:00.000Z",
-    "2026-12-25T00:00:00.000Z",
-    "2028-02-20T00:00:00.000Z",
+    "2026-10-28T00:00:00.000Z",
+    "2026-12-28T00:00:00.000Z",
+    "2028-02-26T00:00:00.000Z",
   ]) {
     const snapshot = { ...prior, fetchedAt: date, lastAttemptedAt: date };
     const start = Date.parse(date);
-    assert.equal(
-      isRefreshDue(snapshot, new Date(start + REFRESH_INTERVAL_MS - 1)),
-      false,
-    );
-    assert.equal(
-      isRefreshDue(snapshot, new Date(start + REFRESH_INTERVAL_MS)),
-      true,
-    );
-    assert.equal(
-      isRefreshDue(snapshot, new Date(start + REFRESH_INTERVAL_MS + 1)),
-      true,
-    );
+    assert.equal(isRefreshDue(snapshot, new Date(start + week - 1)), false);
+    assert.equal(isRefreshDue(snapshot, new Date(start + week)), true);
+    assert.equal(isRefreshDue(snapshot, new Date(start + week + 1)), true);
   }
   assert.throws(() => isRefreshDue(prior, new Date(Date.parse(priorTime) - 1)));
   assert.throws(() => isRefreshDue(prior, new Date("invalid")));
@@ -303,7 +323,7 @@ test("not-due checks skip every network request and leave the snapshot untouched
         path,
         now: new Date(now.getTime() - 1),
         ifDue: true,
-        fetchProfile: () => assert.fail("Must not poll before 15 days"),
+        fetchProfile: () => assert.fail("Must not poll before 7 days"),
       }),
       false,
     );
@@ -330,7 +350,7 @@ for (const [name, fetchProfile] of [
   ["challenge HTML", async () => response("<html>Verify you are human</html>")],
   ["non-HTML", async () => new Response("{}")],
 ]) {
-  test(`${name} preserves the verified count, reports failure, and waits 15 days before retrying`, async () => {
+  test(`${name} preserves the verified count, reports failure, and waits a week before retrying`, async () => {
     await withSnapshot(async (path) => {
       await assert.rejects(
         refreshSnapshot({ path, now, ifDue: true, fetchProfile }),

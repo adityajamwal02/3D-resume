@@ -14,7 +14,7 @@ on:
         type: boolean
         default: false
   schedule:
-    # Scripts enforce independent 3-day Topmate and 15-day LinkedIn intervals.
+    # Scripts enforce independent 3-day Topmate and 7-day LinkedIn intervals.
     - cron: "23 * * * *"
 
 permissions:

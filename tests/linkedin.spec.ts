@@ -22,10 +22,10 @@ test("LinkedIn audience stays consistent in both sections without browser pollin
       `${(hundreds * 100).toLocaleString("en-US")}+`,
     );
     await expect(page.locator("#content")).not.toContainText(
-      /refresh|polling|15 days|last updated/i,
+      /refresh|polling|weekly|once a week|7 days|15 days|last updated/i,
     );
     await expect(page.locator(".impact-strip")).not.toContainText(
-      /refresh|polling|15 days|last updated/i,
+      /refresh|polling|weekly|once a week|7 days|15 days|last updated/i,
     );
     await expect(
       page

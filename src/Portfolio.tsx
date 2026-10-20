@@ -11,7 +11,12 @@ import {
   Star,
   Zap,
 } from "lucide-react";
-import { creatorImpressions, experience, skillGroups } from "./content";
+import {
+  collaborationFormats,
+  creatorImpressions,
+  experience,
+  skillGroups,
+} from "./content";
 import topmate from "./data/topmate.json";
 import linkedin from "./data/linkedin.json";
 import { formatLinkedInFollowers } from "./linkedin";
@@ -815,6 +820,52 @@ export default function Portfolio() {
             </div>
           </div>
           <BrandCarousel />
+          <section
+            className="collaboration-formats"
+            aria-labelledby="collaboration-formats-title"
+          >
+            <div className="collaboration-formats-heading">
+              <p className="eyebrow">LET'S WORK TOGETHER</p>
+              <h3 id="collaboration-formats-title">
+                Your story. The right format.
+              </h3>
+              <p>
+                From a focused product introduction to a hands-on walkthrough,
+                let's shape content that helps a tech-minded audience understand
+                what you are building.
+              </p>
+            </div>
+            <div className="collaboration-formats-grid">
+              {collaborationFormats.map((format, index) => (
+                <article className="collaboration-format" key={format.title}>
+                  <div className="collaboration-format-topline">
+                    <span>{format.format}</span>
+                    <span aria-hidden="true">0{index + 1}</span>
+                  </div>
+                  <h4>{format.title}</h4>
+                  <p>{format.description}</p>
+                  <p className="collaboration-format-focus">
+                    <strong>A good fit for</strong>
+                    {format.focus}
+                  </p>
+                </article>
+              ))}
+            </div>
+            <div className="collaboration-formats-footer">
+              <p>
+                Have a campaign in mind? Share your product, audience, and
+                goals, and let's find the right approach.
+              </p>
+              <a
+                className="button button-primary"
+                href="https://www.linkedin.com/in/adityajamwal02/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Discuss a collaboration <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </section>
         </section>
         <section
           className="section contact-section"

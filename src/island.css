@@ -1220,6 +1220,83 @@
   .creator-social-links .button {
     gap: 12px;
   }
+  .collaboration-formats {
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .collaboration-formats-heading {
+    max-width: 640px;
+    margin-bottom: 28px;
+  }
+  .collaboration-formats-heading h3 {
+    font-size: clamp(26px, 3vw, 34px);
+    line-height: 1.3;
+    margin: 10px 0 16px;
+  }
+  .collaboration-formats-heading > p:not(.eyebrow),
+  .collaboration-format p,
+  .collaboration-formats-footer p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .collaboration-formats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .collaboration-format {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  .collaboration-format-topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    color: var(--accent);
+    font: 10px var(--mono);
+    line-height: 1.6;
+  }
+  .collaboration-format h4 {
+    font: 500 24px / 1.3 var(--display);
+    margin: 22px 0 14px;
+    color: var(--text);
+  }
+  .collaboration-format > p:first-of-type {
+    margin-bottom: 24px;
+  }
+  .collaboration-format-focus {
+    padding-top: 18px;
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+  }
+  .collaboration-format-focus strong {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .collaboration-formats-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 28px;
+  }
+  .collaboration-formats-footer p {
+    max-width: 520px;
+  }
+  .collaboration-formats-footer .button {
+    gap: 12px;
+  }
   @media (max-width: 900px) {
     .creator-layout {
       grid-template-columns: minmax(0, 1fr);
@@ -1227,6 +1304,12 @@
     }
   }
   @media (max-width: 700px) {
+    .collaboration-formats-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .collaboration-format {
+      padding: 22px;
+    }
     .creator-community {
       padding: 24px;
     }

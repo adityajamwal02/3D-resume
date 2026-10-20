@@ -1,5 +1,36 @@
 export const creatorImpressions = 17_200_000;
 
+export const collaborationFormats = [
+  {
+    title: "Sponsored post",
+    format: "IMAGE OR VIDEO",
+    description:
+      "Put your brand or tool in context with a thoughtful LinkedIn post, supported by an image or video that makes the value clear.",
+    focus: "Product launches, practical use cases, and brand introductions.",
+  },
+  {
+    title: "Custom carousel",
+    format: "VISUAL STORYTELLING",
+    description:
+      "Turn a complex idea into a clear, swipeable story. A custom LinkedIn carousel guides readers through your product, its benefits, and how it works.",
+    focus: "Feature explainers, educational content, and step-by-step guides.",
+  },
+  {
+    title: "Two-post campaign",
+    format: "CONNECTED CONTENT",
+    description:
+      "Build a cohesive narrative across two sponsored LinkedIn posts, moving from an introduction to a deeper use case with brand-supplied or custom assets.",
+    focus: "Sequential storytelling and a more complete product conversation.",
+  },
+  {
+    title: "On-camera walkthrough",
+    format: "FACE-TO-CAMERA VIDEO",
+    description:
+      "Bring your product to life with a personalized technical walkthrough and on-camera narration that connects features to real-world use.",
+    focus: "Product demos, technical tutorials, and hands-on explanations.",
+  },
+];
+
 export const experience = [
   {
     company: "Microsoft",

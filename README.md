@@ -13,7 +13,7 @@ creator. Built with React, TypeScript, Vite, and Three.js, with an interactive
 - **Work:** HashImagin and Multi-Agentic System.
 - **Expertise:** Skills, education, and achievements.
 - **Mentorship:** Session guide, booking links, and testimonials.
-- **Content:** LinkedIn community and impressions counters, social links, and brand collaborations.
+- **Content:** LinkedIn community and impressions counters, brand partnerships, collaboration formats, and social links.
 - **Contact:** Professional links and a dynamic copyright footer.
 
 ## Architecture

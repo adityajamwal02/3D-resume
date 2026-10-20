@@ -53,6 +53,7 @@ src/
   theme.css                   Light palette, theme control, and contact invitation
 tests/portfolio.spec.ts       Production-browser regression suite
 tests/creator.spec.ts         Content-creation layout, navigation, and outbound-link checks
+tests/collaboration.spec.ts   Format cards, responsive accessibility, and safe inquiry link
 tests/linkedin.spec.ts        Consistent audience displays with no browser-side polling
 tests/metrics.spec.ts         Impressions, animation lifecycle, and motion preferences
 playwright.config.ts         Isolated preview server and Chromium configuration
@@ -72,12 +73,11 @@ If WebGL or the deferred chunk fails, a CSS illustration remains alongside funct
 
 ## Content Provenance
 
-On October 21, 2026, the owner set the audience display to **90.5K+ / 90,500+**.
-The exact override is recorded in `src/data/linkedin.json` with a provenance
-note. The last automated request timestamps remain unchanged so the existing
-15-day refresh schedule is preserved; a successful future fetch replaces the
-manual value and note. Wispr Flow already exists once in the brand
-source list with its official logo; do not add a duplicate.
+On October 21, 2026, the owner replaced manual LinkedIn audience maintenance
+with a weekly public-profile refresh. The bootstrap fetch succeeded and removed
+the earlier manual override note; subsequent counts come from the validated
+public snapshot, even when they differ from an earlier owner estimate.
+Wispr Flow already exists once in the brand source list; do not add a duplicate.
 
 The remote repository was empty when work began on September 10, 2026. There was no earlier implementation or checked-in CV to preserve. The resume text supplied in the coding session is the source for all employment dates, project descriptions, metrics, skills, education, and achievements.
 
@@ -97,6 +97,21 @@ The remote repository was empty when work began on September 10, 2026. There was
 - Carousel tiles use the active theme's surface, border, and text colors. Every tile is 176 by 108 pixels with a centered 128 by 48 logo frame and a 120 by 40 image box; `object-fit: contain` preserves each brand's original proportions without cropping or stretching. A small neutral logo backing keeps original dark/color marks visible while the surrounding card and labels follow the theme. Captions use the locally served Google Sans bold (700) font and share a consistent baseline. The animation duration grows with the expanded brand list to preserve a comfortable scrolling speed.
 
 ## Validation
+
+### Collaboration formats
+
+The Content section offers four formats based on the owner's October 21
+reference: Sponsored post (image/video), Custom carousel, Two-post campaign,
+and On-camera walkthrough. Copy focuses on product context and use cases, not
+guaranteed reach or performance. Pricing, payments, and booking widgets are
+deliberately absent. A single inquiry link opens the existing LinkedIn profile
+with `rel="noreferrer"`; there is no new form, data submission, script, SDK, or
+third-party request on page load.
+
+The two-column format grid stacks below 700px and inherits the existing
+Google Sans font, palette, border, and surface tokens. Tests verify all four
+formats, no pricing, both themes at 320/390/768/1440/1920px, accessible headings,
+keyboard inquiry navigation with no opener or POST body, and print exclusion.
 
 ### Load and reload behavior
 
@@ -212,11 +227,11 @@ To refresh immediately locally, run `npm run refresh:topmate`, then run the vali
 
 ### Public LinkedIn follower refresh
 
-The same hourly workflow independently checks a **15-day (360-hour)** interval before requesting `https://www.linkedin.com/in/adityajamwal02`. It uses Node's public HTTP fetch with no credentials, cookies, account session, browser automation, LinkedIn API, scraping service, or other profile. The frontend makes no LinkedIn data requests and contains no refresh-frequency text.
+The same hourly workflow independently checks a **7-day (168-hour)** interval before requesting `https://www.linkedin.com/in/adityajamwal02`. This elapsed-time gate avoids month-boundary cron gaps; the first eligible scheduled run performs the fetch without manual intervention. It uses Node's public HTTP fetch with no credentials, cookies, account session, browser automation, LinkedIn API, scraping service, or other profile. The frontend makes no LinkedIn data requests and contains no refresh-frequency text.
 
 The parser accepts only an exact, nonnegative safe-integer `FollowAction` count attached to Aditya Jamwal's matching `Person` structured-data object. It does not use connection counts, post likes, rounded `87K` badges, or login/challenge pages. Requests have a shared 30-second timeout, a 2 MiB streamed response limit, and at most three redirects restricted to the same profile on `www.linkedin.com` or the observed `in.linkedin.com` regional host. Remote scripts are never executed; HTML is not stored or published.
 
-The snapshot stores the exact count, last verified fetch time, last attempted time, and success status. Every scheduled attempt is separated by at least 15 days, including failed attempts, so a blocked response does not cause hourly retries. A failure preserves the last verified count and fetch time, records the failed attempt, and reports an Actions failure after any unaffected profile changes have validated and deployed. LinkedIn failure does not block Topmate refreshes, and vice versa. Invalid local snapshots, write failures, and test failures remain explicit errors; no zero or invented count is substituted.
+The snapshot stores the exact count, last verified fetch time, last attempted time, and success status. Every scheduled attempt is separated by at least 7 days, including failed attempts, so a blocked response does not cause hourly retries. A failure preserves the last verified count and fetch time, records the failed attempt, and reports an Actions failure after any unaffected profile changes have validated and deployed. LinkedIn failure does not block Topmate refreshes, and vice versa. Invalid local snapshots, write failures, and test failures remain explicit errors; no zero or invented count is substituted.
 
 GitHub can delay scheduled execution; unauthenticated LinkedIn availability and markup are outside this site's control. Last-known values remain available when the source is blocked. Use Actions notifications and the refresh logs to investigate failures. An authorized manual run can enable **Fetch the public LinkedIn follower count now**, or run `npm run refresh:linkedin` locally. `npm run refresh:linkedin -- --if-due` preserves the interval. These commands never sign in.
 

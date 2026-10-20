@@ -3,7 +3,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { formatLinkedInFollowers } from "../src/linkedin.ts";
 
 export const PROFILE_URL = "https://www.linkedin.com/in/adityajamwal02";
-export const REFRESH_INTERVAL_MS = 15 * 24 * 60 * 60 * 1000;
+export const REFRESH_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 export const MAX_PROFILE_BYTES = 2 * 1024 * 1024;
 const snapshotPath = fileURLToPath(
   new URL("../src/data/linkedin.json", import.meta.url),

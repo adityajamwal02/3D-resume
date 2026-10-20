@@ -234,6 +234,7 @@ test("reload restores a scrolled page without a hash and keeps the hero renderer
   const ready = observeScene(page, browserName);
   await page.goto("./");
   await ready();
+  await page.evaluate(() => document.fonts.ready);
   await page.locator("#content").scrollIntoViewIfNeeded();
   const before = await page.evaluate(() => window.scrollY);
   expect(before).toBeGreaterThan(1000);
@@ -244,10 +245,13 @@ test("reload restores a scrolled page without a hash and keeps the hero renderer
   });
   await page.reload();
   await page.evaluate(() => document.fonts.ready);
+  // WebKit can shift by one native scrollbar as the deferred carousel settles.
   await expect
-    .poll(() => page.evaluate(() => window.scrollY))
-    .toBeGreaterThan(1000);
-  await expect(page.locator("#creator-title")).toBeInViewport();
+    .poll(() =>
+      page.evaluate((position) => Math.abs(window.scrollY - position), before),
+    )
+    .toBeLessThanOrEqual(24);
+  await expect(page.locator("#content")).toBeInViewport();
   await expect(page.locator("canvas")).toHaveCount(0);
   expect(renderers).toEqual([]);
 });
