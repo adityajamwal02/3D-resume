@@ -81,6 +81,25 @@
     border-color: var(--line);
     box-shadow: 0 12px 45px #233e4920;
   }
+  [data-theme="light"] .collaboration-format {
+    --format-shadow: #233e4929;
+    --format-glow: #087b6826;
+    border-color: #46667340;
+    background:
+      linear-gradient(135deg, #c8e6df38, #ffffff80 50%, #e6cedd30), #f4f7f6e8;
+    box-shadow:
+      inset 0 1px #ffffffcc,
+      0 8px 24px #233e490d;
+  }
+  @media (hover: hover) {
+    [data-theme="light"] .collaboration-format:hover {
+      border-color: var(--accent);
+      box-shadow:
+        inset 0 1px #ffffff,
+        0 16px 36px var(--format-shadow),
+        0 0 22px var(--format-glow);
+    }
+  }
   [data-theme="light"] .dynamic-island .navigation a,
   [data-theme="light"] .island-context,
   [data-theme="light"] .island-toggle {

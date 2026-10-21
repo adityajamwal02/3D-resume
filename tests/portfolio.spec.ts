@@ -94,7 +94,7 @@ test("portfolio content, navigation, skill filters, and professional links", asy
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto("./");
-  await expect(page).toHaveTitle("Aditya Jamwal | Software Engineer & Mentor");
+  await expect(page).toHaveTitle("Aritte Jamwal Website");
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page
@@ -104,7 +104,8 @@ test("portfolio content, navigation, skill filters, and professional links", asy
   expect(
     await page.evaluate(() => document.fonts.check('16px "Google Sans"')),
   ).toBe(true);
-  await expect(page.locator(".brand-mark")).toHaveCount(2);
+  await expect(page.locator(".dynamic-island .brand-mark")).toHaveCount(0);
+  await expect(page.locator(".brand-mark")).toHaveCount(1);
   for (const logo of await page.locator(".brand-mark").all()) {
     await expect
       .poll(() =>

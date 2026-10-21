@@ -142,21 +142,6 @@ export default function DynamicIsland() {
       className={`site-header dynamic-island ${expanded ? "is-expanded" : ""}`}
     >
       <div className="island-main">
-        <a
-          className="wordmark"
-          href="#home"
-          aria-label="Aditya Jamwal home"
-          onClick={() => setExpanded(false)}
-        >
-          <img
-            className="brand-mark"
-            src={`${import.meta.env.BASE_URL}monogram.svg`}
-            alt=""
-            width="44"
-            height="44"
-          />
-        </a>
-        <span className="island-divider" aria-hidden="true" />
         <span className="island-context" aria-hidden="true">
           {destinations.find(({ id }) => id === active)?.label ??
             "Software Engineer"}

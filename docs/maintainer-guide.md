@@ -54,6 +54,7 @@ src/
 tests/portfolio.spec.ts       Production-browser regression suite
 tests/creator.spec.ts         Content-creation layout, navigation, and outbound-link checks
 tests/collaboration.spec.ts   Format cards, responsive accessibility, and safe inquiry link
+tests/navigation.spec.ts      Logo-free spacing, responsive menu, and exact tab title
 tests/linkedin.spec.ts        Consistent audience displays with no browser-side polling
 tests/metrics.spec.ts         Impressions, animation lifecycle, and motion preferences
 playwright.config.ts         Isolated preview server and Chromium configuration
@@ -63,7 +64,7 @@ scripts/refresh-linkedin.mjs  Credential-free public-profile follower refresh
 scripts/refresh-linkedin.test.mjs Formatting, parser, network-safety, and interval tests
 ```
 
-The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. A custom geometric AJ monogram is shared by the header, footer, and favicon.
+The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. The AJ monogram remains in the footer and favicon, not the navigation.
 
 Mouse movement gently tilts the floating sculpture through damped interpolation. A subtle linear-gradient background animates behind the name and bio. The pause control freezes both the sculpture and ambient gradient; reduced-motion preferences disable automatic motion. The existing discipline selection, assembly, rotation, and reset controls remain available, as do the dynamic island, vertical experience timeline, skills, and contact sections.
 
@@ -244,6 +245,24 @@ This is a static application. Publish the `dist/` directory from `npm run build`
 Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not publish the source repository, node_modules, or local test artifacts as the web root.
 
 ## Appearance
+
+The browser-tab title is **Aritte Jamwal Website**, as requested by the owner.
+This does not rename the resume's subject or professional profile links.
+Desktop navigation gives each of the six section links an equal-width grid
+cell; the AJ logo and its divider are removed. Theme and quick-actions controls
+remain available. The compact menu retains its current-section label and
+vertically stacked, equal-width links on smaller screens.
+
+All four collaboration-format cards remain non-clickable articles with no
+tab stop or button role. Translucent theme-specific gradient surfaces and
+backdrop blur provide a glass effect; the nearly opaque base remains readable
+when blur is unsupported. Pointer hover adds a small lift, stronger border,
+and palette-colored shadow. Reduced motion disables the lift and transition;
+touch keeps the static cards. Only the separate inquiry link is interactive.
+Navigation checks cover 320, 390, 667, 768, 900, 901, 1024, 1440, and 1920px
+widths, including short landscape screens and the compact-menu breakpoint.
+Card checks cover both themes, actual hover shadows/blur/lift, non-clickability,
+reduced motion, touch behavior, and WCAG contrast during hover.
 
 ### Project-card border glow
 

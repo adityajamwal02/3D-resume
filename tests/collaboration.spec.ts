@@ -16,6 +16,86 @@ const labels = [
 const linkedinURL = "https://www.linkedin.com/in/adityajamwal02/";
 
 for (const theme of ["light", "dark"] as const) {
+  test(`all four glass collaboration cards gain a hover shadow without becoming clickable in ${theme} mode`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({
+      colorScheme: theme,
+      reducedMotion: "no-preference",
+    });
+    await page.goto("./#content");
+    const cards = page.locator(".collaboration-format");
+    await expect(cards).toHaveCount(4);
+    for (const [index, card] of (await cards.all()).entries()) {
+      await card.scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await expect(card).toHaveCSS("transform", "none");
+      const initialShadow = await card.evaluate(
+        (element) => getComputedStyle(element).boxShadow,
+      );
+      await expect(card).toHaveCSS(
+        "backdrop-filter",
+        "blur(16px) saturate(1.3)",
+      );
+      expect(
+        await card.evaluate(
+          (element) => getComputedStyle(element).backgroundImage,
+        ),
+      ).toContain("linear-gradient");
+      await expect(card.locator("a, button, input, [tabindex]")).toHaveCount(0);
+      expect(await card.getAttribute("tabindex")).toBeNull();
+      expect(await card.getAttribute("role")).toBeNull();
+      await expect(card).toHaveCSS("cursor", "default");
+      await card.hover();
+      await expect
+        .poll(() =>
+          card.evaluate((element) => getComputedStyle(element).boxShadow),
+        )
+        .not.toBe(initialShadow);
+      await expect(card).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, -4)");
+      const beforeURL = page.url();
+      await card.click();
+      expect(page.url()).toBe(beforeURL);
+      await expect(card).not.toBeFocused();
+      await card.screenshot({
+        path: testInfo.outputPath(`glass-hover-${theme}-${index}.png`),
+      });
+      const accessibility = await new AxeBuilder({ page })
+        .include(".collaboration-formats")
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(accessibility.violations).toEqual([]);
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await cards.first().hover();
+    await expect(cards.first()).toHaveCSS("transform", "none");
+    await expect(cards.first()).toHaveCSS("transition-duration", "0s");
+  });
+}
+
+test("touch users can read glass collaboration cards without hover motion or new tab stops", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    hasTouch: true,
+    viewport: { width: 390, height: 844 },
+    reducedMotion: "no-preference",
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto(process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4173");
+    const card = page.locator(".collaboration-format").first();
+    await card.scrollIntoViewIfNeeded();
+    await card.tap();
+    await expect(card).toHaveCSS("transform", "none");
+    await expect(card).not.toBeFocused();
+    await expect(card.locator("a,button,[tabindex]")).toHaveCount(0);
+  } finally {
+    await context.close();
+  }
+});
+
+for (const theme of ["light", "dark"] as const) {
   test(`collaboration formats have no pricing and stay accessible in ${theme} mode`, async ({
     page,
   }, testInfo) => {

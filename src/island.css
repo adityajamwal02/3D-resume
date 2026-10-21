@@ -58,29 +58,23 @@
     align-items: center;
     min-height: 44px;
   }
-  .dynamic-island .wordmark {
-    font-size: 28px;
-    margin: 0 4px 0 10px;
-  }
-  .island-divider {
-    width: 1px;
-    height: 22px;
-    background: var(--line);
-  }
   .island-context {
     display: none;
   }
   .dynamic-island .navigation {
-    gap: 3px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
     flex: 1;
-    justify-content: center;
+    min-width: 0;
     font-size: 11px;
   }
   .dynamic-island .navigation a {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 7px;
-    padding: 12px 11px;
+    padding: 12px 8px;
     border-radius: 22px;
     color: #b9c1ce;
     transition:
@@ -588,16 +582,10 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .dynamic-island .wordmark {
-      margin-left: 6px;
-      font-size: 27px;
-    }
-    .island-divider {
-      margin-right: 0;
-    }
     .island-context {
       display: block;
       margin-right: auto;
+      margin-left: 12px;
       font: 10px var(--display);
       color: #b9c7d5;
     }
@@ -619,6 +607,7 @@
     .dynamic-island .navigation a {
       padding: 12px;
       font-size: 13px;
+      justify-content: flex-start;
     }
     .dynamic-island .navigation a svg {
       width: 17px;
@@ -1247,13 +1236,43 @@
     gap: 20px;
   }
   .collaboration-format {
+    --format-shadow: #00000045;
+    --format-glow: #36d9b629;
     display: flex;
     flex-direction: column;
     min-width: 0;
     padding: 28px;
-    border: 1px solid var(--line);
+    border: 1px solid #b0f0e42e;
     border-radius: 12px;
-    background: var(--surface);
+    background:
+      linear-gradient(135deg, #b0f0e40d, #ffffff04 50%, #db8bae0d), #1c2028eb;
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    backdrop-filter: blur(16px) saturate(130%);
+    box-shadow:
+      inset 0 1px #ffffff0d,
+      0 8px 24px #00000014;
+    cursor: default;
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+  @media (hover: hover) {
+    .collaboration-format:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow:
+        inset 0 1px #ffffff1a,
+        0 16px 36px var(--format-shadow),
+        0 0 22px var(--format-glow);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .collaboration-format,
+    .collaboration-format:hover {
+      transform: none;
+      transition: none;
+    }
   }
   .collaboration-format-topline {
     display: flex;
