@@ -15,7 +15,7 @@
     "format": "prettier --write src tests playwright.config.ts vite.config.ts index.html README.md"
   },
   "dependencies": {
-    "@fontsource/google-sans": "^5.3.1",
+    "@fontsource-variable/google-sans": "^5.3.2",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "lucide-react": "^1.40.0",
     "react": "^19.2.8",

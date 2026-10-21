@@ -55,6 +55,7 @@ tests/portfolio.spec.ts       Production-browser regression suite
 tests/creator.spec.ts         Content-creation layout, navigation, and outbound-link checks
 tests/collaboration.spec.ts   Format cards, responsive accessibility, and safe inquiry link
 tests/navigation.spec.ts      Logo-free spacing, responsive menu, and exact tab title
+tests/overview.spec.ts        Static SEO metadata, font-byte budget, and scroll layout work
 tests/linkedin.spec.ts        Consistent audience displays with no browser-side polling
 tests/metrics.spec.ts         Impressions, animation lifecycle, and motion preferences
 playwright.config.ts         Isolated preview server and Chromium configuration
@@ -64,7 +65,7 @@ scripts/refresh-linkedin.mjs  Credential-free public-profile follower refresh
 scripts/refresh-linkedin.test.mjs Formatting, parser, network-safety, and interval tests
 ```
 
-The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. The typography uses self-hosted Google Sans (OFL-1.1), with IBM Plex Mono for technical labels. The AJ monogram remains in the footer and favicon, not the navigation.
+The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. Typography uses a single self-hosted Latin Google Sans variable font (400-700), with IBM Plex Mono for technical labels. The existing Google Sans CSS family name is preserved; its [OFL license](../public/licenses/google-sans.txt) ships with the site. The AJ monogram remains only in the footer, not the navigation or browser tab.
 
 Mouse movement gently tilts the floating sculpture through damped interpolation. A subtle linear-gradient background animates behind the name and bio. The pause control freezes both the sculpture and ambient gradient; reduced-motion preferences disable automatic motion. The existing discipline selection, assembly, rotation, and reset controls remain available, as do the dynamic island, vertical experience timeline, skills, and contact sections.
 
@@ -133,8 +134,11 @@ single-worker software-WebGL and accessibility suite on hosted runners.
   storage logs a warning and leaves normal navigation available. Font-ready
   alignment corrects layout movement only if the visitor has not navigated or
   scrolled elsewhere; native anchor navigation and history behavior are retained.
-- Critical regular/medium Google Sans WOFF2 files are preloaded, using Vite's
-  hashed subpath-safe asset URLs. React, React DOM, and Scheduler have a separate
+- One Google Sans Latin variable WOFF2 covers all four weights, loaded once from
+  the stylesheet using Vite's hashed subpath-safe asset URL. An explicit font
+  preload is omitted because WebKit fetched it again for CSS in testing.
+  `font-display: swap` keeps text available during the download.
+  React, React DOM, and Scheduler have a separate
   hashed vendor chunk, so content-only updates do not invalidate those libraries.
   No service worker or custom stale-content cache is introduced.
 - The lazy mentorship portrait is a 480 by 480 WebP, generated from the original
@@ -155,6 +159,36 @@ host permits it. These measurements are not universal latency guarantees.
 asset reuse, the small entry bundle, offscreen deferral, Wispr Flow uniqueness,
 portrait size, and fallbacks. Existing browser suites continue to check all
 sections, motion, accessibility, links, and narrow-screen layouts.
+
+The October 21 overview optimization replaces four static Google Sans downloads
+(91,760 bytes total) with one 35,968-byte variable file: **60.8% fewer Google Sans
+font bytes and three fewer requests**, while retaining all weights and the same
+family. Including the unchanged mono font, font transfer is 50,676 bytes instead
+of 106,468. File-size and font-request budgets are checked in `tests/overview.spec.ts`.
+
+Navigation caches document-space section positions and remeasures after section
+or body resizing, viewport changes, and font readiness. Scroll frames read the
+scroll offset, use cached positions, and update progress/React state only when
+the value changes. In the same local Chromium scenario, 20 ordinary scroll steps
+went from **140 tracked section rectangle reads to zero**. ResizeObserver
+fallback retains functional navigation with a warning. Native smooth scrolling,
+reduced-motion behavior, section anchors, and reload-position restoration remain.
+
+### Search and sharing metadata
+
+The delivered HTML includes a production canonical URL, matching Open Graph and
+Twitter titles, the existing portrait as a social image, and a `ProfilePage` /
+`Person` JSON-LD object with verified professional links. No review ratings,
+unstable audience counts, or invented achievements are added to structured data.
+The single-page [sitemap](../public/sitemap.xml) lists only the canonical page,
+not fragment sections. It can be submitted to Search Console; a project-path
+`robots.txt` is deliberately not used because crawlers read it at the host root.
+These metadata improvements do not guarantee rankings or rich-result eligibility.
+
+A no-JavaScript overview exposes the name, role, and direct professional links
+if scripts are disabled; the full interactive resume still uses React.
+An empty data favicon suppresses the former branded tab icon without a network
+request. Browsers may show their own generic page glyph.
 
 ### Content metric maintenance and animation
 
@@ -246,8 +280,7 @@ Cache hashed assets immutably, but revalidate `index.html` on deployment. Do not
 
 ## Appearance
 
-The browser-tab title is **Aritte Jamwal Website**, as requested by the owner.
-This does not rename the resume's subject or professional profile links.
+The browser-tab and social-preview title is **Aditya Jamwal | Overview**.
 Desktop navigation gives each of the six section links an equal-width grid
 cell; the AJ logo and its divider are removed. Theme and quick-actions controls
 remain available. The compact menu retains its current-section label and
@@ -299,4 +332,4 @@ The sun/moon control in the navigation switches between dark and light palettes 
 - The lazy Three.js chunk is approximately 139 KB gzipped. Vite reports its uncompressed size above the default 500 KB advisory threshold; it is deliberately kept off the initial content bundle.
 - The full suite runs in Chromium; focused navigation, accessibility, and resilience checks also run in Firefox and Playwright WebKit. Emulated viewports and WebKit are not substitutes for physical iOS/Android devices, shipping Safari, manual screen-reader testing, or real Topmate booking/payment transactions.
 - Add exact project/competitive-programming URLs when available.
-- Add a deployment-specific canonical URL, social preview image, and custom domain when needed.
+- Add a custom domain when needed, updating the canonical URL, sitemap, and structured-data URLs together.

@@ -17,7 +17,7 @@ test("logo-free navigation evenly spaces all six sections across responsive view
     await page.setViewportSize(viewport);
     await page.goto("./#content");
     await page.evaluate(() => document.fonts.ready);
-    await expect(page).toHaveTitle("Aritte Jamwal Website");
+    await expect(page).toHaveTitle("Aditya Jamwal | Overview");
     const header = page.locator(".dynamic-island");
     await expect(header.locator("img, .wordmark, .island-divider")).toHaveCount(
       0,
@@ -98,7 +98,7 @@ test("requested tab title survives navigation, theme changes, and reload", async
 }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("./#content");
-  await expect(page).toHaveTitle("Aritte Jamwal Website");
+  await expect(page).toHaveTitle("Aditya Jamwal | Overview");
   await page.getByRole("button", { name: "Switch to dark mode" }).click();
   await page
     .getByRole("navigation")
@@ -106,7 +106,7 @@ test("requested tab title survives navigation, theme changes, and reload", async
     .click();
   await expect(page.locator("#work-title")).toBeInViewport();
   await page.reload();
-  await expect(page).toHaveTitle("Aritte Jamwal Website");
+  await expect(page).toHaveTitle("Aditya Jamwal | Overview");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "AdityaJamwal.",

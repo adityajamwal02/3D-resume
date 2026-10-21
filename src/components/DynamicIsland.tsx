@@ -85,34 +85,80 @@ export default function DynamicIsland() {
 
   useEffect(() => {
     let frame = 0;
+    let disposed = false;
+    let geometryDirty = true;
+    let positions: { id: string; top: number }[] = [];
+    let distance = 0;
+    let viewportHeight = 0;
+    let currentId = "home";
+    let progress = "";
     const sections = ["home", ...destinations.map(({ id }) => id)].map((id) =>
       document.getElementById(id)!,
     );
     const update = () => {
       frame = 0;
-      const distance =
-        document.documentElement.scrollHeight - window.innerHeight;
-      island.current?.style.setProperty(
-        "--reading-progress",
-        `${distance > 0 ? window.scrollY / distance : 0}`,
-      );
-      const current = sections
-        .filter(
-          (section) =>
-            section.getBoundingClientRect().top <= window.innerHeight * 0.4,
-        )
-        .at(-1);
-      setActive(current?.id ?? "home");
+      if (disposed) return;
+      const scrollY = window.scrollY;
+      // Measure only when layout changes, and finish reads before writing styles.
+      if (geometryDirty) {
+        viewportHeight = window.innerHeight;
+        distance = document.documentElement.scrollHeight - viewportHeight;
+        positions = sections.map((section) => ({
+          id: section.id,
+          top: section.getBoundingClientRect().top + scrollY,
+        }));
+        geometryDirty = false;
+      }
+      const nextProgress = Math.max(
+        0,
+        Math.min(1, distance > 0 ? scrollY / distance : 0),
+      ).toFixed(4);
+      const nextId =
+        positions.findLast(({ top }) => top <= scrollY + viewportHeight * 0.4)
+          ?.id ?? "home";
+      if (nextProgress !== progress) {
+        progress = nextProgress;
+        island.current?.style.setProperty("--reading-progress", progress);
+      }
+      if (nextId !== currentId) {
+        currentId = nextId;
+        setActive(nextId);
+      }
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    const onResize = () => {
+      geometryDirty = true;
+      onScroll();
+    };
+    const resizeObserver =
+      typeof ResizeObserver === "undefined"
+        ? undefined
+        : new ResizeObserver(onResize);
+    if (resizeObserver) {
+      for (const element of [document.body, ...sections])
+        resizeObserver.observe(element);
+    } else {
+      console.warn(
+        "Layout observation unavailable; refreshing navigation measurements on scroll.",
+      );
+    }
+    const onPageScroll = () => {
+      if (!resizeObserver) geometryDirty = true;
+      onScroll();
+    };
+    window.addEventListener("scroll", onPageScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    void document.fonts.ready.then(() => {
+      if (!disposed) onResize();
+    });
     update();
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      disposed = true;
+      window.removeEventListener("scroll", onPageScroll);
+      window.removeEventListener("resize", onResize);
+      resizeObserver?.disconnect();
       cancelAnimationFrame(frame);
     };
   }, []);

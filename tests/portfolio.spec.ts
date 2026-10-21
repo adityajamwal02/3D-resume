@@ -94,7 +94,7 @@ test("portfolio content, navigation, skill filters, and professional links", asy
     if (message.type() === "error") errors.push(message.text());
   });
   await page.goto("./");
-  await expect(page).toHaveTitle("Aritte Jamwal Website");
+  await expect(page).toHaveTitle("Aditya Jamwal | Overview");
   await page.evaluate(() => document.fonts.ready);
   expect(
     await page
