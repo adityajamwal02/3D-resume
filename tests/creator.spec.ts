@@ -24,6 +24,7 @@ const brandNames = [
   "Matiks",
   "Wellbeing Nutrition",
   "Switch AI",
+  "Happpy AI Agent",
 ];
 
 test("career highlights and selected work reflect the community and collaboration platform", async ({
@@ -77,7 +78,7 @@ for (const theme of ["light", "dark"] as const) {
       ).toHaveText(`${(linkedinHundreds * 100).toLocaleString("en-US")}+`);
       await expect(
         section.locator(".creator-impressions .count-up-visual"),
-      ).toHaveText("17.2M+");
+      ).toHaveText("19.1M+");
       await expect(section.locator(".creator-impressions")).toContainText(
         "impressions on LinkedIn",
       );
@@ -140,10 +141,11 @@ for (const theme of ["light", "dark"] as const) {
         name: "Collaborating brands",
       });
       await expect(brands.getByRole("listitem")).toHaveText(brandNames);
-      await expect(brands.locator("img")).toHaveCount(17);
+      await expect(brands.locator("img")).toHaveCount(18);
       for (const [name, file] of [
         ["Wellbeing Nutrition", "wellbeing-nutrition.jpg"],
         ["Switch AI", "switch-ai.jpg"],
+        ["Happpy AI Agent", "happpy-ai-agent.png"],
       ]) {
         const item = brands.getByRole("listitem").filter({ hasText: name });
         await expect(item).toHaveCount(1);
@@ -229,6 +231,25 @@ for (const theme of ["light", "dark"] as const) {
           height: (image as HTMLImageElement).naturalHeight,
         })),
       ).toEqual({ width: 148, height: 148 });
+      const happpy = brands
+        .getByRole("listitem")
+        .filter({ hasText: /^Happpy AI Agent$/ });
+      await happpy.scrollIntoViewIfNeeded();
+      await expect(happpy).toBeInViewport();
+      expect(
+        await happpy.locator("img").evaluate((image) => ({
+          width: (image as HTMLImageElement).naturalWidth,
+          height: (image as HTMLImageElement).naturalHeight,
+        })),
+      ).toEqual({ width: 200, height: 200 });
+      expect(
+        await happpy
+          .locator(".brand-carousel-name")
+          .evaluate((label) => label.scrollWidth <= label.clientWidth),
+      ).toBe(true);
+      await happpy.screenshot({
+        path: testInfo.outputPath(`happpy-${theme}-${width}.png`),
+      });
       await expect(collaborations.getByRole("button")).toHaveCount(0);
       expect(
         await collaborations
@@ -470,7 +491,7 @@ test("brand carousel honors reduced motion and all brands remain reachable", asy
   const brands = page
     .getByRole("list", { name: "Collaborating brands" })
     .getByRole("listitem");
-  await expect(brands).toHaveCount(17);
+  await expect(brands).toHaveCount(18);
   for (const item of await brands.all()) {
     await item.scrollIntoViewIfNeeded();
     await expect(item).toBeInViewport();
@@ -504,7 +525,7 @@ test("missing brand logos leave readable brand names and social links", async ({
   await page.route("**/brands/*", (route) => route.abort());
   await page.goto("./#content");
   const brands = page.getByRole("list", { name: "Collaborating brands" });
-  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(17);
+  await expect(brands.locator(".brand-logo-unavailable")).toHaveCount(18);
   await expect(brands.locator("img")).toHaveCount(0);
   for (const name of brandNames) {
     await expect(brands.getByText(name, { exact: true })).toHaveCount(1);

@@ -1,7 +1,8 @@
 # Collaboration brand assets
 
 The portfolio owner supplied the initial collaboration list on September 25,
-2026 and added Wellbeing Nutrition and Switch AI on October 18, 2026.
+2026, added Wellbeing Nutrition and Switch AI on October 18, 2026, and
+supplied the Happpy AI Agent logo on November 2, 2026.
 The marks identify those collaborations, not product ownership or employer
 affiliation. All marks remain the property of their respective owners.
 The assets are self-hosted without recoloring or redrawing. Cards and bold
@@ -29,6 +30,7 @@ themes. The backing is white in light mode and muted gray-green in dark mode.
 | Matiks              | `matiks.png`              | [Official site icon](https://www.matiks.in/icon.png), declared as the social image by [Matiks](https://matiks.com/), the mental-math duels and puzzle battles app. Original lime symbol on an opaque dark square.                                                                                                                                                                                                |
 | Wellbeing Nutrition | `wellbeing-nutrition.jpg` | Official 200 by 200 company logo from the `og:image` of the owner-specified [LinkedIn company page](https://www.linkedin.com/company/wellbeing-nutrition/), downloaded October 18, 2026 from [LinkedIn's media CDN](https://media.licdn.com/dms/image/v2/C510BAQFxwnkxOgGv6g/company-logo_200_200/company-logo_200_200/0/1630606707050?e=2147483647&v=beta&t=S1uyShNIq77bYpZoo-CgH1PUbx-PwB1JhIzVcajQlC8).       |
 | Switch AI           | `switch-ai.jpg`           | Official 200 by 200 showcase logo from the `og:image` of the owner-specified [LinkedIn showcase](https://www.linkedin.com/showcase/switch-ai-dev/), downloaded October 18, 2026 from [LinkedIn's media CDN](https://media.licdn.com/dms/image/v2/D4D0BAQFXNg03T5gZHA/company-logo_200_200/B4DaDOhyvWIcAE-/0/1790171360431/switch_ai_dev_logo?e=2147483647&v=beta&t=Bd2LYUXmYO5swpz6tKPmst9k8uGgnvIuvbzawiEMaYo). |
+| Happpy AI Agent     | `happpy-ai-agent.png`     | Owner-provided 200 by 200 PNG attachment, supplied November 2, 2026; copied unchanged, with the brand name spelled as requested.                                                                                                                                                                                                                                                                                 |
 
 CodeRabbit, MuscleBlaze, and CodeAnt AI use official symbol assets with their
 names displayed separately. Gamma now uses the owner's supplied logo rather

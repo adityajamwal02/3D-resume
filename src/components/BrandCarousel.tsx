@@ -21,6 +21,7 @@ const brands = [
   { name: "Matiks", logo: "matiks.png" },
   { name: "Wellbeing Nutrition", logo: "wellbeing-nutrition.jpg" },
   { name: "Switch AI", logo: "switch-ai.jpg" },
+  { name: "Happpy AI Agent", logo: "happpy-ai-agent.png" },
 ];
 
 function BrandLogo({

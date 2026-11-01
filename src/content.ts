@@ -1,4 +1,4 @@
-export const creatorImpressions = 17_200_000;
+export const creatorImpressions = 19_100_000;
 
 export const collaborationFormats = [
   {
