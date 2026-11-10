@@ -82,7 +82,9 @@ low-priority SVG request records each visible production-page load, including
 reloads. It starts after the page's load event, not when the footer scrolls into
 view, so visitors need not reach the bottom to be counted. Section navigation,
 theme changes, and returning to an already loaded tab do not add views.
-The year in the adjacent copyright remains dynamic.
+The copyright stays centered in the footer, with the counter on the right.
+On narrow screens the copyright has its own centered row to avoid overlap.
+Its year remains dynamic.
 
 The shared key is `adityajamwal02.github.io/3D-resume`. Counts persist at the
 provider across browsers and deployments; no fabricated starting value or

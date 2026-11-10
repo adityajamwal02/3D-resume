@@ -932,22 +932,24 @@ export default function Portfolio() {
         </section>
       </main>
       <footer className="site-footer">
-        <a className="wordmark" href="#home" aria-label="Back to top">
-          <img
-            className="brand-mark"
-            src={`${import.meta.env.BASE_URL}monogram.svg`}
-            alt=""
-            width="44"
-            height="44"
-          />
-        </a>
-        <a className="footer-back" href="#home">
-          BACK TO TOP <ArrowRight size={15} className="up-arrow" />
-        </a>
-        <div className="footer-meta">
-          <span>© {new Date().getFullYear()} Aditya Jamwal</span>
-          <VisitCounter />
+        <div className="footer-navigation">
+          <a className="wordmark" href="#home" aria-label="Back to top">
+            <img
+              className="brand-mark"
+              src={`${import.meta.env.BASE_URL}monogram.svg`}
+              alt=""
+              width="44"
+              height="44"
+            />
+          </a>
+          <a className="footer-back" href="#home">
+            BACK TO TOP <ArrowRight size={15} className="up-arrow" />
+          </a>
         </div>
+        <span className="footer-copyright">
+          © {new Date().getFullYear()} Aditya Jamwal
+        </span>
+        <VisitCounter />
       </footer>
     </>
   );

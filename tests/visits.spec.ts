@@ -239,7 +239,7 @@ for (const theme of ["light", "dark"] as const) {
       }),
     );
     await page.emulateMedia({ colorScheme: theme });
-    for (const width of [320, 390, 768, 1440, 1920]) {
+    for (const width of [320, 390, 700, 701, 768, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(`${production}#contact`);
       await page.evaluate(() => document.fonts.ready);
@@ -250,13 +250,24 @@ for (const theme of ["light", "dark"] as const) {
       await expect(footer).toContainText(
         `© ${new Date().getFullYear()} Aditya Jamwal`,
       );
+      const copyright = await footer.locator(".footer-copyright").boundingBox();
+      const footerBounds = await footer.boundingBox();
+      expect(copyright).not.toBeNull();
+      expect(footerBounds).not.toBeNull();
+      expect(
+        Math.abs(
+          copyright!.x +
+            copyright!.width / 2 -
+            (footerBounds!.x + footerBounds!.width / 2),
+        ),
+      ).toBeLessThanOrEqual(1);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
       const boxes = await footer
-        .locator(".wordmark, .footer-back, .footer-meta > *")
+        .locator(".wordmark, .footer-back, .footer-copyright, .visit-counter")
         .evaluateAll((elements) =>
           elements.map((element) => {
             const rect = element.getBoundingClientRect();
