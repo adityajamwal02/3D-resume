@@ -14,7 +14,7 @@ creator. Built with React, TypeScript, Vite, and Three.js, with an interactive
 - **Expertise:** Skills, education, and achievements.
 - **Mentorship:** Session guide, booking links, and testimonials.
 - **Content:** LinkedIn community and impressions counters, brand partnerships, collaboration formats, and social links.
-- **Contact:** Professional links and a dynamic copyright footer.
+- **Contact:** Professional links, dynamic copyright, and a shared profile-view counter.
 
 ## Architecture
 
@@ -34,6 +34,8 @@ flowchart TD
     Metrics --> Motion["IntersectionObserver + animation frames; reduced-motion fallback"]
     Portfolio --> Brands["BrandCarousel: motion and keyboard controls"]
     Assets["Local logos + Google Sans fonts"] --> Brands
+    Portfolio --> Visits["VisitCounter: footer count + statistics link"]
+    Visits --> Hits["Hits.sh: shared page-load count"]
 ```
 
 Development, content maintenance, testing, deployment, and implementation history

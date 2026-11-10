@@ -252,6 +252,13 @@
   [data-theme="light"] .site-footer {
     background: #e4ece9;
   }
+  [data-theme="light"] .visit-counter img {
+    filter: brightness(0);
+    opacity: 0.8;
+  }
+  [data-theme="light"] .visit-counter:hover img {
+    opacity: 1;
+  }
   [data-theme="light"] .company-ambee {
     filter: brightness(0) saturate(100%);
   }

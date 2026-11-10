@@ -4,7 +4,7 @@ Implementation details, content provenance, testing, and operations for the
 [3D Resume Portfolio](../README.md). Paths in the architecture tree are relative
 to the repository root.
 
-A career portfolio with a floating, glossy Three.js sculpture. Built with React 19, TypeScript, Vite 8, and CSS. No custom backend, API keys, analytics, or email delivery. Contact links lead directly to LinkedIn, Topmate, and GitHub.
+A career portfolio with a floating, glossy Three.js sculpture. Built with React 19, TypeScript, Vite 8, and CSS. No custom backend, API keys, identifying analytics, or email delivery. Contact links lead directly to LinkedIn, Topmate, and GitHub. An external Hits.sh badge maintains the public page-load counter.
 
 ## Local Development
 
@@ -35,6 +35,7 @@ src/
   Portfolio.tsx               Semantic resume sections and contact interactions
   content.ts                  Career history and skill category data
   components/CountUp.tsx       Once-per-mount, viewport-triggered metric animation
+  components/VisitCounter.tsx  Shared public page-load count and statistics link
   components/BorderGlow.tsx    Project-card pointer-reactive border glow
   components/border-glow.css  Theme palettes, edge masks, focus and motion fallbacks
   data/topmate.json           Last verified public Topmate metrics and timestamp
@@ -58,6 +59,7 @@ tests/navigation.spec.ts      Logo-free spacing, responsive menu, and exact tab 
 tests/overview.spec.ts        Static SEO metadata, font-byte budget, and scroll layout work
 tests/linkedin.spec.ts        Consistent audience displays with no browser-side polling
 tests/metrics.spec.ts         Impressions, animation lifecycle, and motion preferences
+tests/visits.spec.ts          Counter lifecycle, preview isolation, failures, and footer layout
 playwright.config.ts         Isolated preview server and Chromium configuration
 scripts/refresh-topmate.mjs   Validated, atomic public-profile metric refresh
 scripts/refresh-topmate.test.mjs Parser, freshness, and failure regression tests
@@ -72,6 +74,50 @@ Mouse movement gently tilts the floating sculpture through damped interpolation.
 The renderer targets 30 fps, caps device pixel ratio at 1 on mobile and 1.5 on desktop, suspends animation outside the viewport or in a hidden tab, and disposes GPU resources on unmount. Reduced-motion preferences start the scene paused. It can also be paused manually. Mouse orbit, layer selection, and keyboard-accessible rotation/reset controls all work without scroll capture. One-finger mobile scrolling is preserved.
 
 If WebGL or the deferred chunk fails, a CSS illustration remains alongside functional discipline selection. Every resume section is ordinary HTML and independent of the renderer. Fonts are self-hosted through Fontsource.
+
+## Profile-view Counter
+
+The footer uses the [Hits.sh](https://hits.sh) hosted counter. One small,
+low-priority SVG request records each visible production-page load, including
+reloads. It starts after the page's load event, not when the footer scrolls into
+view, so visitors need not reach the bottom to be counted. Section navigation,
+theme changes, and returning to an already loaded tab do not add views.
+The year in the adjacent copyright remains dynamic.
+
+The shared key is `adityajamwal02.github.io/3D-resume`. Counts persist at the
+provider across browsers and deployments; no fabricated starting value or
+browser-local total is used. Clicking the counter opens
+[total and daily statistics](https://hits.sh/adityajamwal02.github.io/3D-resume/).
+The provider's SVG is displayed only as an image, never injected as HTML.
+Its native badge typography is retained; surrounding text uses Google Sans.
+CSS adapts its transparent, monochrome badge to both themes without another
+counting request. The statistics link also provides an accessible alternative
+to the number embedded in the cross-origin image.
+
+This is an approximate count of **page loads**, not unique people or a list of
+identities. Repeat visits and some bots can increase it; blockers, offline
+visits, and service outages can reduce it. The public endpoint is not protected
+against deliberate inflation, and historical visits before enabling it cannot
+be recovered. Do not describe it as verified unique visitors.
+
+There are no accounts, API secrets, cookies set by this app, fingerprinting,
+or embedded analytics scripts. The request sends no referrer, query string,
+section hash, or visitor identifier from this app. Like any external resource,
+the provider receives ordinary network request metadata. Its
+[privacy policy](https://hits.sh/privacy/) says the counter does not track IPs,
+cookies, or user agents; the separate statistics website has its own analytics.
+
+Counting is restricted to the production origin and portfolio path. Local
+development, previews, forks, and WebDriver checks show `Views: preview` and
+make no counter requests. Browser tests intercept the production origin and
+badge response, so CI does not pollute real totals. Use the separate
+`adityajamwal02.github.io/3D-resume-counter-check` key for manual provider checks,
+never the production key.
+
+A loading error or 12-second timeout shows `Views unavailable` and emits a
+warning. There is deliberately no automatic retry: the provider may already
+have counted a request whose response was lost. The statistics link remains
+available. A subsequent real page load attempts counting again.
 
 ## Content Provenance
 

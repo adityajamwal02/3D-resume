@@ -25,6 +25,7 @@ import DynamicIsland from "./components/DynamicIsland";
 import BrandCarousel from "./components/BrandCarousel";
 import CountUp from "./components/CountUp";
 import BorderGlow from "./components/BorderGlow";
+import VisitCounter from "./components/VisitCounter";
 import useScrollRestoration from "./hooks/useScrollRestoration";
 import "./island.css";
 import "./theme.css";
@@ -940,10 +941,13 @@ export default function Portfolio() {
             height="44"
           />
         </a>
-        <span>© {new Date().getFullYear()} Aditya Jamwal</span>
-        <a href="#home">
+        <a className="footer-back" href="#home">
           BACK TO TOP <ArrowRight size={15} className="up-arrow" />
         </a>
+        <div className="footer-meta">
+          <span>© {new Date().getFullYear()} Aditya Jamwal</span>
+          <VisitCounter />
+        </div>
       </footer>
     </>
   );

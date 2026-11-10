@@ -906,16 +906,63 @@ em {
 }
 .site-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
   padding: 30px 5%;
   font: 9px var(--mono);
   color: var(--muted);
 }
-.site-footer > a:last-child {
+.footer-back {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 44px;
+  margin-right: auto;
+}
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px 24px;
+  font: 11px/1.5 var(--display);
+}
+.visit-counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 44px;
+}
+.visit-counter > svg {
+  color: var(--accent);
+}
+.visit-counter-value {
+  display: grid;
+  align-items: center;
+  width: 136px;
+  min-height: 20px;
+}
+.visit-counter-value > * {
+  grid-area: 1 / 1;
+}
+.visit-counter img {
+  width: 136px;
+  height: 20px;
+  object-fit: scale-down;
+  object-position: left center;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+.visit-counter[data-counter-state="loading"] img {
+  visibility: hidden;
+}
+.visit-counter:hover {
+  color: var(--text);
+}
+.visit-counter:hover img {
+  opacity: 1;
 }
 .up-arrow {
   rotate: -90deg;
@@ -1232,12 +1279,16 @@ em {
   .site-footer .wordmark {
     font-size: 30px;
   }
-  .site-footer > span {
-    font-size: 8px;
+  .footer-meta {
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 0 12px;
   }
-  .site-footer > a:last-child {
+  .footer-back {
     font-size: 8px;
     gap: 5px;
+    margin-left: auto;
+    margin-right: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
