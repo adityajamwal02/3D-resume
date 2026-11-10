@@ -16,19 +16,54 @@ function pixelDifference(before: Buffer, after: Buffer) {
 
 test("Microsoft experience uses the updated resume wording", async ({
   page,
-}) => {
-  await page.goto("./");
+}, testInfo) => {
+  const bullets = [
+    "Developing Azure Resource Mover v2 to move Azure resources across regions via intelligent discovery, execution and co-pilot integrations.",
+    "Architected smart load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded CRUD APIs for move applications",
+    "Planned end-to-end Observability-as-code telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure supporting alerts, dashboard views, mapped KQL queries and incident management (IcM) routing.",
+    "Implementing UI/ UX blades for post-MVP and automation scripts to support deployment testing on-go.",
+  ];
   const microsoft = page.locator(".job").filter({
     has: page.getByRole("heading", {
       name: "Microsoft Software Engineer",
       exact: true,
     }),
   });
-  await expect(microsoft.locator("li")).toHaveText([
-    "Developing Azure Resource Mover v2 to move Azure resources across regions via intelligent discovery, execution and co-pilot integrations.",
-    "Architected end-to-end load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded MoveApplications CRUD APIs",
-    "Planned Geneva telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure to support alerting, mapped KQL queries and incident management (IcM) calls",
-  ]);
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("./#experience");
+      await page.evaluate(() => document.fonts.ready);
+      await expect(microsoft.locator("li")).toHaveText(bullets);
+      await expect(microsoft.locator(".job-date")).toHaveText(
+        "FEB 2026 — PRESENT",
+      );
+      await expect(microsoft.locator(".tags > span")).toHaveText([
+        ".NET",
+        "Azure",
+        "Cloud management",
+        "Agentic AI",
+        "REST APIs",
+      ]);
+      expect(
+        await microsoft
+          .locator(".job-body")
+          .evaluate((element) => element.scrollWidth <= element.clientWidth),
+      ).toBe(true);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      await microsoft.screenshot({
+        path: testInfo.outputPath(`microsoft-${theme}-${width}.png`),
+      });
+    }
+  }
+  await page.emulateMedia({ media: "print" });
+  await expect(microsoft).toBeVisible();
+  await expect(microsoft.locator("li")).toHaveText(bullets);
 });
 
 for (const year of [2026, 2027, 2030]) {

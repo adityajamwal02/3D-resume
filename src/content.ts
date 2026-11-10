@@ -38,8 +38,9 @@ export const experience = [
     date: "FEB 2026 — PRESENT",
     bullets: [
       "Developing Azure Resource Mover v2 to move Azure resources across regions via intelligent discovery, execution and co-pilot integrations.",
-      "Architected end-to-end load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded MoveApplications CRUD APIs",
-      "Planned Geneva telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure to support alerting, mapped KQL queries and incident management (IcM) calls",
+      "Architected smart load balancer system to provision OpenAI model endpoints to distribute scale for intelligent workflows. Designed and coded CRUD APIs for move applications",
+      "Planned end-to-end Observability-as-code telemetric system for synthetic logs, metrics and monitors for backend service and infrastructure supporting alerts, dashboard views, mapped KQL queries and incident management (IcM) routing.",
+      "Implementing UI/ UX blades for post-MVP and automation scripts to support deployment testing on-go.",
     ],
     skills: [".NET", "Azure", "Cloud management", "Agentic AI", "REST APIs"],
   },
