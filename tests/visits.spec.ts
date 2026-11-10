@@ -6,16 +6,23 @@ const badge =
   "https://hits.sh/adityajamwal02.github.io/3D-resume.svg?label=Profile%20views&style=flat-square&color=transparent&labelColor=transparent";
 const statistics = "https://hits.sh/adityajamwal02.github.io/3D-resume/";
 
+test.afterEach(async ({ page, context }) => {
+  await page.unrouteAll({ behavior: "wait" });
+  await context.unrouteAll({ behavior: "wait" });
+});
+
 function badgeBody(count = 1234) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="136" height="20"><text x="5" y="14" font-family="Verdana,sans-serif" font-size="11" fill="white">Profile views: ${count}</text></svg>`;
 }
 
 async function serveProduction(page: Page, baseURL: string, automated = false) {
-  await page.route(`${production}**`, async (route) => {
-    const resource = route.request().url().slice(production.length);
-    const response = await page.request.get(new URL(resource, baseURL).href);
-    await route.fulfill({ response });
-  });
+  if (new URL(baseURL).href !== production) {
+    await page.route(`${production}**`, async (route) => {
+      const resource = route.request().url().slice(production.length);
+      const response = await page.request.get(new URL(resource, baseURL).href);
+      await route.fulfill({ response });
+    });
+  }
   if (!automated) {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
@@ -68,6 +75,7 @@ test("visits count once per page load, never on theme changes or section navigat
     "ready",
   );
   expect(count).toBe(3);
+  await secondPage.unrouteAll({ behavior: "wait" });
   await secondPage.close();
 });
 
