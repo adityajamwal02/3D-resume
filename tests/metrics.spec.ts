@@ -7,6 +7,47 @@ const impressions = "19.1M+";
 const clockStart = new Date("2026-10-04T18:00:00.000Z");
 const clockPause = new Date("2026-10-04T18:01:00.000Z");
 
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`LeetCode practice fits desktop, tablet and phone in ${colorScheme} mode`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("./#expertise");
+    const practice = page.locator("#expertise .leetcode-practice");
+    await expect(
+      practice.getByRole("link", { name: "LeetCode profile" }),
+    ).toHaveAttribute("href", "https://leetcode.com/u/darkaadityaa/");
+    await expect(practice.locator(".practice-stats dd")).toHaveText([
+      "1,718",
+      "57K",
+      "140",
+      "8",
+      "363",
+    ]);
+    await expect(page.getByText(/Top 2\.77%/)).toHaveCount(2);
+    for (const [width, columns] of [
+      [1440, 3],
+      [700, 2],
+      [320, 1],
+    ]) {
+      await page.setViewportSize({ width, height: 900 });
+      const entries = practice
+        .locator(".practice-topics")
+        .first()
+        .locator(":scope > div");
+      const boxes = await entries.evaluateAll((nodes) =>
+        nodes.map((node) => node.getBoundingClientRect().toJSON()),
+      );
+      expect(boxes.filter((box) => box.top === boxes[0].top)).toHaveLength(
+        columns,
+      );
+      expect(boxes.every((box) => box.left >= 0 && box.right <= width)).toBe(
+        true,
+      );
+    }
+  });
+}
+
 test("impressions use the supplied manual total and show 19.1M+ without fetching", async ({
   page,
 }) => {

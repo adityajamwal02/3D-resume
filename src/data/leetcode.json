@@ -1,0 +1,43 @@
+{
+  "profile": "https://leetcode.com/u/darkaadityaa/",
+  "topPercent": "2.77",
+  "topics": {
+    "Advanced": {
+      "Dynamic Programming": 281,
+      "Backtracking": 63,
+      "Union-Find": 44,
+      "Divide and Conquer": 32,
+      "Monotonic Stack": 32,
+      "Trie": 24,
+      "Segment Tree": 18,
+      "Bitmask": 17
+    },
+    "Intermediate": {
+      "Hash Table": 348,
+      "Math": 268,
+      "Greedy": 213,
+      "Depth-First Search": 170,
+      "Binary Search": 162,
+      "Breadth-First Search": 141,
+      "Tree": 126,
+      "Bit Manipulation": 120
+    },
+    "Fundamental": {
+      "Array": 946,
+      "String": 377,
+      "Sorting": 263,
+      "Matrix": 136,
+      "Two Pointers": 133,
+      "Simulation": 99,
+      "Stack": 90,
+      "Linked List": 60
+    }
+  },
+  "solved": 1718,
+  "community": {
+    "Views": "57K",
+    "Solutions": "140",
+    "Discussions": "8",
+    "Reputation": "363"
+  }
+}

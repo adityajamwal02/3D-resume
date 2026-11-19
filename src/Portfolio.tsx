@@ -19,6 +19,7 @@ import {
 } from "./content";
 import topmate from "./data/topmate.json";
 import linkedin from "./data/linkedin.json";
+import leetcode from "./data/leetcode.json";
 import { formatLinkedInFollowers } from "./linkedin";
 import SystemsScene from "./components/SystemsScene";
 import DynamicIsland from "./components/DynamicIsland";
@@ -195,7 +196,8 @@ export default function Portfolio() {
           </div>
           <div>
             <strong>
-              Top 2.63<span>%</span>
+              Top {leetcode.topPercent}
+              <span>%</span>
             </strong>
             <p>LeetCode · Knight</p>
           </div>
@@ -448,6 +450,46 @@ export default function Portfolio() {
               </div>
             ))}
           </div>
+          <div className="leetcode-practice">
+            <header>
+              <h3>DSA patterns by topic</h3>
+              <a className="text-link" href={leetcode.profile}>
+                LeetCode profile <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            </header>
+            <p>
+              Problems solved per topic. A problem can count toward more than
+              one topic.
+            </p>
+            {Object.entries(leetcode.topics).map(([level, topics]) => (
+              <div className="practice-group" key={level}>
+                <h4>{level}</h4>
+                <dl className="practice-topics">
+                  {Object.entries(topics).map(([name, count]) => (
+                    <div key={name}>
+                      <dt>{name}</dt>
+                      <dd>{count}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+            <div className="practice-group">
+              <h4>Problem solving &amp; community stats</h4>
+              <dl className="practice-stats">
+                <div>
+                  <dt>Problems solved</dt>
+                  <dd>{formatCommunityCount(leetcode.solved)}</dd>
+                </div>
+                {Object.entries(leetcode.community).map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
         </section>
         <section
           className="section credentials-section"
@@ -479,7 +521,8 @@ export default function Portfolio() {
               <div>
                 <span>01</span>
                 <h3>
-                  LeetCode Knight<small>Top 2.63% · Peak rating 1994</small>
+                  LeetCode Knight
+                  <small>Top {leetcode.topPercent}% · Peak rating 1994</small>
                 </h3>
                 <span className="achievement-detail">DSA</span>
               </div>

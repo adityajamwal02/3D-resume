@@ -11,7 +11,7 @@ creator. Built with React, TypeScript, Vite, and Three.js, with an interactive
 - **Introduction:** Engineering and mentorship focus, interactive sculpture, and career highlights.
 - **Experience:** Microsoft, Cisco, and Ambee.
 - **Work:** HashImagin and Multi-Agentic System.
-- **Expertise:** Skills, education, and achievements.
+- **Expertise:** Skills, LeetCode practice by topic, community stats, education, and achievements.
 - **Mentorship:** Session guide, booking links, and testimonials.
 - **Content:** LinkedIn community and impressions counters, brand partnerships, collaboration formats, and social links.
 - **Contact:** Professional links, dynamic copyright, and a shared profile-view counter.

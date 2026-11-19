@@ -767,6 +767,79 @@ em {
   margin-top: 25px;
   max-width: 550px;
 }
+.leetcode-practice {
+  margin-top: clamp(48px, 7vw, 96px);
+  border-top: 1px solid var(--line);
+  padding-top: 32px;
+}
+.leetcode-practice header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.leetcode-practice h3 {
+  font-size: clamp(24px, 3vw, 40px);
+}
+.leetcode-practice > p {
+  margin-top: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.practice-group {
+  margin-top: 32px;
+}
+.practice-group h4 {
+  font: 500 18px var(--display);
+}
+.practice-group dl {
+  display: grid;
+  gap: 0 clamp(20px, 4vw, 56px);
+  margin: 12px 0 0;
+}
+.practice-topics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.practice-stats {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.practice-group dl > div {
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+.practice-topics > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.practice-group dd {
+  color: var(--accent);
+  margin: 0;
+  font: 14px var(--mono);
+}
+.practice-stats dd {
+  margin-top: 6px;
+  font: 500 28px var(--display);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 760px) {
+  .practice-topics,
+  .practice-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .practice-topics {
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .leetcode-practice {
+    display: none;
+  }
+}
 .credentials-section {
   border-top: 1px solid var(--line);
 }
