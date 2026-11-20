@@ -414,6 +414,77 @@ test("Topmate mentorship links and mobile navigation", async ({ page }) => {
 });
 
 for (const theme of ["light", "dark"] as const) {
+  test(`career timeline follows reading position in ${theme} mode`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({
+      colorScheme: theme,
+      reducedMotion: "no-preference",
+    });
+    await page.goto("./#experience");
+    const timeline = page.locator(".timeline");
+    const scale = () =>
+      timeline.evaluate(
+        (el) => new DOMMatrix(getComputedStyle(el, "::before").transform).d,
+      );
+    await timeline.evaluate((el) =>
+      el.scrollIntoView({ block: "start", behavior: "instant" }),
+    );
+    await expect.poll(scale).toBeLessThan(0.7);
+    await page.locator("#work").evaluate((el) =>
+      el.scrollIntoView({ block: "start", behavior: "instant" }),
+    );
+    await expect.poll(scale).toBe(1);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect.poll(scale).toBe(1);
+    await expect(page.locator(".skill-list")).toHaveCSS(
+      "animation-name",
+      "none",
+    );
+  });
+
+  test(`prep package hit areas and depth respect motion in ${theme} mode`, async ({
+    page,
+    context,
+  }) => {
+    await page.emulateMedia({
+      colorScheme: theme,
+      reducedMotion: "no-preference",
+    });
+    await page.goto("./#mentorship");
+    const cards = page.locator(".prep-package");
+    await context.route("https://topmate.io/**", (route) =>
+      route.fulfill({ body: "Package" }),
+    );
+    for (const [i, price, oldPrice] of [
+      [0, "₹2,899", "₹3,696"],
+      [1, "₹3,999", "₹5,495"],
+    ] as const) {
+      const card = cards.nth(i);
+      await expect(card.locator(".prep-package-price strong")).toContainText(
+        price,
+      );
+      await expect(card.locator(".prep-package-price s")).toHaveText(oldPrice);
+      await card.hover();
+      const scale = (index: number) =>
+        cards
+          .nth(index)
+          .evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a);
+      await expect.poll(() => scale(i)).toBeGreaterThan(1);
+      await expect.poll(() => scale(1 - i)).toBeLessThan(1);
+      const href = await card.getByRole("link").getAttribute("href");
+      const popup = page.waitForEvent("popup");
+      await card.click({ position: { x: 16, y: 16 } });
+      const destination = await popup;
+      await expect(destination).toHaveURL(href!);
+      await destination.close();
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await cards.first().hover();
+    for (const card of await cards.all())
+      await expect(card).toHaveCSS("transform", "none");
+  });
+
   test(`prep packages follow testimonials and reflow in ${theme} mode`, async ({
     page,
   }, testInfo) => {
@@ -422,7 +493,7 @@ for (const theme of ["light", "dark"] as const) {
     const region = page.locator("#mentorship .testimonials + .prep-packages");
     const cards = region.getByRole("article");
     await expect(
-      region.getByRole("heading", { name: "Focused 1:1 prep packages" }),
+      region.getByRole("heading", { name: "Focused 1:1 preparation packages" }),
     ).toBeVisible();
     for (const [i, id] of ["1866899", "1828890"].entries()) {
       const card = cards.nth(i);

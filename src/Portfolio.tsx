@@ -93,11 +93,15 @@ const sharedPrepCalls = [
 const prepPackages = [
   {
     name: "Interview Ready",
+    price: "₹2,899",
+    originalPrice: "₹3,696",
     href: "https://topmate.io/adityajamwal/1866899",
     calls: sharedPrepCalls,
   },
   {
     name: "Interview Ready Pro",
+    price: "₹3,999",
+    originalPrice: "₹5,495",
     href: "https://topmate.io/adityajamwal/1828890",
     calls: [...sharedPrepCalls, "Mock Interview (DSA) · 75 min"],
   },
@@ -449,7 +453,7 @@ export default function Portfolio() {
             <div className="skill-panel" aria-live="polite">
               <p className="eyebrow">{skillGroups[selectedSkill].subtitle}</p>
               <h3>{skillGroups[selectedSkill].heading}</h3>
-              <div className="skill-list">
+              <div className="skill-list" key={selectedSkill}>
                 {skillGroups[selectedSkill].skills.map((skill) => (
                   <span key={skill}>{skill}</span>
                 ))}
@@ -804,34 +808,44 @@ export default function Portfolio() {
             className="prep-packages"
             aria-labelledby="prep-packages-title"
           >
-            <h3 id="prep-packages-title">Focused 1:1 prep packages</h3>
+            <h3 id="prep-packages-title">Focused 1:1 preparation packages</h3>
             <div className="prep-package-grid">
-              {prepPackages.map(({ name, href, calls }) => (
-                <article className="prep-package" key={name}>
-                  <h4>{name}</h4>
-                  <p>{calls.length} video sessions + 1 digital guide</p>
-                  <ul aria-label="Included video sessions">
-                    {calls.map((call) => (
-                      <li key={call}>{call}</li>
-                    ))}
-                  </ul>
-                  <p className="prep-package-guide">
-                    Digital guide
-                    <br />
-                    <strong>The Art of Salary Negotiation</strong>
-                  </p>
-                  <a
-                    className="text-link"
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`View ${name} on Topmate`}
-                  >
-                    View on Topmate{" "}
-                    <ArrowUpRight size={16} aria-hidden="true" />
-                  </a>
-                </article>
-              ))}
+              {prepPackages.map(
+                ({ name, href, calls, price, originalPrice }) => (
+                  <article className="prep-package" key={name}>
+                    <h4>{name}</h4>
+                    <p>{calls.length} video sessions + 1 digital guide</p>
+                    <ul aria-label="Included video sessions">
+                      {calls.map((call) => (
+                        <li key={call}>{call}</li>
+                      ))}
+                    </ul>
+                    <p className="prep-package-guide">
+                      Digital guide
+                      <br />
+                      <strong>The Art of Salary Negotiation</strong>
+                    </p>
+                    <p className="prep-package-price">
+                      <strong>
+                        <span className="sr-only">Package price: </span>
+                        {price}
+                      </strong>{" "}
+                      <span className="sr-only">Original price: </span>
+                      <s>{originalPrice}</s>
+                    </p>
+                    <a
+                      className="text-link prep-package-link"
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`View ${name} on Topmate`}
+                    >
+                      View on Topmate{" "}
+                      <ArrowUpRight size={16} aria-hidden="true" />
+                    </a>
+                  </article>
+                ),
+              )}
             </div>
           </section>
         </section>

@@ -16,6 +16,8 @@ creator. Built with React, TypeScript, Vite, and Three.js, with an interactive
 - **Content:** LinkedIn community and impressions counters, brand partnerships, collaboration formats, and social links.
 - **Contact:** Professional links, dynamic copyright, and a shared profile-view counter.
 
+The experience timeline traces as you scroll in supported browsers, and the skill list settles into place when you switch categories. Reduced-motion mode keeps the timeline static and disables animated scrolling.
+
 ## Architecture
 
 Low-level component and data flow. The static site is built and deployed to

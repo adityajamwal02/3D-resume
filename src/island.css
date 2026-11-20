@@ -367,6 +367,44 @@
     left: 25%;
     background: linear-gradient(#b5ecd9, #9abde3 45%, #e2b9c8 75%, #e2b9c800);
   }
+  @media (prefers-reduced-motion: no-preference) {
+    .brand-carousel-viewport {
+      scroll-behavior: smooth;
+    }
+    .skill-list {
+      animation: skills-settle 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes skills-settle {
+      from {
+        transform: translateX(6px);
+        opacity: 0.8;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @supports (animation-timeline: view()) and
+      (animation-range: cover 20% cover 80%) {
+      .timeline {
+        view-timeline-name: --career;
+      }
+      .timeline::before {
+        transform-origin: top;
+        animation: career-trace linear both;
+        animation-timeline: --career;
+        animation-range: cover 20% cover 80%;
+      }
+      @keyframes career-trace {
+        from {
+          transform: scaleY(0);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+    }
+  }
   .job {
     position: relative;
     border: 0;
@@ -995,6 +1033,7 @@
     gap: 24px;
   }
   .prep-package {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1027,6 +1066,49 @@
   .prep-package-guide strong {
     color: var(--text);
     font-size: 16px;
+  }
+  .prep-package .prep-package-price {
+    margin: 0 0 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .prep-package-price strong {
+    font-size: 24px;
+    color: var(--text);
+    margin-inline-end: 6px;
+  }
+  .prep-package-link::after {
+    position: absolute;
+    content: "";
+    inset: 0;
+    border-radius: 8px;
+  }
+  .prep-package-link:focus-visible::after {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .prep-package:hover {
+      border-color: var(--accent);
+    }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .prep-package {
+      transition:
+        transform 180ms ease-out,
+        box-shadow 180ms ease-out;
+    }
+    .prep-package:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 8px 20px color-mix(in srgb, var(--text) 12%, transparent);
+    }
+    .prep-package-grid:has(.prep-package:hover) .prep-package:not(:hover) {
+      transform: scale(0.985);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prep-package .prep-package-link:hover svg {
+      transform: none;
+    }
   }
   .testimonials {
     margin-top: 64px;

@@ -124,7 +124,7 @@ export default function BrandCarousel() {
           };
           if (!(event.key in offsets)) return;
           event.preventDefault();
-          element.scrollTo({ left: offsets[event.key], behavior: "instant" });
+          element.scrollTo({ left: offsets[event.key], behavior: "auto" });
         }}
       >
         <div className="brand-carousel-track">
