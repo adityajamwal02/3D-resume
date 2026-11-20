@@ -414,6 +414,46 @@ test("Topmate mentorship links and mobile navigation", async ({ page }) => {
 });
 
 for (const theme of ["light", "dark"] as const) {
+  test(`prep packages follow testimonials and reflow in ${theme} mode`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.goto("./#mentorship");
+    const region = page.locator("#mentorship .testimonials + .prep-packages");
+    const cards = region.getByRole("article");
+    await expect(
+      region.getByRole("heading", { name: "Focused 1:1 prep packages" }),
+    ).toBeVisible();
+    for (const [i, id] of ["1866899", "1828890"].entries()) {
+      const card = cards.nth(i);
+      await expect(card.getByRole("link")).toHaveAttribute(
+        "href",
+        `https://topmate.io/adityajamwal/${id}`,
+      );
+      await expect(card.getByRole("listitem")).toHaveCount(i + 3);
+      await expect(
+        card.getByText("The Art of Salary Negotiation"),
+      ).toBeVisible();
+    }
+    await expect(
+      cards.nth(1).getByText(/Mock Interview \(DSA\)/),
+    ).toBeVisible();
+    for (const width of [1440, 768, 320]) {
+      await page.setViewportSize({ width, height: 980 });
+      await region.scrollIntoViewIfNeeded();
+      const [a, b] = await cards.evaluateAll((nodes) =>
+        nodes.map((n) => n.getBoundingClientRect().toJSON()),
+      );
+      expect(a.left).toBeGreaterThanOrEqual(0);
+      expect(b.right).toBeLessThanOrEqual(width);
+      if (width === 320) expect(b.top).toBeGreaterThan(a.bottom);
+      else expect(b.top).toBe(a.top);
+      await region.screenshot({
+        path: testInfo.outputPath(`packages-${width}.png`),
+      });
+    }
+  });
+
   test(`testimonials align within mentorship in ${theme} mode`, async ({
     page,
   }, testInfo) => {

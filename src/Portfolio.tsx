@@ -85,6 +85,24 @@ const mentorshipSessions = [
   },
 ];
 
+const sharedPrepCalls = [
+  "Resume Review",
+  "1:1 Mentorship",
+  "Interview prep & tips",
+];
+const prepPackages = [
+  {
+    name: "Interview Ready",
+    href: "https://topmate.io/adityajamwal/1866899",
+    calls: sharedPrepCalls,
+  },
+  {
+    name: "Interview Ready Pro",
+    href: "https://topmate.io/adityajamwal/1828890",
+    calls: [...sharedPrepCalls, "Mock Interview (DSA) · 75 min"],
+  },
+];
+
 const testimonials = [
   {
     name: "Anushka Bhardwaj",
@@ -782,6 +800,40 @@ export default function Portfolio() {
               ))}
             </div>
           </div>
+          <section
+            className="prep-packages"
+            aria-labelledby="prep-packages-title"
+          >
+            <h3 id="prep-packages-title">Focused 1:1 prep packages</h3>
+            <div className="prep-package-grid">
+              {prepPackages.map(({ name, href, calls }) => (
+                <article className="prep-package" key={name}>
+                  <h4>{name}</h4>
+                  <p>{calls.length} video sessions + 1 digital guide</p>
+                  <ul aria-label="Included video sessions">
+                    {calls.map((call) => (
+                      <li key={call}>{call}</li>
+                    ))}
+                  </ul>
+                  <p className="prep-package-guide">
+                    Digital guide
+                    <br />
+                    <strong>The Art of Salary Negotiation</strong>
+                  </p>
+                  <a
+                    className="text-link"
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`View ${name} on Topmate`}
+                  >
+                    View on Topmate{" "}
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                  </a>
+                </article>
+              ))}
+            </div>
+          </section>
         </section>
         <section
           className="section creator-section"
