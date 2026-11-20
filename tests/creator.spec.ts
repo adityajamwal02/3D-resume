@@ -78,7 +78,7 @@ for (const theme of ["light", "dark"] as const) {
       ).toHaveText(`${(linkedinHundreds * 100).toLocaleString("en-US")}+`);
       await expect(
         section.locator(".creator-impressions .count-up-visual"),
-      ).toHaveText("19.1M+");
+      ).toHaveText("20.8M+");
       await expect(section.locator(".creator-impressions")).toContainText(
         "impressions on LinkedIn",
       );

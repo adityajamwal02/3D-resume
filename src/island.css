@@ -941,7 +941,7 @@
     flex-wrap: wrap;
     gap: 8px;
     color: #b9c1c9;
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--display);
     font-size: 10px;
   }
   .session-format > span {
@@ -1051,6 +1051,7 @@
     line-height: 1.6;
   }
   .prep-package ul {
+    text-align: left;
     width: 100%;
     list-style: none;
     border-top: 1px solid var(--line);
@@ -1058,6 +1059,17 @@
     padding: 16px 0;
     line-height: 1.8;
     flex: 1;
+  }
+  .prep-package li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .prep-package li svg {
+    align-self: flex-start;
+    margin-top: 0.42em;
+    flex: none;
+    color: var(--accent);
   }
   .prep-package .prep-package-guide {
     margin: 0 0 16px;

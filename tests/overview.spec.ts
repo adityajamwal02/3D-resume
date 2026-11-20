@@ -98,22 +98,44 @@ test("one variable Google Sans font supplies all four weights within the font-by
   const fonts = await page.evaluate(() =>
     performance
       .getEntriesByType("resource")
-      .filter(
-        (entry) =>
-          entry.name.includes("google-sans") && entry.name.includes("woff"),
-      )
+      .filter((entry) => entry.name.includes("woff"))
       .map((entry) => entry.name),
   );
-  expect(fonts).toHaveLength(1);
-  expect(fonts[0]).toMatch(/google-sans-latin-wght-normal-.*\.woff2$/);
-  const font = await page.request.get(fonts[0]);
+  expect(
+    fonts.every((url) =>
+      /google-sans-latin(?:-ext)?-wght-normal-.*\.woff2$/.test(url),
+    ),
+  ).toBe(true);
+  const latin = fonts.filter((url) => /google-sans-latin-wght/.test(url));
+  expect(latin).toHaveLength(1);
+  const font = await page.request.get(latin[0]);
   expect((await font.body()).length).toBeLessThan(40_000);
   const definitions = await page.evaluate(() =>
     Array.from(document.fonts)
       .filter((face) => face.family.replaceAll('"', "") === "Google Sans")
       .map((face) => ({ weight: face.weight, status: face.status })),
   );
-  expect(definitions).toEqual([{ weight: "400 700", status: "loaded" }]);
+  expect(definitions).toHaveLength(2);
+  expect(
+    await page
+      .locator("body *")
+      .evaluateAll((nodes) => [
+        ...new Set(
+          nodes
+            .filter(
+              (el) =>
+                el instanceof HTMLElement &&
+                el.getClientRects().length &&
+                [...el.childNodes].some(
+                  (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim(),
+                ),
+            )
+            .map((el) =>
+              getComputedStyle(el).fontFamily.split(",")[0].replaceAll('"', ""),
+            ),
+        ),
+      ]),
+  ).toEqual(["Google Sans"]);
   await expect(page.locator('link[rel="preload"][as="font"]')).toHaveCount(0);
 });
 

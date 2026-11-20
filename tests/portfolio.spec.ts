@@ -431,9 +431,11 @@ for (const theme of ["light", "dark"] as const) {
       el.scrollIntoView({ block: "start", behavior: "instant" }),
     );
     await expect.poll(scale).toBeLessThan(0.7);
-    await page.locator("#work").evaluate((el) =>
-      el.scrollIntoView({ block: "start", behavior: "instant" }),
-    );
+    await page
+      .locator("#work")
+      .evaluate((el) =>
+        el.scrollIntoView({ block: "start", behavior: "instant" }),
+      );
     await expect.poll(scale).toBe(1);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await expect.poll(scale).toBe(1);
@@ -502,6 +504,17 @@ for (const theme of ["light", "dark"] as const) {
         `https://topmate.io/adityajamwal/${id}`,
       );
       await expect(card.getByRole("listitem")).toHaveCount(i + 3);
+      await expect(card.getByRole("listitem").first()).toHaveCSS(
+        "text-align",
+        "left",
+      );
+      await expect(card.locator("li > svg[aria-hidden=true]")).toHaveCount(
+        i + 3,
+      );
+      await expect(card.locator(".prep-package-price")).toHaveCSS(
+        "text-align",
+        "center",
+      );
       await expect(
         card.getByText("The Art of Salary Negotiation"),
       ).toBeVisible();

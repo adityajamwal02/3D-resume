@@ -7,6 +7,7 @@ import {
   isRefreshDue,
   parseProfile,
   PROFILE_URL,
+  PROFILE_API,
   REFRESH_INTERVAL_MS,
   refreshSnapshot,
   validateSnapshot,
@@ -22,37 +23,22 @@ const feedback = [
 function profile({
   rating = 4.9,
   ratings = 65,
-  bookings = "1,234",
+  bookings = 1234,
   testimonials = 63,
   properties = feedback,
-  url = PROFILE_URL,
+  username = "adityajamwal",
 } = {}) {
-  const schema = {
-    "@graph": [
-      {
-        "@type": "Person",
-        url,
-        aggregateRating: {
-          bestRating: 5,
-          ratingValue: rating,
-          reviewCount: ratings,
-        },
-      },
-      {
-        "@type": "Service",
-        aggregateRating: { ratingValue: 1, reviewCount: 2 },
-      },
-    ],
+  return {
+    username,
+    avg_ratings: rating,
+    ratings_count: ratings,
+    bookings_count: bookings,
+    testimonials_count: testimonials,
+    liked_properties: properties,
+    show_rating_on_profile: true,
+    show_bookings_on_profile: true,
+    show_testimonials_on_profile: true,
   };
-  const payload = JSON.stringify({ liked_properties: properties });
-  // Flight text can be split across script tags.
-  const middle = Math.floor(payload.length / 2);
-  const packets = [payload.slice(0, middle), payload.slice(middle)];
-  return `<script type="application/ld+json">${JSON.stringify(schema)}</script>
-    <span>${rating}<!-- -->/5</span><span>${ratings}<!-- --> ratings</span>
-    <span>${bookings}</span><span>bookings</span>
-    <span>${testimonials}</span><span>testimonials</span>
-    ${packets.map((packet) => `<script>self.__next_f.push(${JSON.stringify([1, packet])})</script>`).join("")}`;
 }
 
 test("extracts profile-level ratings, bookings, testimonials and feedback", () => {
@@ -76,7 +62,7 @@ test("accepts genuine zero counts, without treating absent counts as zero", () =
     profile({
       rating: 0,
       ratings: 0,
-      bookings: "0",
+      bookings: 0,
       testimonials: 0,
       properties: feedback.map((item) => ({ ...item, total: 0 })),
     }),
@@ -87,17 +73,14 @@ test("accepts genuine zero counts, without treating absent counts as zero", () =
   assert.equal(result.testimonials, 0);
 });
 
-for (const [name, html] of [
-  ["wrong account", profile({ url: "https://topmate.io/someone-else" })],
+for (const [name, data] of [
+  ["wrong account", profile({ username: "someone-else" })],
   ["invalid rating", profile({ rating: 6 })],
   ["invalid ratings count", profile({ ratings: -1 })],
-  ["missing booking badge", profile().replace(">bookings<", ">sessions<")],
-  [
-    "missing testimonial badge",
-    profile().replace(">testimonials<", ">reviews<"),
-  ],
+  ["hidden bookings", { ...profile(), show_bookings_on_profile: false }],
+  ["missing testimonials", { ...profile(), testimonials_count: undefined }],
   ["abbreviated booking count", profile({ bookings: "1.2K" })],
-  ["unsafe integer", profile({ bookings: "9007199254740992" })],
+  ["unsafe integer", profile({ bookings: 2 ** 53 })],
   ["missing feedback count", profile({ properties: feedback.slice(1) })],
   [
     "negative feedback count",
@@ -105,15 +88,9 @@ for (const [name, html] of [
       properties: feedback.map((item) => ({ ...item, total: -1 })),
     }),
   ],
-  [
-    "mismatched visible ratings",
-    profile().replace(">65<!-- -->", ">66<!-- -->"),
-  ],
-  ["challenge page", "<html>Verify you are human</html>"],
-  ["malformed JSON", '<script type="application/ld+json">{broken}</script>'],
 ]) {
   test(`rejects ${name}`, () => {
-    assert.throws(() => parseProfile(html, now));
+    assert.throws(() => parseProfile(data, now));
   });
 }
 
@@ -178,11 +155,9 @@ test("successful refresh atomically persists new counts and the fetch date", asy
       now,
       ifDue: true,
       fetchProfile: async (url, options) => {
-        assert.equal(url, PROFILE_URL);
+        assert.equal(url, PROFILE_API);
         assert.ok(options.signal instanceof AbortSignal);
-        return new Response(profile({ bookings: "140", testimonials: 70 }), {
-          headers: { "content-type": "text/html; charset=utf-8" },
-        });
+        return Response.json(profile({ bookings: 140, testimonials: 70 }));
       },
     });
     assert.equal(changed, true);
@@ -224,10 +199,10 @@ for (const [name, fetchProfile] of [
   ],
   ["wrong content type", async () => new Response("{}")],
   [
-    "changed markup",
+    "malformed JSON",
     async () =>
       new Response("<html>Changed</html>", {
-        headers: { "content-type": "text/html" },
+        headers: { "content-type": "application/json" },
       }),
   ],
 ]) {

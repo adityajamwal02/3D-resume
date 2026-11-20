@@ -399,23 +399,26 @@ test("a failed LinkedIn refresh does not prevent an independent Topmate refresh"
         fetchProfile: async () => new Response("", { status: 403 }),
       }),
     );
-    const topmateHTML = `<script type="application/ld+json">{"@type":"Person","url":"https://topmate.io/adityajamwal","aggregateRating":{"bestRating":5,"ratingValue":5,"reviewCount":65}}</script>
-      <span>5/5</span><span>65 ratings</span><span>132</span><span>bookings</span><span>63</span><span>testimonials</span>
-      <script>self.__next_f.push(${JSON.stringify([
-        1,
-        JSON.stringify({
-          liked_properties: [
-            { property: "Helpful", total: 38 },
-            { property: "Insightful", total: 31 },
-            { property: "Friendly", total: 30 },
-          ],
-        }),
-      ])})</script>`;
+    const topmateProfile = {
+      username: "adityajamwal",
+      avg_ratings: 5,
+      ratings_count: 65,
+      bookings_count: 132,
+      testimonials_count: 63,
+      show_rating_on_profile: true,
+      show_bookings_on_profile: true,
+      show_testimonials_on_profile: true,
+      liked_properties: [
+        { property: "Helpful", total: 38 },
+        { property: "Insightful", total: 31 },
+        { property: "Friendly", total: 30 },
+      ],
+    };
     assert.equal(
       await refreshTopmate({
         path: topmatePath,
         now,
-        fetchProfile: async () => response(topmateHTML),
+        fetchProfile: async () => Response.json(topmateProfile),
       }),
       true,
     );

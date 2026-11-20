@@ -842,7 +842,10 @@ export default function Portfolio() {
                     <p>{calls.length} video sessions + 1 digital guide</p>
                     <ul aria-label="Included video sessions">
                       {calls.map((call) => (
-                        <li key={call}>{call}</li>
+                        <li key={call}>
+                          <ArrowRight size={16} aria-hidden="true" />
+                          {call}
+                        </li>
                       ))}
                     </ul>
                     <p className="prep-package-guide">

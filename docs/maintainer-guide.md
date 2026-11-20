@@ -67,7 +67,7 @@ scripts/refresh-linkedin.mjs  Credential-free public-profile follower refresh
 scripts/refresh-linkedin.test.mjs Formatting, parser, network-safety, and interval tests
 ```
 
-The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. Typography uses a single self-hosted Latin Google Sans variable font (400-700), with IBM Plex Mono for technical labels. The existing Google Sans CSS family name is preserved; its [OFL license](../public/licenses/google-sans.txt) ships with the site. The AJ monogram remains only in the footer, not the navigation or browser tab.
+The rendering engine is dynamically imported only when its host enters the viewport, after content paint and an idle opportunity (with a bounded fallback). Deep links to lower sections do not load or allocate the renderer until the visitor returns to the hero. Three.js does not run through React state on each frame. Three interlocking rings share geometry and use physical clearcoat materials. A locally generated RoomEnvironment provides studio reflections through a PMREM texture; no downloaded models or HDR maps are needed. Site text uses self-hosted Google Sans (400–700), including technical labels and the rupee sign. Its [OFL license](../public/licenses/google-sans.txt) ships with the site. The AJ monogram remains only in the footer, not the navigation or browser tab.
 
 Mouse movement gently tilts the floating sculpture through damped interpolation. A subtle linear-gradient background animates behind the name and bio. The pause control freezes both the sculpture and ambient gradient; reduced-motion preferences disable automatic motion. The existing discipline selection, assembly, rotation, and reset controls remain available, as do the dynamic island, vertical experience timeline, skills, and contact sections.
 
@@ -244,14 +244,12 @@ request. Browsers may show their own generic page glyph.
 
 ### Content metric maintenance and animation
 
-The owner updated LinkedIn impressions to **19.1M+** on November 2, 2026,
-replacing the previous 17.2M+ display. The maintained lower-bound value is
-**19,100,000**; no more precise total was supplied.
+The maintained lower-bound value for LinkedIn impressions is **20,800,000**, supplied by the owner.
 Update `creatorImpressions` in [src/content.ts](../src/content.ts) when the
 owner provides a new value. There is no fetch, schedule, analytics SDK, or
 monitoring for impressions. The display truncates to one decimal million:
 `Math.floor(value / 100_000) / 10`, followed by an explicit `+` suffix, so the
-visible and screen-reader values both show **19.1M+**.
+visible and screen-reader values both show **20.8M+**.
 Community connections retain the public LinkedIn snapshot and existing
 floor-to-hundred rule. The top career strip remains a static summary.
 
@@ -269,7 +267,7 @@ Screen readers receive a stable final value; animated digits are hidden from
 the accessibility tree. Tabular digits and fixed line heights preserve metric
 alignment. The metrics form two columns when space permits and stack on narrow
 cards; both colors follow the current theme. Browser regression coverage checks
-the exact 19.1M+ result, no network polling, in-view start, once-only behavior,
+the exact 20.8M+ result, no network polling, in-view start, once-only behavior,
 reduced-motion changes, missing-observer fallback, and responsive accessibility.
 
 Testimonial checks cover the supplied quotes, current snapshot metrics and update date, unchanged navigation, desktop author alignment, mobile stacking, print exclusion, and accessibility in both themes at 320, 768, and 1440 pixels. Additional tests verify the exact Microsoft bullets and copyright rendering in 2026, 2027, and 2030. Sync tests cover parsing, true zero counts, invalid/missing data, the exact 72-hour threshold across month/year/leap-day boundaries, skipped network requests, successful persistence, and preservation of the previous snapshot on HTTP, network, timeout, or markup failures.
@@ -306,7 +304,7 @@ Live at [adityajamwal02.github.io/3D-resume](https://adityajamwal02.github.io/3D
 
 GitHub Actions checks freshness hourly at minute 23 and fetches the public profile only when the checked-in snapshot is at least 72 hours old. This avoids the short intervals at month boundaries caused by day-of-month `*/3` cron schedules. GitHub may delay scheduled runs; the normal refresh window is 72–73 hours, not a real-time guarantee. When neither profile snapshot changes, scheduled runs skip installation, build, tests, and deployment.
 
-The fetch uses the profile's public JSON-LD rating, visible booking/testimonial badges, and public feedback data. It validates the account identity, rating range, integer counts, and consistency with the visible rating before atomically replacing the JSON snapshot. It requires no account credentials, browser-side third-party requests, or extra dependencies. The three selected testimonial quotes are deliberately unchanged.
+Topmate's public HTML page began returning HTTP 403 to the scheduled runner. The refresh now reads the first-party `api.topmate.io/fetchByUsername/` JSON endpoint used by the public profile. It verifies the username and public visibility flags, validates the rating, counts and feedback, and stores only those aggregates. It requires no credentials or browser-side requests.
 
 Due refreshes run sync tests, lint, build, and browser tests before committing the snapshot and deploying **in the same workflow**. A bot commit does not need to trigger another workflow. Workflow concurrency serializes releases; a conflicting branch update makes the push fail rather than overwriting changes. The workflow needs `contents: write` to persist the snapshot, plus the existing Pages deployment permissions.
 

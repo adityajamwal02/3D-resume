@@ -3,7 +3,7 @@ import { creatorImpressions } from "../src/content";
 import linkedin from "../src/data/linkedin.json" with { type: "json" };
 
 const community = `${(Math.floor(linkedin.followers / 100) * 100).toLocaleString("en-US")}+`;
-const impressions = "19.1M+";
+const impressions = "20.8M+";
 const clockStart = new Date("2026-10-04T18:00:00.000Z");
 const clockPause = new Date("2026-10-04T18:01:00.000Z");
 
@@ -77,7 +77,7 @@ for (const colorScheme of ["light", "dark"] as const) {
   });
 }
 
-test("impressions use the supplied manual total and show 19.1M+ without fetching", async ({
+test("impressions use the supplied manual total and show 20.8M+ without fetching", async ({
   page,
 }) => {
   const dataRequests: string[] = [];
@@ -85,7 +85,7 @@ test("impressions use the supplied manual total and show 19.1M+ without fetching
     if (["fetch", "xhr"].includes(request.resourceType()))
       dataRequests.push(request.url());
   });
-  expect(creatorImpressions).toBe(19_100_000);
+  expect(creatorImpressions).toBe(20_800_000);
   await page.goto("./");
   const metrics = page.locator(".creator-metrics");
   await expect(metrics.locator(".count-up-visual")).toHaveText([
@@ -144,7 +144,7 @@ test("both content metrics count up once on entry and retain stable accessible v
   expect(connections).toBeGreaterThan(0);
   expect(connections).toBeLessThan(Math.floor(linkedin.followers / 100) * 100);
   expect(Number.parseFloat(partial[1])).toBeGreaterThan(0);
-  expect(Number.parseFloat(partial[1])).toBeLessThan(19.1);
+  expect(Number.parseFloat(partial[1])).toBeLessThan(20.8);
   expect(partial[1]).toMatch(/M\+$/);
   await expect(metrics.locator(".sr-only")).toHaveText([
     community,
