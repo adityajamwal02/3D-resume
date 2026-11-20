@@ -10,10 +10,22 @@ const clockPause = new Date("2026-10-04T18:01:00.000Z");
 for (const colorScheme of ["light", "dark"] as const) {
   test(`LeetCode practice fits desktop, tablet and phone in ${colorScheme} mode`, async ({
     page,
-  }) => {
+  }, testInfo) => {
     await page.emulateMedia({ colorScheme });
     await page.goto("./#expertise");
     const practice = page.locator("#expertise .leetcode-practice");
+    await expect(
+      practice.getByRole("heading", {
+        name: "Problem Solving and Community Stats",
+      }),
+    ).toBeVisible();
+    const groups = practice.locator("details");
+    await expect(groups.locator("summary")).toHaveText([
+      "Advanced8 topics",
+      "Intermediate8 topics",
+      "Fundamental8 topics",
+    ]);
+    await expect(practice.locator(".practice-topics dd")).toHaveCount(24);
     await expect(
       practice.getByRole("link", { name: "LeetCode profile" }),
     ).toHaveAttribute("href", "https://leetcode.com/u/darkaadityaa/");
@@ -27,10 +39,27 @@ for (const colorScheme of ["light", "dark"] as const) {
     await expect(page.getByText(/Top 2\.77%/)).toHaveCount(2);
     for (const [width, columns] of [
       [1440, 3],
+      [1920, 3],
       [700, 2],
       [320, 1],
     ]) {
       await page.setViewportSize({ width, height: 900 });
+      const stats = await practice.locator(".practice-stats").boundingBox();
+      expect(stats!.y + stats!.height).toBeLessThan(
+        (await groups.first().boundingBox())!.y,
+      );
+      for (const group of await groups.all()) {
+        const toggle = group.locator("summary");
+        await toggle.focus();
+        await toggle.press("Enter");
+        await expect(group.locator("dl")).toBeHidden();
+        await toggle.press("Space");
+        await expect(group.locator("dl")).toBeVisible();
+      }
+      if (width !== 1920)
+        await practice.screenshot({
+          path: testInfo.outputPath(`topics-${colorScheme}-${width}.png`),
+        });
       const entries = practice
         .locator(".practice-topics")
         .first()

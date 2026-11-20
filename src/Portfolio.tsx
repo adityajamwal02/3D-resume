@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   CodeXml as Github,
   BriefcaseBusiness as Linkedin,
   Mail,
@@ -474,30 +475,14 @@ export default function Portfolio() {
           </div>
           <div className="leetcode-practice">
             <header>
-              <h3>DSA patterns by topic</h3>
+              <h3 id="problem-solving-stats">
+                Problem Solving and Community Stats
+              </h3>
               <a className="text-link" href={leetcode.profile}>
                 LeetCode profile <ArrowUpRight size={16} aria-hidden="true" />
               </a>
             </header>
-            <p>
-              Problems solved per topic. A problem can count toward more than
-              one topic.
-            </p>
-            {Object.entries(leetcode.topics).map(([level, topics]) => (
-              <div className="practice-group" key={level}>
-                <h4>{level}</h4>
-                <dl className="practice-topics">
-                  {Object.entries(topics).map(([name, count]) => (
-                    <div key={name}>
-                      <dt>{name}</dt>
-                      <dd>{count}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ))}
             <div className="practice-group">
-              <h4>Problem solving &amp; community stats</h4>
               <dl className="practice-stats">
                 <div>
                   <dt>Problems solved</dt>
@@ -511,6 +496,46 @@ export default function Portfolio() {
                 ))}
               </dl>
             </div>
+            <h4 className="practice-breakdown">Problems solved by topic</h4>
+            <p>
+              Bars compare counts within each level. A problem can belong to
+              more than one topic.
+            </p>
+            {Object.entries(leetcode.topics).map(([level, topics]) => {
+              const entries = Object.entries(topics);
+              const max = Math.max(...Object.values(topics));
+              return (
+                <details
+                  open
+                  className="practice-group practice-level"
+                  key={level}
+                >
+                  <summary>
+                    <span>{level}</span>
+                    <small>{entries.length} topics</small>
+                    <ChevronDown size={18} aria-hidden="true" />
+                  </summary>
+                  <dl
+                    className="practice-topics"
+                    aria-label={`${level} topic counts`}
+                  >
+                    {entries.map(([name, count]) => (
+                      <div key={name}>
+                        <dt>{name}</dt>
+                        <dd>
+                          {count}
+                          <span className="topic-track" aria-hidden="true">
+                            <span
+                              style={{ width: `${(100 * count) / max}%` }}
+                            />
+                          </span>
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
+              );
+            })}
           </div>
         </section>
         <section

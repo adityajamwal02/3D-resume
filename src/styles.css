@@ -790,8 +790,69 @@ em {
 .practice-group {
   margin-top: 32px;
 }
-.practice-group h4 {
+.practice-breakdown {
+  margin: 40px 0 0;
+  font: 500 22px var(--display);
+}
+.practice-level {
+  margin-top: 16px;
+  padding-inline: clamp(14px, 2vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.practice-level summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 16px;
   font: 500 18px var(--display);
+}
+.practice-level summary::-webkit-details-marker {
+  display: none;
+}
+.practice-level summary small {
+  font: 12px var(--mono);
+  margin-left: auto;
+  color: var(--muted);
+}
+.practice-level[open] summary svg {
+  transform: rotate(180deg);
+}
+.practice-level summary:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+.practice-level[open] .practice-topics {
+  margin: 0 0 16px;
+}
+.topic-track {
+  position: absolute;
+  inset: auto 0 4px;
+  height: 2px;
+  background: var(--line);
+}
+.topic-track > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.65;
+  transform-origin: left;
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  .practice-level summary svg {
+    transition: transform 160ms ease-out;
+  }
+  .practice-level[open] .topic-track > span {
+    animation: topic-fill 220ms ease-out;
+  }
+  @keyframes topic-fill {
+    from {
+      transform: scaleX(0.85);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 .practice-group dl {
   display: grid;
@@ -809,10 +870,14 @@ em {
   border-top: 1px solid var(--line);
 }
 .practice-topics > div {
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+}
+.practice-group .practice-topics > div {
+  border: 0;
 }
 .practice-group dd {
   color: var(--accent);
