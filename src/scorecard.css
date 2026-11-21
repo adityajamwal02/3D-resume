@@ -1,0 +1,149 @@
+@font-face {
+  font-family: "Google Sans";
+  src: url("@fontsource-variable/google-sans/files/google-sans-latin-wght-normal.woff2")
+    format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+:root {
+  color-scheme: light dark;
+  --paper: light-dark(#f4f7f6, #111216);
+  --ink: light-dark(#1c2b30, #eceee8);
+  --accent: light-dark(#256658, #b5ecd9);
+  --rule: light-dark(#abbcb7, #475453);
+  font:
+    16px/1.55 "Google Sans",
+    sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 47rem;
+  margin: auto;
+  padding: 24px clamp(16px, 4vw, 40px) 56px;
+}
+nav,
+.scores {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+nav {
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: inherit;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.12;
+  margin: 0;
+}
+.scale {
+  border-block: 1px solid var(--rule);
+  padding: 14px 0;
+}
+fieldset {
+  min-width: 0;
+  margin: 24px 0;
+  padding: 0 0 20px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+}
+legend,
+.next-step {
+  font-weight: 600;
+}
+legend {
+  padding: 0;
+  font-size: 1.35rem;
+}
+fieldset p {
+  margin: 4px 0;
+}
+.scores label {
+  padding: 6px 10px 6px 0;
+  cursor: pointer;
+}
+input {
+  accent-color: var(--accent);
+}
+textarea,
+input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+}
+textarea {
+  resize: vertical;
+}
+details,
+footer {
+  margin-top: 24px;
+}
+summary {
+  color: var(--accent);
+  cursor: pointer;
+}
+.printed-note {
+  display: none;
+}
+@media print {
+  :root {
+    color-scheme: light !important;
+    font-size: 10pt;
+    background: white;
+    color: black;
+  }
+  main {
+    padding: 0;
+    max-width: none;
+  }
+  nav,
+  details,
+  footer,
+  textarea {
+    display: none;
+  }
+  fieldset {
+    margin: 10px 0;
+    padding-bottom: 8px;
+    break-inside: avoid;
+  }
+  .printed-note {
+    display: block;
+    min-height: 2.5em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  input::placeholder {
+    color: transparent;
+  }
+}

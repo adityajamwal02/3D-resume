@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DSA mock-interview scorecard | Aditya Jamwal</title>
+    <meta
+      name="description"
+      content="A free printable worksheet for a peer DSA mock interview. Rate four skills, record evidence, and pick one next step."
+    />
+    <link rel="stylesheet" href="./src/scorecard.css" />
+    <script type="module" src="./src/scorecard.ts"></script>
+  </head>
+  <body>
+    <main>
+      <nav aria-label="Worksheet actions">
+        <a href="./#free-scorecard">Back to mentorship</a>
+        <button id="print" type="button">Print or save PDF</button>
+      </nav>
+      <h1>DSA mock-interview scorecard</h1>
+      <p>
+        Work through one timed problem with a partner. As the interviewer, mark
+        one score per skill and write down what you actually saw. Print a blank
+        sheet or fill it in here first.
+      </p>
+      <p class="scale">
+        <strong>0</strong> Not demonstrated &middot; <strong>1</strong> After a
+        prompt &middot; <strong>2</strong> Independently
+      </p>
+      <div id="rubric"></div>
+      <label class="next-step"
+        >One thing to practice next
+        <input
+          type="text"
+          placeholder="What will you try in your next interview?"
+        />
+      </label>
+      <details>
+        <summary>See a worked example</summary>
+        <p>
+          <strong>Correctness: 1/2.</strong> The problem asks for two distinct
+          indices that sum to a target. With a single value of 3 and a target of
+          6, inserting the value before checking its complement pairs the index
+          with itself. The candidate caught this after a prompt.
+        </p>
+        <p>
+          <strong>Next time:</strong> Trace the smallest input before declaring
+          the solution complete.
+        </p>
+      </details>
+      <footer>
+        <p>Entries stay on this page. Print before leaving to keep a copy.</p>
+        <a href="https://topmate.io/adityajamwal/1553022"
+          >Practice with Aditya in a 75-minute DSA mock interview</a
+        >
+      </footer>
+    </main>
+  </body>
+</html>

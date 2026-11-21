@@ -12,7 +12,7 @@ creator. Built with React, TypeScript, Vite, and Three.js, with an interactive
 - **Experience:** Microsoft, Cisco, and Ambee.
 - **Work:** HashImagin and Multi-Agentic System.
 - **Expertise:** Skills, LeetCode community stats, and collapsible topic counts with comparison bars scaled within each level, followed by education and achievements.
-- **Mentorship:** Session guide, booking links, testimonials, and a comparison of the Interview Ready and Interview Ready Pro packages.
+- **Mentorship:** Session guide, booking links, testimonials, preparation packages, and a [free printable DSA mock-interview scorecard](https://adityajamwal02.github.io/3D-resume/dsa-scorecard.html).
 - **Content:** LinkedIn community and impressions counters, brand partnerships, collaboration formats, and social links.
 - **Contact:** Professional links, dynamic copyright, and a shared profile-view counter.
 

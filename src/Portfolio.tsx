@@ -685,37 +685,48 @@ export default function Portfolio() {
               aria-label="Mentorship sessions"
             >
               {mentorshipSessions.map((session) => (
-                <a
-                  className="mentorship-service"
-                  key={session.name}
-                  href={session.href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span className="session-format">
-                    <CalendarDays size={15} /> 1:1 VIDEO CALL{" "}
-                    <span>{session.duration}</span>
-                  </span>
-                  <span className="session-goal">{session.goal}</span>
-                  <h4>
-                    {session.name}
-                    <ArrowUpRight size={20} />
-                  </h4>
-                  <p>{session.detail}</p>
-                  <dl className="session-expectations">
-                    <div>
-                      <dt>What to bring</dt>
-                      <dd>{session.prepare}</dd>
-                    </div>
-                    <div>
-                      <dt>What to take away</dt>
-                      <dd>{session.takeaway}</dd>
-                    </div>
-                  </dl>
-                  <span className="session-book">
-                    Book {session.name} <ArrowUpRight size={16} />
-                  </span>
-                </a>
+                <div className="session-option" key={session.name}>
+                  <a
+                    className="mentorship-service"
+                    href={session.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span className="session-format">
+                      <CalendarDays size={15} /> 1:1 VIDEO CALL{" "}
+                      <span>{session.duration}</span>
+                    </span>
+                    <span className="session-goal">{session.goal}</span>
+                    <h4>
+                      {session.name}
+                      <ArrowUpRight size={20} />
+                    </h4>
+                    <p>{session.detail}</p>
+                    <dl className="session-expectations">
+                      <div>
+                        <dt>What to bring</dt>
+                        <dd>{session.prepare}</dd>
+                      </div>
+                      <div>
+                        <dt>What to take away</dt>
+                        <dd>{session.takeaway}</dd>
+                      </div>
+                    </dl>
+                    <span className="session-book">
+                      Book {session.name} <ArrowUpRight size={16} />
+                    </span>
+                  </a>
+                  {session.name === "Mock Interview (DSA)" && (
+                    <a
+                      className="scorecard-entry text-link"
+                      id="free-scorecard"
+                      href="./dsa-scorecard.html"
+                    >
+                      Try the free scorecard{" "}
+                      <ArrowRight size={16} aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
             <p className="mentorship-booking-note">

@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rolldownOptions: {
+      input: ["index.html", "dsa-scorecard.html"],
       output: {
         codeSplitting: {
           groups: [
