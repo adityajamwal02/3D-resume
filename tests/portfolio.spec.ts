@@ -532,6 +532,21 @@ for (const theme of ["light", "dark"] as const) {
       expect(b.right).toBeLessThanOrEqual(width);
       if (width === 320) expect(b.top).toBeGreaterThan(a.bottom);
       else expect(b.top).toBe(a.top);
+      for (const card of await cards.all()) {
+        const guide = card.locator(".prep-package-guide");
+        await expect(guide).toHaveCSS("text-align", "left");
+        const arrow = await guide
+          .locator("svg[aria-hidden=true]")
+          .boundingBox();
+        const first = await card.locator("li svg").first().boundingBox();
+        const price = await card.locator(".prep-package-price").boundingBox();
+        const bounds = await card.boundingBox();
+        expect(arrow!.x).toBeCloseTo(first!.x, 0);
+        expect(price!.x + price!.width / 2).toBeCloseTo(
+          bounds!.x + bounds!.width / 2,
+          0,
+        );
+      }
       await region.screenshot({
         path: testInfo.outputPath(`packages-${width}.png`),
       });

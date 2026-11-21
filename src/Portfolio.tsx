@@ -849,9 +849,11 @@ export default function Portfolio() {
                       ))}
                     </ul>
                     <p className="prep-package-guide">
-                      Digital guide
-                      <br />
-                      <strong>The Art of Salary Negotiation</strong>
+                      <ArrowRight size={16} aria-hidden="true" />
+                      <span>
+                        Digital guide:{" "}
+                        <strong>The Art of Salary Negotiation</strong>
+                      </span>
                     </p>
                     <p className="prep-package-price">
                       <strong>

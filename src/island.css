@@ -1060,18 +1060,22 @@
     line-height: 1.8;
     flex: 1;
   }
-  .prep-package li {
+  .prep-package li,
+  .prep-package-guide {
     display: flex;
     gap: 10px;
     align-items: baseline;
   }
-  .prep-package li svg {
+  .prep-package li svg,
+  .prep-package-guide svg {
     align-self: flex-start;
     margin-top: 0.42em;
     flex: none;
     color: var(--accent);
   }
   .prep-package .prep-package-guide {
+    width: 100%;
+    text-align: left;
     margin: 0 0 16px;
     font-size: 14px;
   }
